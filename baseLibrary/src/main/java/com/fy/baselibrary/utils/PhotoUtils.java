@@ -49,13 +49,9 @@ public class PhotoUtils {
         takePictureIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
-
             Uri uri;
-            int fileType = 2;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                fileType = 0;
-            }
-            File takeImageFile = FileUtils.createFile(FileUtils.IMG, "IMG_", ".png", fileType);
+
+            File takeImageFile = FileUtils.createFile("Pictures/" + ConfigUtils.getFilePath(), "IMG_", ".jpg", 2);
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
                 uri = Uri.fromFile(takeImageFile);
             } else {
