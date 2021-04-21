@@ -2,15 +2,15 @@ package com.fy.baselibrary.base;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.ColorRes;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.ColorRes;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.fy.baselibrary.utils.ResUtils;
 
@@ -32,14 +32,12 @@ public class ViewHolder extends RecyclerView.ViewHolder {
     }
 
     public static ViewHolder createViewHolder(Context context, View itemView) {
-        ViewHolder holder = new ViewHolder(context, itemView);
-        return holder;
+        return new ViewHolder(context, itemView);
     }
 
     public static ViewHolder createViewHolder(Context context, ViewGroup parent, int layoutId) {
         View itemView = LayoutInflater.from(context).inflate(layoutId, parent, false);
-        ViewHolder holder = new ViewHolder(context, itemView);
-        return holder;
+        return new ViewHolder(context, itemView);
     }
 
     /**

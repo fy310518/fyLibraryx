@@ -75,7 +75,7 @@ public class SettingUtils {
      * @param content
      * @param context
      */
-    public void copyContentToClipboard(String content, Context context) {
+    public static void copyContentToClipboard(String content, Context context) {
         //获取剪贴板管理器：
         ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         // 创建普通字符型ClipData
