@@ -505,7 +505,7 @@ public abstract class RvCommonAdapter<Item, Holder extends ViewHolder> extends R
             } else {
                 constructor = z.getDeclaredConstructor(Context.class, View.class);
                 constructor.setAccessible(true);
-                return (Holder) constructor.newInstance(view);
+                return (Holder) constructor.newInstance(mContext, view);
             }
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
