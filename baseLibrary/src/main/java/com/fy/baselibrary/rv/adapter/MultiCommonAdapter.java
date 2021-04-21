@@ -35,7 +35,7 @@ public abstract class MultiCommonAdapter<Item, Holder extends ViewHolder> extend
         Holder viewHolder = super.onCreateViewHolder(parent, viewType);
         if (null == viewHolder){
             int layoutId = mMultiTypeSupport.getLayoutId(viewType);
-            viewHolder = (Holder) Holder.createViewHolder(mContext, parent, layoutId);
+            viewHolder = createBaseViewHolder(parent, layoutId);
 
             bindOnClick(viewHolder);
         }
