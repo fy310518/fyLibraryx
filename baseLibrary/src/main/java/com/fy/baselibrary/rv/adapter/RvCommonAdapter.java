@@ -503,7 +503,7 @@ public abstract class RvCommonAdapter<Item, Holder extends ViewHolder> extends R
                 constructor.setAccessible(true);
                 return (Holder) constructor.newInstance(this, view);
             } else {
-                constructor = z.getDeclaredConstructor(View.class);
+                constructor = z.getDeclaredConstructor(Context.class, View.class);
                 constructor.setAccessible(true);
                 return (Holder) constructor.newInstance(view);
             }
