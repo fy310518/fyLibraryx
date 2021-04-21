@@ -1,6 +1,8 @@
 package com.fy.baselibrary.utils;
 
 import android.app.NotificationManager;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -68,5 +70,18 @@ public class SettingUtils {
     }
 
 
+    /**
+     * 复制内容到剪贴板
+     * @param content
+     * @param context
+     */
+    public void copyContentToClipboard(String content, Context context) {
+        //获取剪贴板管理器：
+        ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        // 创建普通字符型ClipData
+        ClipData mClipData = ClipData.newPlainText("Label", content);
+        // 将ClipData内容放到系统剪贴板里。
+        cm.setPrimaryClip(mClipData);
+    }
 
 }

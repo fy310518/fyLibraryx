@@ -24,7 +24,7 @@ import java.util.List;
  * RecyclerView 通用的Adapter
  * Created by fangs on 2017/7/31.
  */
-public abstract class RvCommonAdapter<Item> extends RecyclerView.Adapter<ViewHolder> implements Filterable, View.OnClickListener, View.OnLongClickListener{
+public abstract class RvCommonAdapter<Item, Holder extends ViewHolder> extends RecyclerView.Adapter<Holder> implements Filterable, View.OnClickListener, View.OnLongClickListener{
     private final static int TYPE_HEAD = 100000;
     private final static int TYPE_FOOTER = 200000;
 
@@ -87,19 +87,19 @@ public abstract class RvCommonAdapter<Item> extends RecyclerView.Adapter<ViewHol
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
-        ViewHolder viewHolder = null;
+    public Holder onCreateViewHolder(final ViewGroup parent, int viewType) {
+        Holder viewHolder = null;
         if (null != mHeaderViews.get(viewType)) {//头
-            viewHolder =  ViewHolder.createViewHolder(parent.getContext(), mHeaderViews.get(viewType));
+            viewHolder = (Holder) Holder.createViewHolder(parent.getContext(), mHeaderViews.get(viewType));
         } else if (null != mFootViews.get(viewType)) {//尾
-            viewHolder =  ViewHolder.createViewHolder(parent.getContext(), mFootViews.get(viewType));
+            viewHolder = (Holder) Holder.createViewHolder(parent.getContext(), mFootViews.get(viewType));
         } else if (viewType == TYPE_EMPTY){//空布局
-            viewHolder = ViewHolder.createViewHolder(mContext, parent, ConfigUtils.getOnStatusAdapter().emptyDataView());
+            viewHolder = (Holder) Holder.createViewHolder(mContext, parent, ConfigUtils.getOnStatusAdapter().emptyDataView());
             viewHolder.itemView.setOnClickListener(view -> {
                 if (null != OnEmptyClickListener) OnEmptyClickListener.onRetry();
             });
         } else if (mLayoutId != -1){//主体
-            viewHolder = ViewHolder.createViewHolder(mContext, parent, mLayoutId);
+            viewHolder = (Holder) Holder.createViewHolder(mContext, parent, mLayoutId);
             bindOnClick(viewHolder);
         }
 
@@ -107,7 +107,7 @@ public abstract class RvCommonAdapter<Item> extends RecyclerView.Adapter<ViewHol
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(Holder holder, int position) {
         if (isHeaderViewPos(position) || isFooterViewPos(position) || isShowEmpty(position)) {
             return;
         }
@@ -115,8 +115,7 @@ public abstract class RvCommonAdapter<Item> extends RecyclerView.Adapter<ViewHol
         int centerPosition = position - getHeadersCount();//计算 主体数据 position
         convert(holder, mDatas.get(centerPosition), centerPosition);
 
-//        设置 tag 对应 onCreateViewHolder() 设置点击事件
-        holder.itemView.setTag(mDatas.get(centerPosition));
+        setViewTag(holder, mDatas.get(centerPosition));
     }
 
     @Override
@@ -139,7 +138,7 @@ public abstract class RvCommonAdapter<Item> extends RecyclerView.Adapter<ViewHol
     }
 
     @Override
-    public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
+    public void onViewAttachedToWindow(@NonNull Holder holder) {
         super.onViewAttachedToWindow(holder);
         int position = holder.getLayoutPosition();
         if (isHeaderViewPos(position) || isFooterViewPos(position)) {
@@ -150,23 +149,32 @@ public abstract class RvCommonAdapter<Item> extends RecyclerView.Adapter<ViewHol
 
     /**
      * 渲染数据到 View中
-     *
      * @param holder
      * @param item
      */
-    public abstract void convert(ViewHolder holder, Item item, int position);
+    public abstract void convert(Holder holder, Item item, int position);
 
     /**
      * 绑定点击事件
-     *
      * @param viewHolder
      */
-    protected void bindOnClick(ViewHolder viewHolder) {
+    protected void bindOnClick(Holder viewHolder) {
 //        避免 在onBindViewHolder里面频繁创建事件回调，应该在 onCreateViewHolder()中每次为新建的 View 设置一次即可
 //        需要在 convert() 最后使用 holder.itemView.setTag(Item)
         viewHolder.itemView.setOnClickListener(this);
 
         viewHolder.itemView.setOnLongClickListener(this);
+    }
+
+    /**
+     * 为设置了点击事件的 view, 设置tag,方便回调接口 获取当前点击的 item 的实体类；
+     * 子类 adapter，可以重写 setViewTag 和 bindOnClick 方法，添加Item内的控件点击事件
+     * @param holder
+     * @param item
+     */
+    protected void setViewTag(Holder holder, Item item) {
+        //设置 tag 对应 onCreateViewHolder() 设置点击事件
+        holder.itemView.setTag(item);
     }
 
     @ClickFilter()

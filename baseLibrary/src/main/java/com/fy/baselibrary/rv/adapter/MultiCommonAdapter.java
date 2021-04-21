@@ -11,7 +11,7 @@ import java.util.List;
  * RecyclerView多种ItemViewType 的adapter
  * Created by fangs on 2017/7/31.
  */
-public abstract class MultiCommonAdapter<Item> extends RvCommonAdapter<Item> {
+public abstract class MultiCommonAdapter<Item, Holder extends ViewHolder> extends RvCommonAdapter<Item, Holder> {
 
     protected MultiTypeSupport<Item> mMultiTypeSupport;
 
@@ -31,11 +31,11 @@ public abstract class MultiCommonAdapter<Item> extends RvCommonAdapter<Item> {
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
+    public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Holder viewHolder = super.onCreateViewHolder(parent, viewType);
         if (null == viewHolder){
             int layoutId = mMultiTypeSupport.getLayoutId(viewType);
-            viewHolder = ViewHolder.createViewHolder(mContext, parent, layoutId);
+            viewHolder = (Holder) Holder.createViewHolder(mContext, parent, layoutId);
 
             bindOnClick(viewHolder);
         }
