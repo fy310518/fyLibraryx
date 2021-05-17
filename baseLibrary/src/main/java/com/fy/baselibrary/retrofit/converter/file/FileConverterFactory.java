@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 
 import com.fy.baselibrary.retrofit.load.down.DownLoadFileType;
 import com.fy.baselibrary.retrofit.load.up.UpLoadFileType;
+import com.fy.baselibrary.retrofit.load.up.UpLoadFileType2;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -37,6 +38,8 @@ public class FileConverterFactory extends Converter.Factory {
         for (Annotation annotation : methodAnnotations) {
             if (annotation instanceof UpLoadFileType) {
                 return new FileRequestBodyConverter();
+            } else if (annotation instanceof UpLoadFileType2){
+                return new FileRequestBodyConverter2();
             }
         }
 
