@@ -83,14 +83,14 @@ public class N {
      */
     public static NotificationCompat.Builder createNotifyBuilder(Channel channel, NotifyBuild customBuild) {
         createNotifyChannel(channel);
-
         Context context = ConfigUtils.getAppCtx();
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channel.channelId)
                 .setWhen(System.currentTimeMillis())
                 .setPriority(getLowVersionPriority(channel)) // 通知优先级，优先级确定通知在Android7.1和更低版本上的干扰程度。
                 .setVisibility(channel.lockScreenVisibility) // 锁定屏幕公开范围
                 .setSmallIcon(customBuild.icon)
-                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), customBuild.icon))
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), customBuild.iconBgColor))
                 .setColor(ResUtils.getColor(customBuild.iconBgColor));
 
         if (channel.defaults == N.DEFAULT_CUSTOM) {
@@ -249,6 +249,8 @@ public class N {
         private int icon;
         /** 通知图标 背景颜色 */
         private int iconBgColor;
+        //通知 大图标
+        private int LargeIcon;
 
         /** 通知标题 */
         private String title;
@@ -268,9 +270,10 @@ public class N {
             return build;
         }
 
-        public NotifyBuild setIcon(@DrawableRes int icon, @ColorRes int iconBgColor) {
+        public NotifyBuild setIcon(@DrawableRes int icon, @ColorRes int iconBgColor, @DrawableRes int LargeIcon) {
             this.icon = icon;
             this.iconBgColor = iconBgColor;
+            this.LargeIcon = LargeIcon;
             return this;
         }
 
