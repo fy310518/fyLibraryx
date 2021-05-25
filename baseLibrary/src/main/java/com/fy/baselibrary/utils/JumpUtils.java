@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -469,16 +470,30 @@ public class JumpUtils {
 
     /**
      * 跳转到 对应 action的设置界面
-     * @param act     如：Settings.ACTION_APPLICATION_DETAILS_SETTINGS(权限设置)
-     * @param action
+     * @param act
+     * @param action 如：Settings.ACTION_APPLICATION_DETAILS_SETTINGS(权限设置)
      */
-    public static void jumpSettting(Activity act, String action){
-        Intent localIntent = new Intent();
-        localIntent.setAction(action);
+    public static void jumpSetting(Activity act, String action){
+        Intent localIntent = new Intent(action);
         localIntent.setData(Uri.fromParts("package", act.getPackageName(), null));
         act.startActivity(localIntent);
     }
 
+    /**
+     * 跳转到 本应用的 指定action 的设置界面
+     * @param act
+     * @param action  如： Settings.ACTION_APP_NOTIFICATION_SETTINGS （通知设置）
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void jumpDetailsSetting(Activity act, String action){
+        ApplicationInfo appInfo = act.getApplicationInfo();
+
+        Intent localIntent = new Intent(action);
+        //这种方案适用于 API 26, 即8.0（含8.0）以上可以用
+        localIntent.putExtra(Settings.EXTRA_APP_PACKAGE, act.getPackageName());
+        localIntent.putExtra(Settings.EXTRA_CHANNEL_ID, appInfo.uid);
+        act.startActivity(localIntent);
+    }
 
     /**
      * 拨打电话
