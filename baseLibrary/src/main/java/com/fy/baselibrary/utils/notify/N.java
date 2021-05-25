@@ -367,8 +367,13 @@ public class N {
             return this;
         }
 
-        public Channel setVibrate(long[] vibrate, int type) {
+        public Channel setVibrate(long[] vibrate) {
             this.vibrate = vibrate;
+            return this;
+        }
+
+        /** 设置使用 系统铃声管理器中的提示音效 */
+        public Channel setSound(int type){
             this.sound = RingtoneManager.getDefaultUri(type);
             return this;
         }
