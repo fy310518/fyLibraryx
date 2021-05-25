@@ -86,7 +86,9 @@ public class N {
         createNotifyChannel(channel);
         Context context = ConfigUtils.getAppCtx();
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channel.channelId)
+        //从 SPF 获取 保存的 指定key 的 渠道ID
+        String channelID = SpfAgent.init("").getString(channel.channelIdKey);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelID)
                 .setWhen(System.currentTimeMillis())
                 .setPriority(getLowVersionPriority(channel)) // 通知优先级，优先级确定通知在Android7.1和更低版本上的干扰程度。
                 .setVisibility(channel.lockScreenVisibility) // 锁定屏幕公开范围
@@ -150,31 +152,25 @@ public class N {
      */
     public static void modifyChannel(Channel channel) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
-        Context ctx = ConfigUtils.getAppCtx();
+
+        //从 SPF 获取 保存的 指定key 的 渠道ID
+        String channelID = SpfAgent.init("").getString(channel.channelIdKey);
+        if (TextUtils.isEmpty(channelID)) return;
 
         //1、删除 之前的 通知渠道
-        NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) ConfigUtils.getAppCtx().getSystemService(Context.NOTIFICATION_SERVICE);
         List<NotificationChannel> channelList = notificationManager.getNotificationChannels();
         for (NotificationChannel NotifyChannel : channelList) {
-            if (NotifyChannel.getId().contains(channel.channelId)) {
+            if (NotifyChannel.getId().contains(channelID)) {
                 notificationManager.deleteNotificationChannel(NotifyChannel.getId());
                 SpfAgent.init("")
-                        .saveString(channel.channelId, System.currentTimeMillis() + "")
+                        .saveString(channel.channelIdKey, System.currentTimeMillis() + "")
                         .commit(false);
                 break;
             }
         }
 
         //2、创建一个新的通知渠道
-        String channelNum = SpfAgent.init("").getString(channel.channelId);
-        if (TextUtils.isEmpty(channelNum)){
-            channelNum = System.currentTimeMillis() + "";
-            SpfAgent.init("")
-                    .saveString(channel.channelId, channelNum)
-                    .commit(false);
-        }
-
-        channel.setChannel(channelNum, channel.channelName, channel.description);
         createNotifyChannel(channel);
     }
 
@@ -185,7 +181,9 @@ public class N {
     public static void createNotifyChannel(Channel channel){
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
 
-        NotificationChannel NotifyChannel = new NotificationChannel(channel.channelId, channel.channelName, channel.importance);
+        //从 SPF 获取 保存的 指定key 的 渠道ID
+        String channelID = SpfAgent.init("").getString(channel.channelIdKey);
+        NotificationChannel NotifyChannel = new NotificationChannel(channelID, channel.channelName, channel.importance);
         NotifyChannel.setDescription(channel.description);
 
         if (null != channel.sound){
@@ -311,8 +309,8 @@ public class N {
      * 通知渠道 对象
      */
     public static class Channel {
-        /** 通知渠道 Id 【android 8.0 渠道概念的 渠道ID 是String类型】*/
-        private String channelId;
+        /** 通知渠道ID key 【android 8.0 渠道概念的 渠道ID 是String类型】*/
+        private String channelIdKey;
         /** 通知渠道名称 */
         private String channelName;
         /** 描述 */
@@ -345,8 +343,8 @@ public class N {
 
 
         /** 以下为构建参数 */
-        public Channel setChannel(String channelId, String channelName, String description) {
-            this.channelId = channelId;
+        public Channel setChannel(String channelIdKey, String channelName, String description) {
+            this.channelIdKey = channelIdKey;
             this.channelName = channelName;
             this.description = description;
             return this;
