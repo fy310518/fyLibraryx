@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.widget.RemoteViews;
 
 import androidx.annotation.ColorRes;
@@ -90,8 +91,9 @@ public class N {
                 .setPriority(getLowVersionPriority(channel)) // 通知优先级，优先级确定通知在Android7.1和更低版本上的干扰程度。
                 .setVisibility(channel.lockScreenVisibility) // 锁定屏幕公开范围
                 .setSmallIcon(customBuild.icon)
-                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), customBuild.iconBgColor))
-                .setColor(ResUtils.getColor(customBuild.iconBgColor));
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), customBuild.LargeIcon))
+                .setColor(ResUtils.getColor(customBuild.iconBgColor))
+                .setOnlyAlertOnce(true); // 设置通知只会在通知首次出现时打断用户（通过声音、振动或视觉提示），而之后更新则不会再打断用户。
 
         if (channel.defaults == N.DEFAULT_CUSTOM) {
             if (null != channel.sound) builder.setSound(channel.sound); //通知 提示音
@@ -164,19 +166,14 @@ public class N {
         }
 
         //2、创建一个新的通知渠道
-        boolean shock = SpfAgent.init("").getBoolean(N.shockKEY, true);
-        boolean voice = SpfAgent.init("").getBoolean(N.voiceKEY, true);
-
-        int importance = NotificationManager.IMPORTANCE_LOW;
-        if ((voice && !shock) || (!voice && shock)){
-            importance = NotificationManager.IMPORTANCE_DEFAULT;
-        } else if (voice && shock){
-            importance = NotificationManager.IMPORTANCE_HIGH;
+        String channelNum = SpfAgent.init("").getString(channel.channelId);
+        if (TextUtils.isEmpty(channelNum)){
+            channelNum = System.currentTimeMillis() + "";
+            SpfAgent.init("")
+                    .saveString(channel.channelId, channelNum)
+                    .commit(false);
         }
 
-        channel.setImportance(importance);
-
-        String channelNum = SpfAgent.init("").getString(channel.channelId);
         channel.setChannel(channelNum, channel.channelName, channel.description);
         createNotifyChannel(channel);
     }
@@ -249,7 +246,7 @@ public class N {
         private int icon;
         /** 通知图标 背景颜色 */
         private int iconBgColor;
-        //通知 大图标
+        /** 通知 大图标 */
         private int LargeIcon;
 
         /** 通知标题 */
