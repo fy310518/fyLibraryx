@@ -65,11 +65,20 @@
 
 
     <!-- 自定义圆形进度条 控件 -->
-    <declare-styleable name="circleProgressBar">
-        <attr name="circleWidth" format="dimension" />
-        <attr name="betaAngle" format="integer" />
-        <attr name="firstColor" format="color" />
-        <attr name="secondColor" format="color" />
+    <declare-styleable name="ProgressWheel">
+        <attr name="barWidth" format="dimension" />
+        <attr name="rimWidth" format="dimension" />
+        <attr name="spinSpeed" format="dimension" />
+        <attr name="delayMillis" format="integer" />
+        <attr name="barColor" format="color" />
+        <attr name="barLength" format="color" />
+        <attr name="textSize" format="dimension" />
+        <attr name="textColor" format="color" />
+        <attr name="text" format="string" />
+        <attr name="rimColor" format="color" />
+        <attr name="circleColor" format="color" />
+        <attr name="contourColor" format="color" />
+        <attr name="contourSize" format="dimension" />
     </declare-styleable>
 
 

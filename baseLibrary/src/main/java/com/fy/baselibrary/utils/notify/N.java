@@ -95,7 +95,7 @@ public class N {
                 .setSmallIcon(customBuild.icon)
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), customBuild.LargeIcon))
                 .setColor(ResUtils.getColor(customBuild.iconBgColor))
-                .setOnlyAlertOnce(true); // 设置通知只会在通知首次出现时打断用户（通过声音、振动或视觉提示），而之后更新则不会再打断用户。
+                .setOnlyAlertOnce(false); // 设置通知是否 只会在通知首次出现时打断用户（通过声音、振动或视觉提示），而之后更新则不会再打断用户。
 
         if (channel.defaults == N.DEFAULT_CUSTOM) {
             if (null != channel.sound) builder.setSound(channel.sound); //通知 提示音
@@ -208,6 +208,7 @@ public class N {
         NotifyChannel.setBypassDnd(true); //设置绕过免打扰模式
         NotifyChannel.setLockscreenVisibility(channel.lockScreenVisibility);//设置在锁屏界面上显示这条通知
 
+        NotifyChannel.setShowBadge(true);//桌面小红点
         NotificationManager notificationManager = (NotificationManager) ConfigUtils.getAppCtx().getSystemService(Context.NOTIFICATION_SERVICE);
         assert notificationManager != null;
         notificationManager.createNotificationChannel(NotifyChannel);
