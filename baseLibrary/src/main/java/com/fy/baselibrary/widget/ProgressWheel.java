@@ -209,28 +209,28 @@ public class ProgressWheel extends View {
      * @param a the attributes to parse
      */
     private void parseAttributes(TypedArray a) {
-        barWidth = (int) a.getDimension(R.styleable.ProgressWheel_barWidth, barWidth);
-        rimWidth = (int) a.getDimension(R.styleable.ProgressWheel_rimWidth, rimWidth);
-        spinSpeed = (int) a.getDimension(R.styleable.ProgressWheel_spinSpeed, spinSpeed);
-        delayMillis = a.getInteger(R.styleable.ProgressWheel_delayMillis, delayMillis);
+        barWidth = (int) a.getDimension(R.styleable.ProgressWheel_progress_barWidth, barWidth);
+        rimWidth = (int) a.getDimension(R.styleable.ProgressWheel_progress_rimWidth, rimWidth);
+        spinSpeed = (int) a.getDimension(R.styleable.ProgressWheel_progress_spinSpeed, spinSpeed);
+        delayMillis = a.getInteger(R.styleable.ProgressWheel_progress_delayMillis, delayMillis);
         if (delayMillis < 0) {
             delayMillis = 0;
         }
 
-        barColor = a.getColor(R.styleable.ProgressWheel_barColor, barColor);
-        barLength = (int) a.getDimension(R.styleable.ProgressWheel_barLength, barLength);
-        textSize = (int) a.getDimension(R.styleable.ProgressWheel_textSize, textSize);
-        textColor = (int) a.getColor(R.styleable.ProgressWheel_textColor, textColor);
+        barColor = a.getColor(R.styleable.ProgressWheel_progress_barColor, barColor);
+        barLength = (int) a.getDimension(R.styleable.ProgressWheel_progress_barLength, barLength);
+        textSize = (int) a.getDimension(R.styleable.ProgressWheel_progress_textSize, textSize);
+        textColor = (int) a.getColor(R.styleable.ProgressWheel_progress_textColor, textColor);
 
         //如果text是空的，就无视它
-        if (a.hasValue(R.styleable.ProgressWheel_text)) {
-            setText(a.getString(R.styleable.ProgressWheel_text));
+        if (a.hasValue(R.styleable.ProgressWheel_progress_text)) {
+            setText(a.getString(R.styleable.ProgressWheel_progress_text));
         }
 
-        rimColor = (int) a.getColor(R.styleable.ProgressWheel_rimColor, rimColor);
-        circleColor = (int) a.getColor(R.styleable.ProgressWheel_circleColor, circleColor);
-        contourColor = a.getColor(R.styleable.ProgressWheel_contourColor, contourColor);
-        contourSize = a.getDimension(R.styleable.ProgressWheel_contourSize, contourSize);
+        rimColor = (int) a.getColor(R.styleable.ProgressWheel_progress_rimColor, rimColor);
+        circleColor = (int) a.getColor(R.styleable.ProgressWheel_progress_circleColor, circleColor);
+        contourColor = a.getColor(R.styleable.ProgressWheel_progress_contourColor, contourColor);
+        contourSize = a.getDimension(R.styleable.ProgressWheel_progress_contourSize, contourSize);
         // 使用TypedArray获得控件属性时必须要注意：使用结束后必须回收TypedArray的对象
         a.recycle();
     }
