@@ -63,25 +63,6 @@
         </attr>
     </declare-styleable>
 
-
-    <!-- 自定义圆形进度条 控件 -->
-    <declare-styleable name="ProgressWheel">
-        <attr name="progress_barWidth" format="dimension" />
-        <attr name="progress_rimWidth" format="dimension" />
-        <attr name="progress_spinSpeed" format="dimension" />
-        <attr name="progress_delayMillis" format="integer" />
-        <attr name="progress_barColor" format="color" />
-        <attr name="progress_barLength" format="color" />
-        <attr name="progress_textSize" format="dimension" />
-        <attr name="progress_textColor" format="color" />
-        <attr name="progress_text" format="string" />
-        <attr name="progress_rimColor" format="color" />
-        <attr name="progress_circleColor" format="color" />
-        <attr name="progress_contourColor" format="color" />
-        <attr name="progress_contourSize" format="dimension" />
-    </declare-styleable>
-
-
     <declare-styleable name="pickerview">
         <attr name="wheelview_gravity">
             <enum name="center" value="17"/>
@@ -94,6 +75,16 @@
         <attr name="wheelview_dividerColor" format="color"/>
         <attr name="wheelview_dividerWidth" format="dimension"/>
         <attr name="wheelview_lineSpacingMultiplier" format="float"/>
+    </declare-styleable>
+
+
+    <declare-styleable name="RoundProgressBar">
+        <attr name="textSizeRound" format="dimension" />
+        <attr name="textColorRound" format="color" />
+        <attr name="bgColorRound" format="color" />
+        <attr name="currentColorRound" format="color" />
+        <attr name="circleWidthRound" format="dimension" />
+        <attr name="loadSpeedRound" format="integer" />
     </declare-styleable>
 
 </resources>
