@@ -177,6 +177,14 @@ public class PlayUtils {
         this.animation = animation;
     }
 
+    /**
+     * 提供给调用者 給 MediaPlayer 设置更多属性
+     */
+    public MediaPlayer getMediaPlayer() {
+        initMediaPlayer();
+        return mMediaPlayer;
+    }
+
     //初始化 MediaPlayer
     private void initMediaPlayer() {
         if (null == mMediaPlayer) {
