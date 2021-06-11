@@ -179,6 +179,7 @@ public class PlayUtils {
 
     /**
      * 提供给调用者 給 MediaPlayer 设置更多属性
+     * mMediaPlayer.reset();
      */
     public MediaPlayer getMediaPlayer() {
         initMediaPlayer();
@@ -197,8 +198,6 @@ public class PlayUtils {
                     return false;
                 }
             });
-        } else {
-            mMediaPlayer.reset();
         }
     }
 
