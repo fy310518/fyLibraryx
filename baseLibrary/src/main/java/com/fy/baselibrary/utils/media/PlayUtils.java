@@ -17,6 +17,8 @@ import com.fy.baselibrary.application.ioc.ConfigUtils;
 public class PlayUtils {
 
     private volatile static PlayUtils instance = null;
+    private boolean isAutoClose = true;//是否 自动关闭
+
     private MediaPlayer mMediaPlayer;
     private boolean isPause;
     private AnimationDrawable animation;//播放语音的 帧动画
@@ -132,6 +134,7 @@ public class PlayUtils {
      * 暂停播放
      */
     public void pause() {
+        if (!isAutoClose) return;
         if (mMediaPlayer != null && mMediaPlayer.isPlaying()) { //正在播放的时候
             mMediaPlayer.pause();
             isPause = true;
@@ -139,6 +142,7 @@ public class PlayUtils {
     }
 
     public void stop() {
+        if (!isAutoClose) return;
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
         }
@@ -150,6 +154,7 @@ public class PlayUtils {
      * 释放资源
      */
     public void release() {
+        if (!isAutoClose) return;
         if (mMediaPlayer != null) {
             mMediaPlayer.release();
             mMediaPlayer = null;
@@ -175,6 +180,10 @@ public class PlayUtils {
     //设置动画
     public void setAnimation(AnimationDrawable animation) {
         this.animation = animation;
+    }
+
+    public void setAutoClose(boolean autoClose) {
+        isAutoClose = autoClose;
     }
 
     /**
