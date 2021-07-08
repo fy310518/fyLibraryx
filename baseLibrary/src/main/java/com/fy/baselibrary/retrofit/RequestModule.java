@@ -31,6 +31,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -44,22 +45,22 @@ public class RequestModule {
 
     @Singleton
     @Provides
-    protected Retrofit getService(RxJava2CallAdapterFactory callAdapterFactory, GsonConverterFactory
-            gsonConverterFactory, OkHttpClient.Builder okBuilder) {
-        return new Retrofit.Builder()
+    protected Retrofit getService(GsonConverterFactory gsonConverterFactory, OkHttpClient.Builder okBuilder) {
+
+        Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
                 .addConverterFactory(FileConverterFactory.create())
                 .addConverterFactory(HtmlConverterFactory.create())
-                .addCallAdapterFactory(callAdapterFactory)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(gsonConverterFactory)
                 .baseUrl(ConfigUtils.getBaseUrl())
-                .client(okBuilder.build())
-                .build();
-    }
+                .client(okBuilder.build());
 
-    @Singleton
-    @Provides
-    protected RxJava2CallAdapterFactory getCallAdapterFactory() {
-        return RxJava2CallAdapterFactory.create();
+        List<Converter.Factory> converterFactors = ConfigUtils.getConverterFactory();
+        for (Converter.Factory converter : converterFactors) {
+            retrofitBuilder.addConverterFactory(converter);
+        }
+
+        return retrofitBuilder.build();
     }
 
     @Singleton
@@ -106,6 +107,11 @@ public class RequestModule {
         List<Interceptor> interceptors = ConfigUtils.getInterceptor();
         for (Interceptor interceptor : interceptors) {
             builder.addInterceptor(interceptor);
+        }
+
+        List<Interceptor> netInterceptors = ConfigUtils.getNetInterceptor();
+        for (Interceptor interceptor : netInterceptors) {
+            builder.addNetworkInterceptor(interceptor);
         }
 
         List<String> cerFileNames = ConfigUtils.getCerFileName();

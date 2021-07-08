@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Interceptor;
+import retrofit2.Converter;
 
 
 /**
@@ -21,9 +22,9 @@ public class ConfigUtils {
 
     static ConfigComponent configComponent;
 
-    public ConfigUtils(Context context, ConfigBiuder biuder) {
+    public ConfigUtils(Context context, ConfigBiuder builder) {
         configComponent = DaggerConfigComponent.builder()
-                .configModule(new ConfigModule(context, biuder))
+                .configModule(new ConfigModule(context, builder))
                 .build();
     }
 
@@ -61,6 +62,10 @@ public class ConfigUtils {
     public static String getTokenKey(){return configComponent.getConfigBiuder().token;}
 
     public static List<Interceptor> getInterceptor(){return configComponent.getConfigBiuder().interceptors;}
+
+    public static List<Interceptor> getNetInterceptor(){return configComponent.getConfigBiuder().netInterceptors;}
+
+    public static List<Converter.Factory> getConverterFactory(){return configComponent.getConfigBiuder().converterFactories;}
 
     public static DressColor getDressColor(){return configComponent.getConfigBiuder().dressColors;}
 
@@ -126,8 +131,12 @@ public class ConfigUtils {
 
         /** token key */
         String token = "X-Access-Token";
-        /** 添加 自定义拦截器；如：token 拦截器 */
+        /** 添加 自定义应用拦截器；如：token 拦截器 */
         List<Interceptor> interceptors  = new ArrayList<>();
+        /** 添加 自定义网络拦截器； */
+        List<Interceptor> netInterceptors  = new ArrayList<>();
+        /** 添加 自定义转换器； */
+        List<Converter.Factory> converterFactories = new ArrayList<>();
 
         /** 添加 自定义 色彩处理 对象【相当于 给app 穿衣服，从而改变app 界面 展示样式】DressColor 对象的完整类路径*/
         DressColor dressColors;
@@ -204,6 +213,16 @@ public class ConfigUtils {
 
         public ConfigBiuder addInterceptor(Interceptor interceptor) {
             interceptors.add(interceptor);
+            return this;
+        }
+
+        public ConfigBiuder addNetInterceptor(Interceptor interceptor) {
+            netInterceptors.add(interceptor);
+            return this;
+        }
+
+        public ConfigBiuder addConverterFactory(Converter.Factory converter) {
+            converterFactories.add(converter);
             return this;
         }
 
