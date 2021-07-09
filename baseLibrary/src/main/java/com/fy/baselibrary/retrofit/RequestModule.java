@@ -13,6 +13,7 @@ import com.fy.baselibrary.utils.Constant;
 import com.fy.baselibrary.utils.FileUtils;
 import com.fy.baselibrary.utils.notify.L;
 import com.fy.baselibrary.utils.security.SSLUtil;
+import com.google.gson.GsonBuilder;
 
 import java.net.Proxy;
 import java.util.Collections;
@@ -33,6 +34,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * 提供依赖对象的实例
@@ -43,11 +45,11 @@ public class RequestModule {
 
     @Singleton
     @Provides
-    protected Retrofit getService(OkHttpClient.Builder okBuilder) {
+    protected Retrofit getService(GsonConverterFactory gsonFactory, OkHttpClient.Builder okBuilder) {
 
         Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
                 .addConverterFactory(FileConverterFactory.create())
-                .addConverterFactory(HtmlConverterFactory.create())
+                .addConverterFactory(gsonFactory)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .baseUrl(ConfigUtils.getBaseUrl())
                 .client(okBuilder.build());
@@ -60,16 +62,18 @@ public class RequestModule {
         return retrofitBuilder.build();
     }
 
-//    protected GsonConverterFactory getGsonConvertFactory() {
-//        return GsonConverterFactory.create(new GsonBuilder()
-//                .setLenient()// json宽松
-//                .enableComplexMapKeySerialization()//支持Map的key为复杂对象的形式
-//                .serializeNulls() //智能null
-//                .setPrettyPrinting()// 调教格式
-//                .disableHtmlEscaping() //默认是GSON把HTML 转义的
-//                .create());
-////        return DES3GsonConverterFactory.create();//使用 自定义 GsonConverter
-//    }
+    @Singleton
+    @Provides
+    protected GsonConverterFactory getGsonConvertFactory() {
+        return GsonConverterFactory.create(new GsonBuilder()
+                .setLenient()// json宽松
+                .enableComplexMapKeySerialization()//支持Map的key为复杂对象的形式
+                .serializeNulls() //智能null
+                .setPrettyPrinting()// 调教格式
+                .disableHtmlEscaping() //默认是GSON把HTML 转义的
+                .create());
+//        return DES3GsonConverterFactory.create();//使用 自定义 GsonConverter
+    }
 
     @Singleton
     @Provides
