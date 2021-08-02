@@ -31,6 +31,7 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
 //          此方法参数 对应 应用层 执行上传文件前的 请求参数配置 请严格 一一对应
 //        ArrayMap<String, Object> params = new ArrayMap<>();
 //        params.put("uploadFile", "fileName");
+//        params.put("isFileKeyAES", true);//是否使用 fileKey1，fileKey2
 //        params.put("filePathList", files);
 //        params.put("LoadOnSubscribe", new LoadOnSubscribe());
     @Override
@@ -59,12 +60,18 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
      * @return MultipartBody（retrofit 多文件文件上传）
      */
     public synchronized <T> MultipartBody filesToMultipartBody(List<T> files, String fileKey, ArrayMap<String, Object> params) {
+        boolean isFileKeyAES = (boolean) params.get("isFileKeyAES");
 
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
 
         //解析 文本参数 装载到 MultipartBody 中
         for (String key : params.keySet()) {
-            if (!TextUtils.isEmpty(key) && !key.equals("LoadOnSubscribe") && !key.equals("uploadFile") && !key.equals("filePathList") && !key.equals("files")){
+            if (!TextUtils.isEmpty(key)
+                    && !key.equals("LoadOnSubscribe")
+                    && !key.equals("uploadFile")
+                    && !key.equals("isFileKeyAES")
+                    && !key.equals("filePathList")
+                    && !key.equals("files")){
                 builder.addFormDataPart(key, (String) params.get(key));
             }
         }
@@ -80,23 +87,13 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
 
             sumLeng += file.length();
             FileProgressRequestBody requestBody = new FileProgressRequestBody(file, "multipart/form-data", loadOnSubscribe);
-            if (files.size() > 1)builder.addFormDataPart(fileKey + (i + 1), file.getName(), requestBody);
-            else {
+            if (files.size() > 1) {
+                builder.addFormDataPart(isFileKeyAES ? fileKey + (i + 1) : fileKey, file.getName(), requestBody);
+            } else {
                 String name = fileKey.equals("fileName") ? fileKey + 1 : fileKey;
                 builder.addFormDataPart(name, file.getName(), requestBody);
             }
         }
-//        通用情况
-//        for (T t : files) {
-//            if (t instanceof File) file = (File) t;
-//            else if (t instanceof String) file = new File((String) t);//访问手机端的文件资源，保证手机端sdcdrd中必须有这个文件
-//            else break;
-//
-//            sumLeng += file.length();
-//            // TODO 为了简单起见，没有判断file的类型
-//            FileProgressRequestBody requestBody = new FileProgressRequestBody(file, "multipart/form-data", loadOnSubscribe);
-//            builder.addFormDataPart(fileKey, file.getName(), requestBody);
-//        }
 
         loadOnSubscribe.setmSumLength(sumLeng);
 

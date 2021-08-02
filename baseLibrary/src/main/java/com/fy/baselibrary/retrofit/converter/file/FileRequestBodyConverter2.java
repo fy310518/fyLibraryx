@@ -52,13 +52,17 @@ public class FileRequestBodyConverter2 extends FileRequestBodyConverter {
      * @return MultipartBody（retrofit 多文件文件上传）
      */
     public synchronized <T> MultipartBody filesToMultipartBody(List<T> files, String fileKey, ArrayMap<String, Object> params) {
+        boolean isFileKeyAES = (boolean) params.get("isFileKeyAES");
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
 
         //解析 文本参数 装载到 MultipartBody 中
         for (String key : params.keySet()) {
-            if (!TextUtils.isEmpty(key) && !key.equals("LoadOnSubscribe")
+            if (!TextUtils.isEmpty(key)
+                    && !key.equals("LoadOnSubscribe")
                     && !key.equals("uploadFile")
-                    && !key.equals("filePathList") && !key.equals("files")){
+                    && !key.equals("isFileKeyAES")
+                    && !key.equals("filePathList")
+                    && !key.equals("files")){
                 builder.addFormDataPart(key, (String) params.get(key));
             }
         }
@@ -72,8 +76,9 @@ public class FileRequestBodyConverter2 extends FileRequestBodyConverter {
             else break;
 
             FileProgressRequestBody requestBody = new FileProgressRequestBody(file, "multipart/form-data", loadOnSubscribe);
-            if (files.size() > 1)builder.addFormDataPart(fileKey + (i + 1), file.getName(), requestBody);
-            else {
+            if (files.size() > 1){
+                builder.addFormDataPart(isFileKeyAES ? fileKey + (i + 1) : fileKey, file.getName(), requestBody);
+            } else {
                 String name = fileKey.equals("fileName") ? fileKey + 1 : fileKey;
                 builder.addFormDataPart(name, file.getName(), requestBody);
             }
