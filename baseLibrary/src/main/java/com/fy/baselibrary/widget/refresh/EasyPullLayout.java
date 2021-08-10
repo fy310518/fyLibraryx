@@ -210,14 +210,16 @@ public class EasyPullLayout extends ViewGroup {
         // 设置默认的OnEdgeListener，可以被覆盖
         setOnEdgeListener(new OnEdgeListener() {
             @Override
-            public int onEdge() {
-                if (null != getByType(TYPE_EDGE_LEFT) && !contentView.canScrollHorizontally(-1))
+            public int onEdge(float dx, float dy) {
+
+                if (null != getByType(TYPE_EDGE_LEFT) && dx > 0 && !contentView.canScrollHorizontally(-1))
                     return TYPE_EDGE_LEFT;
-                else if (null != getByType(TYPE_EDGE_RIGHT) && !contentView.canScrollHorizontally(1))
+                else if (null != getByType(TYPE_EDGE_RIGHT) && dx < 0 && !contentView.canScrollHorizontally(1))
                     return TYPE_EDGE_RIGHT;
-                else if (null != getByType(TYPE_EDGE_TOP) && !contentView.canScrollVertically(-1))
+
+                else if (null != getByType(TYPE_EDGE_TOP) && dy > 0 && !contentView.canScrollVertically(-1))
                     return TYPE_EDGE_TOP;
-                else if (null != getByType(TYPE_EDGE_BOTTOM) && !contentView.canScrollVertically(1))
+                else if (null != getByType(TYPE_EDGE_BOTTOM) && dy < 0 && !contentView.canScrollVertically(1))
                     return TYPE_EDGE_BOTTOM;
                 else
                     return TYPE_NONE;
@@ -333,9 +335,10 @@ public class EasyPullLayout extends ViewGroup {
                 downY = ev.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
-                int type = onEdgeListener.onEdge();
                 float dx = ev.getX() - downX;
                 float dy = ev.getY() - downY;
+                int type = onEdgeListener.onEdge(dx, dy);
+
                 currentType = type;
                 if (type == TYPE_EDGE_LEFT && (pullTypeMask & PULL_TYPE_LEFT) != 0)
                     return ev.getX() > downX && Math.abs(dx) > Math.abs(dy);
@@ -768,7 +771,7 @@ public class EasyPullLayout extends ViewGroup {
          * @return One of the edge types TYPE_EDGE_LEFT, TYPE_EDGE_TOP,
          * TYPE_EDGE_RIGHT, TYPE_EDGE_BOTTOM or TYPE_NONE if not reaching the edge
          */
-        int onEdge();
+        int onEdge(float dx, float dy);
     }
 
     public void setOnEdgeListener(OnEdgeListener onEdgeListener) {
