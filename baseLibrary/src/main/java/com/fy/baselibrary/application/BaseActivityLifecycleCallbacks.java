@@ -10,34 +10,23 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.viewbinding.ViewBinding;
 
 import com.fy.baselibrary.R;
 import com.fy.baselibrary.application.ioc.ConfigUtils;
-import com.fy.baselibrary.databinding.ActivityHeadBinding;
-import com.fy.baselibrary.dress.DressUtils;
-import com.fy.baselibrary.dress.widget.DressCleanFrameLayout;
 import com.fy.baselibrary.statuslayout.LoadSirUtils;
 import com.fy.baselibrary.statuslayout.OnSetStatusView;
 import com.fy.baselibrary.statuslayout.StatusLayoutManager;
-import com.fy.baselibrary.utils.AppUtils;
 import com.fy.baselibrary.utils.Constant;
 import com.fy.baselibrary.utils.JumpUtils;
 import com.fy.baselibrary.utils.ResUtils;
-import com.fy.baselibrary.utils.cache.SpfAgent;
 import com.fy.baselibrary.utils.media.PlayUtils;
 import com.fy.baselibrary.utils.notify.L;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 
 import io.reactivex.subjects.BehaviorSubject;
 
@@ -123,24 +112,6 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
     public void onActivityResumed(Activity activity) {
         String simpleName = activity.getClass().getSimpleName();
         L.e(TAG + simpleName, "--Resume()");
-
-        if (SpfAgent.init("").getBoolean(DressUtils.useNightMode)) {
-            ViewGroup content = activity.getWindow().getDecorView().findViewById(android.R.id.content);
-            if (DressCleanFrameLayout.getChildA(content, "com.fy.baselibrary.dress.widget.DressCleanFrameLayout") ||
-                    DressCleanFrameLayout.getChildA(content, "com.fy.baselibrary.dress.widget.DressFrameLayout")) {
-
-            } else {
-                int lastTimeUIMode = SpfAgent.init("").getInt(DressUtils.lastTimeUIMode);
-                int isNight = SpfAgent.init("").getInt(DressUtils.isNightMode);
-                if (lastTimeUIMode != isNight) {//当前模式 和 上次模式不同
-                    if (activity.getClass().getName().equals(AppUtils.getBottomActivity(activity).getClassName())) {
-                        SpfAgent.init().saveInt(DressUtils.lastTimeUIMode, isNight).commit(false);
-                    }
-                }
-
-                DressUtils.setDress(activity);
-            }
-        }
     }
 
     @Override

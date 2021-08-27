@@ -89,7 +89,7 @@ public class AppUtils {
             return packageManager.getApplicationLabel(applicationInfo).toString();
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
-            return "未知名称";
+            return "";
         }
     }
 

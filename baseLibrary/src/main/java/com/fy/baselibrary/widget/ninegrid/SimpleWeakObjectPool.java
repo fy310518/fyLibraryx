@@ -1,4 +1,4 @@
-package com.fy.baselibrary.widget;
+package com.fy.baselibrary.widget.ninegrid;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;

@@ -11,12 +11,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
-import com.fy.baselibrary.aop.resultfilter.ActResultManager;
-import com.fy.baselibrary.aop.resultfilter.ResultCallBack;
 import com.fy.baselibrary.utils.notify.T;
 
 import java.io.File;
@@ -69,8 +70,10 @@ public class JumpUtils {
      * @param action
      * @param bundle
      */
-    public static void jump(Fragment fragment, String action, Bundle bundle) {
-        Intent intent = new Intent(action);
+    public static void jump(Fragment fragment, @NonNull String action, Bundle bundle) {
+        String act = action.startsWith(".") ? AppUtils.getLocalPackageName() + action : action;
+
+        Intent intent = new Intent(act);
         if (null != bundle) {
             intent.putExtras(bundle);
         }
@@ -80,17 +83,19 @@ public class JumpUtils {
 
     /**
      * 从 activity 跳转到指定 Action 的activity
-     * @param act
+     * @param activity
      * @param action
      * @param bundle
      */
-    public static void jump(Activity act, String action, Bundle bundle) {
-        Intent intent = new Intent(action);
+    public static void jump(Activity activity, String action, Bundle bundle) {
+        String act = action.startsWith(".") ? AppUtils.getLocalPackageName() + action : action;
+
+        Intent intent = new Intent(act);
         if (null != bundle) {
             intent.putExtras(bundle);
         }
 
-        act.startActivity(intent);
+        activity.startActivity(intent);
     }
 
     /**
@@ -99,32 +104,16 @@ public class JumpUtils {
      * @param bundle
      * @param requestCode 请求码
      */
-    public static void jump(Activity act, String action, Bundle bundle, int requestCode) {
-        Intent intent = new Intent(action);
+    public static void jump(Activity activity, String action, Bundle bundle, int requestCode) {
+        String act = action.startsWith(".") ? AppUtils.getLocalPackageName() + action : action;
+
+        Intent intent = new Intent(act);
         if (null != bundle) {
             intent.putExtras(bundle);
         }
 
-        act.startActivityForResult(intent, requestCode);//原生默认
+        activity.startActivityForResult(intent, requestCode);
     }
-
-    /**
-     * 跳转到指定 Action 的activity 带回调结果的跳转
-     * @param action    要跳转到的 action
-     * @param bundle
-     * @param requestCode 请求码
-     * @param callBack 回调结果，回调接口
-     */
-    public static void jump(Activity act, String action, Bundle bundle, int requestCode, ResultCallBack callBack) {
-        Intent intent = new Intent(action);
-        if (null != bundle) {
-            intent.putExtras(bundle);
-        }
-
-        ActResultManager.getInstance()
-                .startActivityForResult(act, intent, requestCode, callBack);
-    }
-
 
     /**
      * 跳转到指定 activity  带回调结果的跳转
@@ -138,24 +127,7 @@ public class JumpUtils {
             intent.putExtras(bundle);
         }
 
-        act.startActivityForResult(intent, requestCode);//原生默认
-    }
-
-    /**
-     * 跳转到指定 activity  带回调结果的跳转
-     * @param actClass    要跳转到的Activity
-     * @param bundle
-     * @param requestCode 请求码
-     * @param callBack    回调结果，回调接口
-     */
-    public static void jump(Activity act, Class actClass, Bundle bundle, int requestCode, ResultCallBack callBack) {
-        Intent intent = new Intent(act, actClass);
-        if (null != bundle) {
-            intent.putExtras(bundle);
-        }
-
-        ActResultManager.getInstance()
-                .startActivityForResult(act, intent, requestCode, callBack);
+        act.startActivityForResult(intent, requestCode);
     }
 
 
@@ -182,7 +154,7 @@ public class JumpUtils {
             intent.putExtras(bundle);
         }
 
-        fragment.startActivityForResult(intent, requestCode);//原生默认
+        fragment.startActivityForResult(intent, requestCode);
     }
 
     /**
@@ -193,51 +165,15 @@ public class JumpUtils {
      * @param requestCode
      */
     public static void jump(Fragment fragment, String action, Bundle bundle, int requestCode) {
-        Intent intent = new Intent(action);
+        String act = action.startsWith(".") ? AppUtils.getLocalPackageName() + action : action;
+
+        Intent intent = new Intent(act);
         if (null != bundle) {
             intent.putExtras(bundle);
         }
 
-        fragment.startActivityForResult(intent, requestCode);//原生默认
+        fragment.startActivityForResult(intent, requestCode);
     }
-
-    /**
-     * 从fragment 跳转到指定的 activity; 带回调结果的跳转
-     * @param fragment
-     * @param actClass
-     * @param bundle
-     * @param requestCode
-     * @param callBack
-     */
-    public static void jump(Fragment fragment, Class actClass, Bundle bundle, int requestCode, ResultCallBack callBack) {
-        Intent intent = new Intent(fragment.getContext(), actClass);
-        if (null != bundle) {
-            intent.putExtras(bundle);
-        }
-
-//        fragment.startActivityForResult(intent, requestCode);//原生默认
-        ActResultManager.getInstance()
-                .startActivityForResult(fragment.getActivity(), intent, requestCode, callBack);
-    }
-
-    /**
-     * 从fragment 跳转到指定 action 的 activity; 带回调结果的跳转
-     * @param fragment
-     * @param action
-     * @param bundle
-     * @param requestCode
-     */
-    public static void jump(Fragment fragment, String action, Bundle bundle, int requestCode, ResultCallBack callBack) {
-        Intent intent = new Intent(action);
-        if (null != bundle) {
-            intent.putExtras(bundle);
-        }
-
-//        fragment.startActivityForResult(intent, requestCode);
-        ActResultManager.getInstance()
-                .startActivityForResult(fragment.getActivity(), intent, requestCode, callBack);
-    }
-
 
 //////////////////////////////////反射跳转 start///////////////////////////////////////////////
     /**
@@ -265,38 +201,6 @@ public class JumpUtils {
         try {
             Class cla = Class.forName(classPath);
             jump(fragment, cla, bundle);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 使用反射 从fragment 跳转到指定 路径的 activity; 带回调结果的跳转
-     * @param fragment
-     * @param bundle
-     * @param classPath
-     * @param requestCode
-     */
-    public static void jumpReflex(Fragment fragment, Bundle bundle, String classPath, int requestCode, ResultCallBack callBack){
-        try {
-            Class cla = Class.forName(classPath);
-            jump(fragment, cla, bundle, requestCode, callBack);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 使用反射 跳转到指定 路径的 activity; 带回调结果的跳转
-     * @param act
-     * @param bundle
-     * @param classPath
-     * @param callBack 回调接口
-     */
-    public static void jumpReflex(Activity act, String classPath, Bundle bundle, int requestCode, ResultCallBack callBack){
-        try {
-            Class cla = Class.forName(classPath);
-            jump(act, cla, bundle, requestCode, callBack);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
