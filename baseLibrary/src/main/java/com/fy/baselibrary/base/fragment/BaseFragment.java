@@ -11,33 +11,40 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.Fragment;
-import androidx.viewbinding.ViewBinding;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.fy.baselibrary.R;
 import com.fy.baselibrary.application.ioc.ConfigUtils;
+import com.fy.baselibrary.application.mvvm.BaseViewModel;
 import com.fy.baselibrary.statuslayout.LoadSirUtils;
 import com.fy.baselibrary.statuslayout.OnSetStatusView;
 import com.fy.baselibrary.statuslayout.StatusLayoutManager;
 import com.fy.baselibrary.utils.ResUtils;
 import com.fy.baselibrary.utils.notify.L;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
 
 /**
  * Fragment 基类
  * Created by fangs on 2017/4/26.
  */
-public abstract class BaseFragment<VB extends ViewBinding> extends Fragment implements View.OnClickListener, OnSetStatusView {
+public abstract class BaseFragment<VM extends BaseViewModel, VDB extends ViewDataBinding> extends Fragment implements View.OnClickListener, OnSetStatusView {
     public final String TAG = "lifeCycle --> " + getClass().getSimpleName();
 
     protected AppCompatActivity mContext;
     protected StatusLayoutManager slManager;
 
+    protected VDB vdb;
+    protected VM vm;
     protected View mRootView;
-    protected VB vBinding;
 
     /** fragment ViewBinding 视图 */
-    protected abstract VB getContentLayout();
+    protected abstract int getContentLayout();
     /** 初始化 */
     protected abstract void baseInit();
     /** 设置懒加载 */
@@ -75,13 +82,16 @@ public abstract class BaseFragment<VB extends ViewBinding> extends Fragment impl
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (null == mRootView) {
-            if (null != getContentLayout()){
-                vBinding = getContentLayout();
-                mRootView = vBinding.getRoot();
+            if (-1 != getContentLayout()){
+                vdb = DataBindingUtil.setContentView(getActivity(), getContentLayout());
+                vdb.setLifecycleOwner(getActivity());
+                mRootView = vdb.getRoot();
+
+                createViewModel();
             }
 
             baseInit();
-            if (null != getContentLayout()) slManager = LoadSirUtils.initStatusLayout(this);
+            if (-1 != getContentLayout()) slManager = LoadSirUtils.initStatusLayout(this);
 
             isViewCreated = true;
         } else {
@@ -131,7 +141,7 @@ public abstract class BaseFragment<VB extends ViewBinding> extends Fragment impl
     public void onDestroyView() {
         super.onDestroyView();
         L.e(TAG, "onDestroyView()");
-        if (null != vBinding) vBinding = null;
+        if (null != vdb) vdb = null;
     }
 
     @Override
@@ -234,4 +244,18 @@ public abstract class BaseFragment<VB extends ViewBinding> extends Fragment impl
             isUIVisible = false;
         }
     }
+
+    public void createViewModel() {
+        Class modelClass;
+        Type type = getClass().getGenericSuperclass();
+        if (type instanceof ParameterizedType) {
+            modelClass = (Class) ((ParameterizedType) type).getActualTypeArguments()[0];
+        } else {
+            //如果没有指定泛型参数，则默认使用BaseViewModel
+            modelClass = BaseViewModel.class;
+        }
+
+        vm = (VM) new ViewModelProvider(getActivity()).get(modelClass);
+    }
+
 }

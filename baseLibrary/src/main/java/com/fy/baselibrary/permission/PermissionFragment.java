@@ -5,19 +5,20 @@ import android.annotation.TargetApi;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.viewbinding.ViewBinding;
-
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import com.fy.baselibrary.R;
 import com.fy.baselibrary.aop.annotation.NeedPermission;
 import com.fy.baselibrary.application.ioc.ConfigUtils;
+import com.fy.baselibrary.application.mvvm.BaseViewModel;
 import com.fy.baselibrary.base.ViewHolder;
 import com.fy.baselibrary.base.dialog.CommonDialog;
 import com.fy.baselibrary.base.dialog.DialogConvertListener;
@@ -36,7 +37,7 @@ import java.util.List;
  * 动态权限管理 fragment
  * Created by fangs on 2018/8/27 15:36.
  */
-public class PermissionFragment extends BaseFragment<ViewBinding> {
+public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBinding> {
 
     public final static String KEY_PERMISSIONS_ARRAY = "key_permission_array";
     public final static String KEY_FIRST_MESSAGE = "key_first_message";
@@ -64,8 +65,8 @@ public class PermissionFragment extends BaseFragment<ViewBinding> {
     private OnPermission call;
 
     @Override
-    protected ViewBinding getContentLayout() {
-        return null;
+    protected int getContentLayout() {
+        return -1;
     }
 
     @Override
