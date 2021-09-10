@@ -1,23 +1,22 @@
 package com.fy.baselibrary.startactivity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.fy.baselibrary.application.IBaseActivity;
 import com.fy.baselibrary.utils.notify.L;
 
 /**
  * 不可见Activity 用于控制程序 退出(入口activity)
  * Created by fangs on 2017/4/26.
  */
-public abstract class StartActivity extends AppCompatActivity implements IBaseActivity {
+public abstract class StartActivity extends AppCompatActivity {
 
     @Override
-    public void initData(Activity activity, Bundle savedInstanceState) {
-
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         exitOrIn(getIntent());
     }
 

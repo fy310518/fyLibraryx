@@ -16,7 +16,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    viewBinding {
+    dataBinding {
         enabled = true
     }
 
@@ -43,6 +43,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$var.androidx"
     implementation "com.google.android.material:material:$var.androidx"
     implementation "androidx.constraintlayout:constraintlayout:$var.constraintLayout"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:2.2.0"
 
 
     //    dagger2

@@ -19,6 +19,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.fy.baselibrary.R;
 import com.fy.baselibrary.application.ioc.ConfigUtils;
+import com.fy.baselibrary.application.mvvm.IBaseActivity;
 import com.fy.baselibrary.statuslayout.LoadSirUtils;
 import com.fy.baselibrary.statuslayout.OnSetStatusView;
 import com.fy.baselibrary.statuslayout.StatusLayoutManager;
@@ -61,22 +62,20 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
         IBaseActivity act = null;
         if (activity instanceof IBaseActivity) {
             act = (IBaseActivity) activity;
-            if (null != act.getView()) {
-                View view = act.getView().getRoot();
-                if (act.isShowHeadView()) { //动态添加标题栏
-                    View titleBar = initHead(activity);
+            View view = act.getView().getRoot();
+            if (act.isShowHeadView()) { //动态添加标题栏
+                View titleBar = initHead(activity);
 
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -1);
-                    LinearLayout linearLRoot = new LinearLayout(activity);
-                    linearLRoot.setOrientation(LinearLayout.VERTICAL);
-                    linearLRoot.setLayoutParams(params);
-                    linearLRoot.addView(titleBar, MATCH_PARENT, WRAP_CONTENT);
-                    linearLRoot.addView(view, MATCH_PARENT, MATCH_PARENT);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -1);
+                LinearLayout linearLRoot = new LinearLayout(activity);
+                linearLRoot.setOrientation(LinearLayout.VERTICAL);
+                linearLRoot.setLayoutParams(params);
+                linearLRoot.addView(titleBar, MATCH_PARENT, WRAP_CONTENT);
+                linearLRoot.addView(view, MATCH_PARENT, MATCH_PARENT);
 
-                    activity.setContentView(linearLRoot);
-                } else {
-                    activity.setContentView(view);
-                }
+                activity.setContentView(linearLRoot);
+            } else {
+                activity.setContentView(view);
             }
 
 //        注册屏幕旋转监听
