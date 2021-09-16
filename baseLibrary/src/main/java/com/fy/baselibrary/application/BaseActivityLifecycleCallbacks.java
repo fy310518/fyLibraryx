@@ -106,7 +106,7 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
 
         activity.getIntent().putExtra("ActivityBean", activityBean);
         //基础配置 执行完成，再执行 初始化 activity 操作
-        if (null != act) act.initData(savedInstanceState, bvm, vdb);
+        if (null != act) act.initData(bvm, vdb, savedInstanceState);
     }
 
     @Override

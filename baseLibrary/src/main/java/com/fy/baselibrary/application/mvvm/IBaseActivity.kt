@@ -26,14 +26,15 @@ interface IBaseActivity<VM : BaseViewModel, VDB : ViewDataBinding> {
      * 2、设置 ViewModel
      * new ViewModelProvider(activity).get(modelClass)
      *
-     * 注：在 activity 声明 binding: VDB 和 viewModel: VM 变量
+     *
      */
 
     @LayoutRes fun setContentLayout(): Int
 
     /**
      * 初始化
+     * 注：在 activity 声明 binding: VDB 和 viewModel: VM 变量，并用 viewModel dataBinding 赋值
      */
-    fun initData(savedInstanceState: Bundle?, viewModel : VM?, dataBinding : VDB?)
+    fun initData(viewModel : VM?, dataBinding : VDB?, savedInstanceState: Bundle?)
 
 }
