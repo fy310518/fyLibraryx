@@ -17,18 +17,10 @@ interface IBaseActivity<VM : BaseViewModel, VDB : ViewDataBinding> {
      */
     fun isShowHeadView(): Boolean
 
-    /**
-     * 1、设置 activity 布局 ID，并返回 ViewDataBinding
-     * binding = DataBindingUtil.setContentView(this, getContentViewId());
-     * 给binding加上感知生命周期，AppCompatActivity就是lifeOwner
-     * binding.setLifecycleOwner(this);
-     *
-     * 2、设置 ViewModel
-     * new ViewModelProvider(activity).get(modelClass)
-     *
-     *
-     */
 
+    /**
+     * 设置 activity 布局 ID
+     */
     @LayoutRes fun setContentLayout(): Int
 
     /**
