@@ -16,10 +16,14 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 
 import com.fy.baselibrary.R;
 import com.fy.baselibrary.application.ioc.ConfigUtils;
+import com.fy.baselibrary.application.mvvm.BaseViewModel;
 import com.fy.baselibrary.application.mvvm.IBaseActivity;
+import com.fy.baselibrary.base.fragment.BaseFragment;
 import com.fy.baselibrary.statuslayout.LoadSirUtils;
 import com.fy.baselibrary.statuslayout.OnSetStatusView;
 import com.fy.baselibrary.statuslayout.StatusLayoutManager;
@@ -43,6 +47,7 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
     public static final String TAG = "lifeCycle --> ";
     public static int actNum;
 
+
     @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -59,10 +64,14 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
         BaseActivityBean activityBean = new BaseActivityBean();
         activityBean.setSubject(BehaviorSubject.create());
 
+        ViewDataBinding vdb = null;
+        BaseViewModel bvm = null;
         IBaseActivity act = null;
         if (activity instanceof IBaseActivity) {
             act = (IBaseActivity) activity;
-            View view = act.getView().getRoot();
+            vdb = DataBindingUtil.setContentView(activity, act.setContentLayout());
+            bvm = BaseFragment.createViewModel(activity);
+
             if (act.isShowHeadView()) { //动态添加标题栏
                 View titleBar = initHead(activity);
 
@@ -71,11 +80,9 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
                 linearLRoot.setOrientation(LinearLayout.VERTICAL);
                 linearLRoot.setLayoutParams(params);
                 linearLRoot.addView(titleBar, MATCH_PARENT, WRAP_CONTENT);
-                linearLRoot.addView(view, MATCH_PARENT, MATCH_PARENT);
+                linearLRoot.addView(vdb.getRoot(), MATCH_PARENT, MATCH_PARENT);
 
                 activity.setContentView(linearLRoot);
-            } else {
-                activity.setContentView(view);
             }
 
 //        注册屏幕旋转监听
@@ -99,7 +106,7 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
 
         activity.getIntent().putExtra("ActivityBean", activityBean);
         //基础配置 执行完成，再执行 初始化 activity 操作
-        if (null != act) act.initData(activity, savedInstanceState);
+        if (null != act) act.initData(savedInstanceState, bvm, vdb);
     }
 
     @Override

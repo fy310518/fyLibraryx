@@ -14,6 +14,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.fy.baselibrary.R;
@@ -87,7 +88,7 @@ public abstract class BaseFragment<VM extends BaseViewModel, VDB extends ViewDat
                 vdb.setLifecycleOwner(getActivity());
                 mRootView = vdb.getRoot();
 
-                createViewModel();
+                vm = createViewModel(this);
             }
 
             baseInit();
@@ -245,9 +246,9 @@ public abstract class BaseFragment<VM extends BaseViewModel, VDB extends ViewDat
         }
     }
 
-    public void createViewModel() {
+    public static <BVM extends BaseViewModel> BVM createViewModel(Object obj) {
         Class modelClass;
-        Type type = getClass().getGenericSuperclass();
+        Type type = obj.getClass().getGenericSuperclass();
         if (type instanceof ParameterizedType) {
             modelClass = (Class) ((ParameterizedType) type).getActualTypeArguments()[0];
         } else {
@@ -255,7 +256,13 @@ public abstract class BaseFragment<VM extends BaseViewModel, VDB extends ViewDat
             modelClass = BaseViewModel.class;
         }
 
-        vm = (VM) new ViewModelProvider(getActivity()).get(modelClass);
+        if (obj instanceof FragmentActivity){
+            return (BVM) new ViewModelProvider((FragmentActivity) obj).get(modelClass);
+        } else if(obj instanceof Fragment){
+            return (BVM) new ViewModelProvider(((Fragment)obj).getActivity()).get(modelClass);
+        } else {
+            return null;
+        }
     }
 
 }

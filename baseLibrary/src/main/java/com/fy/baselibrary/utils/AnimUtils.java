@@ -24,8 +24,9 @@ public class AnimUtils {
 
     /**
      * 省略号动画
+     * @return ValueAnimator: 为了在activity onDestroy 时候 调用 valueAnimator.cancel(); 避免内存泄漏
      */
-    public static void setTxtEllipsisAnim(TextView txt, @StringRes int id) {
+    public static ValueAnimator setTxtEllipsisAnim(TextView txt, @StringRes int id) {
         String[] scoreText = {"     ", ".    ", ". .  ", ". . ."};
         ValueAnimator valueAnimator = ValueAnimator.ofInt(0, 4).setDuration(1500);
         valueAnimator.setRepeatCount(ValueAnimator.INFINITE);
@@ -37,6 +38,8 @@ public class AnimUtils {
             }
         });
         valueAnimator.start();
+
+        return valueAnimator;
     }
 
     /**

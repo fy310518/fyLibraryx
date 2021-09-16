@@ -2,8 +2,8 @@
 
 package com.fy.baselibrary.application.mvvm
 
-import android.app.Activity
 import android.os.Bundle
+import androidx.annotation.LayoutRes
 import androidx.databinding.ViewDataBinding
 
 /**
@@ -28,11 +28,12 @@ interface IBaseActivity<VM : BaseViewModel, VDB : ViewDataBinding> {
      *
      * 注：在 activity 声明 binding: VDB 和 viewModel: VM 变量
      */
-    fun getView(): VDB
+
+    @LayoutRes fun setContentLayout(): Int
 
     /**
      * 初始化
      */
-    fun initData(activity: Activity, savedInstanceState: Bundle?)
+    fun initData(savedInstanceState: Bundle?, viewModel : VM?, dataBinding : VDB?)
 
 }
