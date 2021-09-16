@@ -87,7 +87,7 @@ public abstract class RequestBaseObserver<V> implements Observer<V> {
 
     @Override
     public void onError(Throwable e) {
-        L.e("net", "onError()");
+        L.e("net", "onError()" + e.getLocalizedMessage());
         dismissProgress();
         onFail();
 

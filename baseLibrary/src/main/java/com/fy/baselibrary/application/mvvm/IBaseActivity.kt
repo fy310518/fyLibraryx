@@ -12,11 +12,11 @@ import androidx.databinding.ViewDataBinding
  * Created by fangs on 2021/9/10 10:04.
  */
 interface IBaseActivity<VM : BaseViewModel, VDB : ViewDataBinding> {
+
     /**
      * 是否显示 标题栏
      */
     fun isShowHeadView(): Boolean
-
 
     /**
      * 设置 activity 布局 ID

@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -18,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
+import androidx.lifecycle.LifecycleOwner;
 
 import com.fy.baselibrary.R;
 import com.fy.baselibrary.application.ioc.ConfigUtils;
@@ -69,7 +71,9 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
         IBaseActivity act = null;
         if (activity instanceof IBaseActivity) {
             act = (IBaseActivity) activity;
+
             vdb = DataBindingUtil.setContentView(activity, act.setContentLayout());
+            if (activity instanceof LifecycleOwner) vdb.setLifecycleOwner((LifecycleOwner) activity);
             bvm = BaseFragment.createViewModel(activity);
 
             if (act.isShowHeadView()) { //动态添加标题栏
@@ -80,6 +84,11 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
                 linearLRoot.setOrientation(LinearLayout.VERTICAL);
                 linearLRoot.setLayoutParams(params);
                 linearLRoot.addView(titleBar, MATCH_PARENT, WRAP_CONTENT);
+
+                View decorView = activity.getWindow().getDecorView();
+                ViewGroup contentView = decorView.findViewById(android.R.id.content);
+                contentView.removeView(vdb.getRoot());
+
                 linearLRoot.addView(vdb.getRoot(), MATCH_PARENT, MATCH_PARENT);
 
                 activity.setContentView(linearLRoot);

@@ -248,9 +248,10 @@ public abstract class BaseFragment<VM extends BaseViewModel, VDB extends ViewDat
 
     public static <BVM extends BaseViewModel> BVM createViewModel(Object obj) {
         Class modelClass;
-        Type type = obj.getClass().getGenericSuperclass();
-        if (type instanceof ParameterizedType) {
-            modelClass = (Class) ((ParameterizedType) type).getActualTypeArguments()[0];
+
+        Type[] types = obj.getClass().getGenericInterfaces();
+        if (types.length > 0 && types[0] instanceof ParameterizedType){
+            modelClass = (Class) ((ParameterizedType) types[0]).getActualTypeArguments()[0];
         } else {
             //如果没有指定泛型参数，则默认使用BaseViewModel
             modelClass = BaseViewModel.class;
