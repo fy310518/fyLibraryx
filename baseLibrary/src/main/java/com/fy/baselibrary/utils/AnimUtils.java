@@ -174,16 +174,13 @@ public class AnimUtils {
 
     /**
      * activity 初始化 toolbar
+     * [activity_head]
      * @param activity
      */
-    public static View initHead(Activity activity) {
-        View titleBar = LayoutInflater.from(activity).inflate(R.layout.activity_head, null);
-        //这里全局给Activity设置toolbar和title mate
-        Toolbar toolbar = titleBar.findViewById(R.id.toolbar);
-
+    public static void setToolbar(Activity activity, Toolbar toolbar) {
         if (ConfigUtils.isTitleCenter()) {
             toolbar.setTitle("");
-            TextView toolbarTitle = titleBar.findViewById(R.id.toolbarTitle);
+            TextView toolbarTitle = toolbar.findViewById(R.id.toolbarTitle);
             toolbarTitle.setText(activity.getTitle());
             toolbarTitle.setTextColor(ResUtils.getColor(ConfigUtils.getTitleColor()));
             toolbarTitle.setVisibility(View.VISIBLE);
@@ -207,8 +204,6 @@ public class AnimUtils {
             if (ConfigUtils.getBgColor() > 0)
                 toolbar.setBackgroundColor(ResUtils.getColor(ConfigUtils.getBgColor()));
         }
-
-        return titleBar;
     }
 
     /**

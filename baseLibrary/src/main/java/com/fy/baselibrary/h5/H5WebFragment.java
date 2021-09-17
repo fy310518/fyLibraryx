@@ -8,15 +8,20 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import androidx.databinding.ViewDataBinding;
+
+import com.fy.baselibrary.application.mvvm.BaseViewModel;
 import com.fy.baselibrary.base.fragment.BaseFragment;
 import com.fy.baselibrary.utils.FileUtils;
 import com.fy.baselibrary.utils.net.NetUtils;
+
+import org.jetbrains.annotations.Nullable;
 
 /**
  * describe：简单封装 常用 webView 配置
  * Created by fangs on 2020/1/9 0009 上午 11:24.
  */
-public abstract class H5WebFragment extends BaseFragment {
+public abstract class H5WebFragment<VM extends BaseViewModel, VDB extends ViewDataBinding> extends BaseFragment<VM, VDB> {
 
     WebView webView;
     IWebViewInitializer initializer;
@@ -24,7 +29,7 @@ public abstract class H5WebFragment extends BaseFragment {
     public abstract IWebViewInitializer setInitializer();
 
     @Override
-    protected void baseInit() {
+    public void initData(@Nullable BaseViewModel viewModel, @Nullable ViewDataBinding dataBinding, @Nullable Bundle savedInstanceState) {
         Bundle bundle = getArguments();
         if (null != bundle) bundle.remove("ActivityBean");
 
