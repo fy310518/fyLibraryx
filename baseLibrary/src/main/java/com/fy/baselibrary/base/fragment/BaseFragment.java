@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -14,27 +13,22 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProvider;
 
-import com.fy.baselibrary.R;
-import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.application.mvvm.BaseViewModel;
+import com.fy.baselibrary.application.mvvm.IBaseMVVM;
 import com.fy.baselibrary.statuslayout.LoadSirUtils;
 import com.fy.baselibrary.statuslayout.OnSetStatusView;
 import com.fy.baselibrary.statuslayout.StatusLayoutManager;
+import com.fy.baselibrary.utils.AnimUtils;
 import com.fy.baselibrary.utils.ResUtils;
 import com.fy.baselibrary.utils.notify.L;
-
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 
 
 /**
  * Fragment 基类
  * Created by fangs on 2017/4/26.
  */
-public abstract class BaseFragment<VM extends BaseViewModel, VDB extends ViewDataBinding> extends Fragment implements View.OnClickListener, OnSetStatusView {
+public abstract class BaseFragment<VM extends BaseViewModel, VDB extends ViewDataBinding> extends Fragment implements IBaseMVVM<VM, VDB>, View.OnClickListener, OnSetStatusView {
     public final String TAG = "lifeCycle --> " + getClass().getSimpleName();
 
     protected AppCompatActivity mContext;
@@ -44,10 +38,6 @@ public abstract class BaseFragment<VM extends BaseViewModel, VDB extends ViewDat
     protected VM vm;
     protected View mRootView;
 
-    /** fragment ViewBinding 视图 */
-    protected abstract int getContentLayout();
-    /** 初始化 */
-    protected abstract void baseInit();
     /** 设置懒加载 */
     protected void lazyData() {}
 
@@ -83,16 +73,16 @@ public abstract class BaseFragment<VM extends BaseViewModel, VDB extends ViewDat
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (null == mRootView) {
-            if (-1 != getContentLayout()){
-                vdb = DataBindingUtil.setContentView(getActivity(), getContentLayout());
+            if (-1 != setContentLayout()){
+                vdb = DataBindingUtil.inflate(LayoutInflater.from(getContext()), setContentLayout(), container, false);
                 vdb.setLifecycleOwner(getActivity());
                 mRootView = vdb.getRoot();
 
-                vm = createViewModel(this);
+                vm = AnimUtils.createViewModel(this);
             }
 
-            baseInit();
-            if (-1 != getContentLayout()) slManager = LoadSirUtils.initStatusLayout(this);
+            initData(vm, vdb, savedInstanceState);
+            if (-1 != setContentLayout()) slManager = LoadSirUtils.initStatusLayout(this);
 
             isViewCreated = true;
         } else {
@@ -162,39 +152,13 @@ public abstract class BaseFragment<VM extends BaseViewModel, VDB extends ViewDat
      * @param title
      * tips：重写 onCreateOptionsMenu 方法 可以设置 菜单
      */
-    protected void setToolbar(Toolbar toolbar, @StringRes int title){
-        setToolbar(toolbar, ResUtils.getStr(title), null);
+    protected void setToolbar(Toolbar toolbar, @StringRes int title, @Nullable View.OnClickListener listener){
+        setToolbar(toolbar, ResUtils.getStr(title), listener);
     }
 
-    protected void setToolbar(Toolbar toolbar, String title, View.OnClickListener listener){
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-
-        if (ConfigUtils.isTitleCenter()) {
-            toolbar.setTitle("");
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);//隐藏 toolbar 自带的标题view
-            TextView toolbarTitle = toolbar.findViewById(R.id.toolbarTitle);
-            toolbarTitle.setText(title);
-            toolbarTitle.setTextColor(ResUtils.getColor(ConfigUtils.getTitleColor()));
-            toolbarTitle.setVisibility(View.VISIBLE);
-        } else {
-            toolbar.setTitle(title);
-        }
-
-        if (ConfigUtils.getBgColor() > 0)
-            toolbar.setBackgroundColor(ResUtils.getColor(ConfigUtils.getBgColor()));
-
-        if (null != listener){
-            //在Toolbar左边显示一个返回按钮
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            //替换toolbar 自带的返回按钮
-            if (ConfigUtils.getBackImg() > 0) toolbar.setNavigationIcon(ConfigUtils.getBackImg());
-
-            toolbar.setNavigationOnClickListener(listener);
-        }
-
-        setHasOptionsMenu(true);//允许fragment 显示 menu
+    protected void setToolbar(Toolbar toolbar, String title, @Nullable View.OnClickListener listener){
+        AnimUtils.setToolbar(this, toolbar, title, listener);
     }
-
 
     /**
      * 当前activity 是否显示
@@ -243,26 +207,6 @@ public abstract class BaseFragment<VM extends BaseViewModel, VDB extends ViewDat
             //数据加载完毕,恢复标记,防止重复加载
             isViewCreated = false;
             isUIVisible = false;
-        }
-    }
-
-    public static <BVM extends BaseViewModel> BVM createViewModel(Object obj) {
-        Class modelClass;
-
-        Type[] types = obj.getClass().getGenericInterfaces();
-        if (types.length > 0 && types[0] instanceof ParameterizedType){
-            modelClass = (Class) ((ParameterizedType) types[0]).getActualTypeArguments()[0];
-        } else {
-            //如果没有指定泛型参数，则默认使用BaseViewModel
-            modelClass = BaseViewModel.class;
-        }
-
-        if (obj instanceof FragmentActivity){
-            return (BVM) new ViewModelProvider((FragmentActivity) obj).get(modelClass);
-        } else if(obj instanceof Fragment){
-            return (BVM) new ViewModelProvider(((Fragment)obj).getActivity()).get(modelClass);
-        } else {
-            return null;
         }
     }
 

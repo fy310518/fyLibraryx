@@ -1,8 +1,11 @@
 package com.fy.baselibrary.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import androidx.annotation.ArrayRes;
@@ -236,13 +239,12 @@ public class ResUtils {
     }
 
     /**
-     * 获取资源文件drawble的id
-     *
-     * @param drableName
+     * 获取资源文件drawable的id
+     * @param drawableName
      * @return
      */
-    public static int getDrableId(String drableName) {
-        return getResId(drableName, RES_DRAWABLE);
+    public static int getDrawableId(String drawableName) {
+        return getResId(drawableName, RES_DRAWABLE);
     }
 
     /**
@@ -313,4 +315,22 @@ public class ResUtils {
         Context context = ConfigUtils.getAppCtx();
         return context.getResources().getIdentifier(resName, defType, context.getPackageName());
     }
+
+
+
+    /**
+     * 设置 app字体是否跟随系统 字体
+     * @param act
+     */
+    public static void setFontDefault(Activity act) {
+        if (ConfigUtils.isFontDefault()) return;
+
+        Resources res = act.getResources();
+        if (res.getConfiguration().fontScale != 1) {//非默认值
+            Configuration newConfig = new Configuration();
+            newConfig.setToDefaults();//设置默认
+            res.updateConfiguration(newConfig, res.getDisplayMetrics());
+        }
+    }
+
 }

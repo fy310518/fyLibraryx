@@ -24,6 +24,7 @@
             android:textSize="18sp"
             android:visibility="gone" />
 
+        <!--   用于标题栏 显示搜索输入框预留   -->
         <ViewStub
             android:id="@+id/toolbarViewStub"
             android:layout_width="match_parent"

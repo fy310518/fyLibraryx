@@ -3,42 +3,27 @@ package com.fy.baselibrary.application;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.LifecycleOwner;
 
-import com.fy.baselibrary.R;
-import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.application.mvvm.BaseViewModel;
-import com.fy.baselibrary.application.mvvm.IBaseActivity;
-import com.fy.baselibrary.base.fragment.BaseFragment;
+import com.fy.baselibrary.application.mvvm.IBaseMVVM;
 import com.fy.baselibrary.statuslayout.LoadSirUtils;
 import com.fy.baselibrary.statuslayout.OnSetStatusView;
 import com.fy.baselibrary.statuslayout.StatusLayoutManager;
+import com.fy.baselibrary.utils.AnimUtils;
 import com.fy.baselibrary.utils.Constant;
-import com.fy.baselibrary.utils.JumpUtils;
 import com.fy.baselibrary.utils.ResUtils;
 import com.fy.baselibrary.utils.media.PlayUtils;
 import com.fy.baselibrary.utils.notify.L;
 
 import io.reactivex.subjects.BehaviorSubject;
-
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 /**
  * activity 生命周期回调 (api 14+)
@@ -49,52 +34,33 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
     public static final String TAG = "lifeCycle --> ";
     public static int actNum;
 
-
     @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
         BaseActivityLifecycleCallbacks.actNum++;
         L.e(TAG + activity.getClass().getSimpleName(), "Create()   " + activity.getTaskId());
-//todo 正式发布时候 解开以下注释
+//        正式发布时候 解开以下注释
 //        if (OSUtils.getRomType() == OSUtils.EMUI && onCheck(activity)){//是华为手机则 执行
 //            activity.finish();
 //            return;
 //        }
 
-        setFontDefault(activity);
+        ResUtils.setFontDefault(activity);
 
         BaseActivityBean activityBean = new BaseActivityBean();
         activityBean.setSubject(BehaviorSubject.create());
 
         ViewDataBinding vdb = null;
         BaseViewModel bvm = null;
-        IBaseActivity act = null;
-        if (activity instanceof IBaseActivity) {
-            act = (IBaseActivity) activity;
+        IBaseMVVM act = null;
+        if (activity instanceof IBaseMVVM) {
+            act = (IBaseMVVM) activity;
 
             vdb = DataBindingUtil.setContentView(activity, act.setContentLayout());
             if (activity instanceof LifecycleOwner) vdb.setLifecycleOwner((LifecycleOwner) activity);
-            bvm = BaseFragment.createViewModel(activity);
+            bvm = AnimUtils.createViewModel(activity);
 
-            if (act.isShowHeadView()) { //动态添加标题栏
-                View titleBar = initHead(activity);
-
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -1);
-                LinearLayout linearLRoot = new LinearLayout(activity);
-                linearLRoot.setOrientation(LinearLayout.VERTICAL);
-                linearLRoot.setLayoutParams(params);
-                linearLRoot.addView(titleBar, MATCH_PARENT, WRAP_CONTENT);
-
-                View decorView = activity.getWindow().getDecorView();
-                ViewGroup contentView = decorView.findViewById(android.R.id.content);
-                contentView.removeView(vdb.getRoot());
-
-                linearLRoot.addView(vdb.getRoot(), MATCH_PARENT, MATCH_PARENT);
-
-                activity.setContentView(linearLRoot);
-            }
-
-//        注册屏幕旋转监听
+//            注册屏幕旋转监听
             if (Constant.isOrientation) {
                 BaseOrientoinListener orientoinListener = new BaseOrientoinListener(activity);
                 boolean autoRotateOn = (Settings.System.getInt(activity.getContentResolver(),
@@ -158,7 +124,6 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
                 .getSerializableExtra("ActivityBean");
 
         if (null != activityBean) {
-            //解绑定 黄油刀
             //销毁 屏幕旋转监听
             if (null != activityBean.getOrientoinListener())
                 activityBean.getOrientoinListener().disable();
@@ -168,49 +133,9 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
         }
     }
 
-    /**
-     * 初始化 toolbar
-     *
-     * @param activity
-     */
-    private View initHead(Activity activity) {
-        View titleBar = LayoutInflater.from(activity).inflate(R.layout.activity_head, null);
-        //这里全局给Activity设置toolbar和title mate
-        Toolbar toolbar = titleBar.findViewById(R.id.toolbar);
-
-        if (ConfigUtils.isTitleCenter()) {
-            toolbar.setTitle("");
-            TextView toolbarTitle = titleBar.findViewById(R.id.toolbarTitle);
-            toolbarTitle.setText(activity.getTitle());
-            toolbarTitle.setTextColor(ResUtils.getColor(ConfigUtils.getTitleColor()));
-            toolbarTitle.setVisibility(View.VISIBLE);
-        } else {
-            toolbar.setTitle(activity.getTitle());
-        }
-
-        if (activity instanceof AppCompatActivity) {
-            AppCompatActivity act = (AppCompatActivity) activity;
-            //设置导航图标要在setSupportActionBar方法之后
-            act.setSupportActionBar(toolbar);
-            if (ConfigUtils.isTitleCenter())
-                act.getSupportActionBar().setDisplayShowTitleEnabled(false);//隐藏 toolbar 自带的标题view
-
-            //在Toolbar左边显示一个返回按钮
-            act.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            //替换toolbar 自带的返回按钮
-            if (ConfigUtils.getBackImg() > 0) toolbar.setNavigationIcon(ConfigUtils.getBackImg());
-            //设置返回按钮监听事件
-            toolbar.setNavigationOnClickListener(v -> JumpUtils.exitActivity(act));
-            if (ConfigUtils.getBgColor() > 0)
-                toolbar.setBackgroundColor(ResUtils.getColor(ConfigUtils.getBgColor()));
-        }
-
-        return titleBar;
-    }
 
     /**
      * 判断 应用是否被杀死（拦截 华为手机 设置中关闭权限 应用崩溃重启 黑屏问题）
-     *
      * @param activity
      * @return
      */
@@ -230,22 +155,6 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
         }
 
         return isrun;
-    }
-
-    /**
-     * 设置 app字体是否跟随系统 字体
-     *
-     * @param act
-     */
-    private void setFontDefault(Activity act) {
-        if (ConfigUtils.isFontDefault()) return;
-
-        Resources res = act.getResources();
-        if (res.getConfiguration().fontScale != 1) {//非默认值
-            Configuration newConfig = new Configuration();
-            newConfig.setToDefaults();//设置默认
-            res.updateConfiguration(newConfig, res.getDisplayMetrics());
-        }
     }
 
 }

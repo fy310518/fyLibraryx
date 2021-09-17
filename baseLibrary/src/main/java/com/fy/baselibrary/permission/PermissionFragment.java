@@ -29,6 +29,8 @@ import com.fy.baselibrary.utils.ResUtils;
 import com.fy.baselibrary.utils.drawable.ShapeBuilder;
 import com.fy.baselibrary.utils.os.OSUtils;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -65,12 +67,13 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
     private OnPermission call;
 
     @Override
-    protected int getContentLayout() {
+    public int setContentLayout() {
         return -1;
     }
 
     @Override
-    protected void baseInit() {
+    public void initData(@Nullable BaseViewModel viewModel, @Nullable ViewDataBinding dataBinding, @Nullable Bundle savedInstanceState) {
+
         appName = AppUtils.getAppName(getContext(), AppUtils.getLocalPackageName());
         mFirstRefuseMessage = getString(R.string.default_always_message);
 
@@ -381,5 +384,4 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
         assert manager != null;
         manager.beginTransaction().add(fragment, "PermissionFragment").commitAllowingStateLoss();
     }
-
 }

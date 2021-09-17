@@ -8,25 +8,6 @@
 <!--    <string name="space">%1$s&#160;&#160;&#8201;</string>-->
 
     <string name="data_loading">正在加载&#8230;</string>
-<!--    <string name="upLoading">正在上传&#8230;</string>-->
-<!--    <string name="publish_loading">正在发表&#8230;</string>-->
-<!--    <string name="loading_modify">正在修改&#8230;</string>-->
-<!--    <string name="loading_save">正在保存&#8230;</string>-->
-<!--    <string name="loading_get">正在获取&#8230;</string>-->
-<!--    <string name="register_loading">正在注册&#8230;</string>-->
-<!--    <string name="user_login">正在登录&#8230;</string>-->
-<!--    <string name="exit_loading">正在退出&#8230;</string>-->
-<!--    <string name="loading_success">加载成功</string>-->
-<!--    <string name="modify_success">修改成功</string>-->
-<!--    <string name="get_success">获取成功</string>-->
-
-<!--    <string name="numPass">账号密码不能为空!!!</string>-->
-<!--    <string name="phoenError">手机号码错误！</string>-->
-<!--    <string name="inputContentNoNull">输入内容不能为空！！！</string>-->
-
-<!--    <string name="passError">密码错误！</string>-->
-<!--    <string name="login_success">登录成功</string>-->
-<!--    <string name="exit_app">再按一次退出程序！</string>-->
 
     <string name="back">返回</string>
     <string name="complete">完成</string>
@@ -92,3 +73,6 @@
 
 <!--    \u0020 == 半角空格(英文符号),代码中常用的;-->
 <!--    \u3000 == 全角空格(中文符号),中文文章中使用;-->
+
+<!--    如果是继承基类而来的泛型，就用 getGenericSuperclass() , 转型为 ParameterizedType 来获得实际类型-->
+<!--    如果是实现接口而来的泛型，就用 getGenericInterfaces() , 针对其中的元素转型为 ParameterizedType 来获得实际类型-->

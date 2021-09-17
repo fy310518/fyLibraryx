@@ -11,12 +11,7 @@ import androidx.databinding.ViewDataBinding
  * 项目自己创建的 activity 建议实现 此 接口
  * Created by fangs on 2021/9/10 10:04.
  */
-interface IBaseActivity<VM : BaseViewModel, VDB : ViewDataBinding> {
-
-    /**
-     * 是否显示 标题栏
-     */
-    fun isShowHeadView(): Boolean
+interface IBaseMVVM<VM : BaseViewModel, VDB : ViewDataBinding> {
 
     /**
      * 设置 activity 布局 ID
