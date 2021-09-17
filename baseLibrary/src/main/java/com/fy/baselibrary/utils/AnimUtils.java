@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -153,15 +154,22 @@ public class AnimUtils {
      * @return ViewModel
      */
     public static <BVM extends BaseViewModel> BVM createViewModel(Object obj) {
-        Class modelClass;
+        Class modelClass = null;
 
-        Type[] types = obj.getClass().getGenericInterfaces();
-        if (types.length > 0 && types[0] instanceof ParameterizedType){
-            modelClass = (Class) ((ParameterizedType) types[0]).getActualTypeArguments()[0];
+        if (obj instanceof Fragment){
+            Type type = obj.getClass().getGenericSuperclass();
+            if (type instanceof ParameterizedType) {
+                modelClass = (Class) ((ParameterizedType) type).getActualTypeArguments()[0];
+            }
         } else {
-            //如果没有指定泛型参数，则默认使用BaseViewModel
-            modelClass = BaseViewModel.class;
+            Type[] types = obj.getClass().getGenericInterfaces();
+            if (types.length > 0 && types[0] instanceof ParameterizedType){
+                modelClass = (Class) ((ParameterizedType) types[0]).getActualTypeArguments()[0];
+            }
         }
+
+        //如果没有指定泛型参数，则默认使用BaseViewModel
+        if (null == modelClass) modelClass = BaseViewModel.class;
 
         if (obj instanceof FragmentActivity){
             return (BVM) new ViewModelProvider((FragmentActivity) obj).get(modelClass);
