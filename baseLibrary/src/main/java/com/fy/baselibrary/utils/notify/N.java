@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
@@ -143,7 +144,7 @@ public class N {
             intent.putExtras(bundle);
             act.startActivity(intent);
 
-            T.showLong("请手动将通知打开");
+            T.show("请手动打开通知权限", Toast.LENGTH_LONG);
         }
     }
 

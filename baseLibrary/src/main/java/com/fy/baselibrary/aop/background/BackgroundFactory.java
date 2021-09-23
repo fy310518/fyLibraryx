@@ -14,8 +14,8 @@ import androidx.annotation.DrawableRes;
 import androidx.collection.ArrayMap;
 
 import com.fy.baselibrary.R;
-import com.fy.baselibrary.utils.notify.L;
 import com.fy.baselibrary.utils.drawable.TintUtils;
+import com.fy.baselibrary.utils.notify.L;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;

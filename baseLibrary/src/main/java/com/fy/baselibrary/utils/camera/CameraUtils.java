@@ -2,6 +2,7 @@ package com.fy.baselibrary.utils.camera;
 
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.widget.Toast;
 
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.utils.notify.T;
@@ -13,7 +14,7 @@ import com.fy.baselibrary.utils.notify.T;
 public class CameraUtils {
 
     /**
-     * 打开闪光灯
+     * 打开手电筒
      */
     public static void openFlashLight(Camera camera) {
         if (null == camera) {
@@ -23,7 +24,7 @@ public class CameraUtils {
         PackageManager pm = ConfigUtils.getAppCtx().getPackageManager();
         //判断系统是否 支持 指定的 功能（如：相机，蓝牙，闪光灯等 硬件功能）
         if (!pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
-            T.showLong("系统不支持电筒");
+            T.show("系统不支持电筒", Toast.LENGTH_LONG);
         } else {
             Camera.Parameters parameter = camera.getParameters();
             parameter.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
@@ -34,7 +35,7 @@ public class CameraUtils {
     }
 
     /**
-     * 关闭闪光灯
+     * 关闭手电筒
      */
     public static void closeFlashLight(Camera camera) {
         if (null == camera) {
@@ -43,7 +44,7 @@ public class CameraUtils {
 
         PackageManager pm = ConfigUtils.getAppCtx().getPackageManager();
         if (!pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
-            T.showLong("系统不支持电筒");
+            T.show("系统不支持电筒", Toast.LENGTH_LONG);
         } else {
             Camera.Parameters parameter = camera.getParameters();
             parameter.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);

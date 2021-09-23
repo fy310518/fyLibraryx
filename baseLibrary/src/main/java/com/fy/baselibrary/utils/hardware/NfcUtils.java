@@ -16,6 +16,7 @@ import android.nfc.tech.NfcA;
 import android.os.Build;
 import android.os.Parcelable;
 import android.provider.Settings;
+import android.widget.Toast;
 
 import com.fy.baselibrary.utils.TransfmtUtils;
 import com.fy.baselibrary.utils.notify.T;
@@ -41,13 +42,13 @@ public class NfcUtils {
     public static NfcAdapter NfcCheck(Activity activity) {
         NfcAdapter mNfcAdapter = NfcAdapter.getDefaultAdapter(activity);
         if (mNfcAdapter == null) {
-            T.showLong("设备不支持NFC功能!");
+            T.show("设备不支持NFC功能!", Toast.LENGTH_LONG);
             return null;
         } else {
             if (!mNfcAdapter.isEnabled()) {
                 goToSet(activity);
             } else {
-                T.showLong("NFC功能已打开!");
+                T.show("NFC功能已打开!", Toast.LENGTH_LONG);
             }
         }
         return mNfcAdapter;

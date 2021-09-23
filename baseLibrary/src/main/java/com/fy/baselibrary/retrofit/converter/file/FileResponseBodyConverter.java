@@ -9,7 +9,6 @@ import com.fy.baselibrary.retrofit.load.down.FileResponseBody;
 import com.fy.baselibrary.utils.Constant;
 import com.fy.baselibrary.utils.FileUtils;
 import com.fy.baselibrary.utils.cache.SpfAgent;
-import com.fy.baselibrary.utils.imgload.imgprogress.ProgressListener;
 import com.fy.baselibrary.utils.notify.L;
 
 import java.io.File;

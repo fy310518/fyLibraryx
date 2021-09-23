@@ -1,5 +1,7 @@
 package com.fy.baselibrary.retrofit.observer;
 
+import android.widget.Toast;
+
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.base.dialog.CommonDialog;
 import com.fy.baselibrary.retrofit.ServerException;
@@ -142,7 +144,7 @@ public abstract class RequestBaseObserver<V> implements Observer<V> {
      * @param msg 内容
      */
     protected void actionResponseError(String msg) {
-        T.showShort(msg);
+        T.show(msg, Toast.LENGTH_LONG);
     }
 
     /**

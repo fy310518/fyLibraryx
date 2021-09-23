@@ -11,9 +11,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
@@ -285,7 +285,7 @@ public class JumpUtils {
             }
             act.startActivity(intent);
         } catch (Exception e) {
-            T.showLong("应用未安装");
+            T.show("应用未安装", Toast.LENGTH_LONG);
             e.printStackTrace();
         }
     }
@@ -308,7 +308,7 @@ public class JumpUtils {
         try {
             act.startActivity(intent);
         } catch (Exception e) {
-            T.showLong("应用未安装");
+            T.show("应用未安装", Toast.LENGTH_LONG);
             e.printStackTrace();
         }
     }
@@ -332,7 +332,7 @@ public class JumpUtils {
         try {
             act.startActivityForResult(intent, requestCode);
         } catch (Exception e) {
-            T.showLong("应用未安装");
+            T.show("应用未安装", Toast.LENGTH_LONG);
             e.printStackTrace();
         }
     }
@@ -356,7 +356,7 @@ public class JumpUtils {
         try {
             fragment.startActivityForResult(intent, requestCode);
         } catch (Exception e) {
-            T.showLong("应用未安装");
+            T.show("应用未安装", Toast.LENGTH_LONG);
             e.printStackTrace();
         }
     }
@@ -414,7 +414,7 @@ public class JumpUtils {
             intent.setData(data);
             ctx.startActivity(intent);
         } else {
-            T.showLong("请使用正确的号码！");
+            T.show("请使用正确的号码！", Toast.LENGTH_LONG);
         }
     }
 
