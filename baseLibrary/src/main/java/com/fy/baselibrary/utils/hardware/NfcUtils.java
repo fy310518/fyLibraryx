@@ -116,6 +116,8 @@ public class NfcUtils {
         NdefRecord[] records = {ndefRecord};
         NdefMessage ndefMessage = new NdefMessage(records);
         ndef.writeNdefMessage(ndefMessage);
+//        ndef.makeReadOnly();
+//        ndef.canMakeReadOnly();
     }
 
     /**
