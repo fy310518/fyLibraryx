@@ -155,8 +155,8 @@ public class FileUtils {
      * @return
      */
     public static String getPath(String aModuleName, int type) {
-//        String modulePath = aModuleName.replace(".", File.separator);
-        String fDirStr = File.separator + aModuleName + File.separator;
+        String modulePath = aModuleName.replace(".", File.separator);
+        String fDirStr = File.separator + modulePath + File.separator;
 
         File dirpath;
         if (isSDCardEnable())

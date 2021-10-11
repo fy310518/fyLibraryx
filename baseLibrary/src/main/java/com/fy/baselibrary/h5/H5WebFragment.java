@@ -26,23 +26,23 @@ public abstract class H5WebFragment<VM extends BaseViewModel, VDB extends ViewDa
     WebView webView;
     IWebViewInitializer initializer;
 
-    public abstract IWebViewInitializer setInitializer(VM viewModel, VDB dataBinding, Bundle savedInstanceState);
+    public abstract IWebViewInitializer setInitializer();
 
     @Override
     public void initData(@Nullable VM viewModel, @Nullable VDB dataBinding, @Nullable Bundle savedInstanceState) {
         Bundle bundle = getArguments();
         if (null != bundle) bundle.remove("ActivityBean");
 
-        initWebView(viewModel, dataBinding, savedInstanceState);
+        initWebView();
         initWebViewSetting();
         webViewSetting();
         webView.loadUrl(initializer.getLoadUrl());
     }
 
     @SuppressLint("JavascriptInterface")
-    private void initWebView(VM viewModel, VDB dataBinding, Bundle savedInstanceState){
+    private void initWebView(){
         //获取子类回调传回来的接口实例
-        initializer = setInitializer(viewModel, dataBinding, savedInstanceState);
+        initializer = setInitializer();
         if (null != initializer) {
             webView = initializer.getWebView();
             if (null == webView) {
