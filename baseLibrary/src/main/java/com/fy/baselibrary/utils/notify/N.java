@@ -102,6 +102,7 @@ public class N {
             if (null != channel.sound) builder.setSound(channel.sound); //通知 提示音
             if (null != channel.vibrate) builder.setVibrate(channel.vibrate); //通知 震动
             builder.setLights(Color.GREEN, 1000, 2000); //通知栏消息闪灯(亮一秒间隔两秒再亮)
+            builder.setDefaults(NotificationCompat.DEFAULT_ALL);
         } else {
             builder.setDefaults(channel.defaults);
         }
@@ -222,19 +223,22 @@ public class N {
      * @param channel
      */
     private static int getLowVersionPriority(Channel channel) {
-        int importance;
+        int importance = NotificationCompat.PRIORITY_MIN;
         switch (channel.importance) {
+            case NotificationManager.IMPORTANCE_MAX:
+                importance = NotificationCompat.PRIORITY_MAX;
+                break;
             case NotificationManager.IMPORTANCE_HIGH:
                 importance = NotificationCompat.PRIORITY_HIGH;
+                break;
+            case NotificationManager.IMPORTANCE_DEFAULT:
+                importance = NotificationCompat.PRIORITY_DEFAULT;
                 break;
             case NotificationManager.IMPORTANCE_LOW:
                 importance = NotificationCompat.PRIORITY_LOW;
                 break;
             case NotificationManager.IMPORTANCE_MIN:
                 importance = NotificationCompat.PRIORITY_MIN;
-                break;
-            default:
-                importance = NotificationCompat.PRIORITY_DEFAULT;
                 break;
         }
 
@@ -258,9 +262,6 @@ public class N {
         private RemoteViews remoteViews;
 
         private PendingIntent pendingIntent;
-
-        private NotificationCompat.Builder mBuilder;
-        private NotificationManager manager;
 
         public static NotifyBuild init() {
             NotifyBuild build = new NotifyBuild();
@@ -318,7 +319,7 @@ public class N {
         /** 描述 */
         private String description;
 
-        /** 重要性级别 */
+        /** 重要性级别  【1 - 5】*/
         private int importance = NotificationManager.IMPORTANCE_DEFAULT;
         /** 锁定屏幕公开范围 */
         private int lockScreenVisibility = NotificationCompat.VISIBILITY_SECRET;
@@ -386,7 +387,7 @@ public class N {
 
         /** 设置 raw 资源中的 提示音效 */
         public Channel setSoundFilePath(@RawRes int soundFilePath) {
-            this.sound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + AppUtils.getLocalPackageName() + "/" + soundFilePath);
+            this.sound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + AppUtils.getLocalPackageName() + "/raw/" + soundFilePath);
             return this;
         }
     }
