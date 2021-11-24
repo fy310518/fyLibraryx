@@ -28,6 +28,7 @@ import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.utils.AppUtils;
 import com.fy.baselibrary.utils.ResUtils;
 import com.fy.baselibrary.utils.cache.SpfAgent;
+import com.fy.baselibrary.utils.media.UriUtils;
 
 import java.io.File;
 import java.util.List;
@@ -386,8 +387,8 @@ public class N {
         }
 
         /** 设置 raw 资源中的 提示音效 */
-        public Channel setSoundFilePath(@RawRes int soundFilePath) {
-            this.sound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + AppUtils.getLocalPackageName() + "/" + soundFilePath);
+        public Channel setSoundFilePath(int soundFilePath) {
+            this.sound = UriUtils.getResUri(soundFilePath);
             return this;
         }
     }
