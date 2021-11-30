@@ -41,9 +41,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$var.kotlin_version"
     implementation "androidx.appcompat:appcompat:$var.androidx"
     implementation "androidx.recyclerview:recyclerview:$var.androidx"
-    implementation "com.google.android.material:material:$var.androidx"
+    implementation "com.google.android.material:material:$var.material"
     implementation "androidx.constraintlayout:constraintlayout:$var.constraintLayout"
-    implementation "androidx.lifecycle:lifecycle-viewmodel:2.2.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$var.lifecycle"
 
 
     //    dagger2

@@ -13,6 +13,7 @@ buildscript {
                 androidx         : "1.2.0",
                 material         : "1.2.1",
                 constraintLayout : "2.0.1",
+                lifecycle        : "2.0.2",
                 work_version     : "2.5.0"
         ]
     }
