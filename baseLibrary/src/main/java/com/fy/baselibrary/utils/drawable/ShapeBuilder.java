@@ -19,19 +19,18 @@ public class ShapeBuilder {
     }
 
     /**
-     * 返回构建的drawable
-     */
-    public GradientDrawable build() {
-        return drawable;
-    }
-
-
-    /**
      * 构建 ShapeBuilder 工具类
      * @return
      */
     public static ShapeBuilder create() {
         return new ShapeBuilder();
+    }
+
+    /**
+     * 返回构建的drawable
+     */
+    public GradientDrawable build() {
+        return drawable;
     }
 
     /**
