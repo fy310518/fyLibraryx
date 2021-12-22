@@ -29,6 +29,9 @@ public class FragmentChangeManager {
      */
     private List<Fragment> mFragments = new ArrayList<>();
 
+    /** 是否添加 到回退栈 */
+    private boolean isAddToBackStack;
+
     @AnimatorRes
     @AnimRes
     int inEnter, inExit;
@@ -107,7 +110,7 @@ public class FragmentChangeManager {
         if (!showFragment.isAdded()) {
             String fragmentTag = showFragment.getClass().getSimpleName();
             fragmentTransaction.add(mContainerViewId, showFragment, fragmentTag);
-            fragmentTransaction.addToBackStack(fragmentTag);
+            if (isAddToBackStack) fragmentTransaction.addToBackStack(fragmentTag);
         } else {
             fragmentTransaction.show(showFragment);
         }
@@ -163,7 +166,6 @@ public class FragmentChangeManager {
 
     //移除指定数量的 fragment
     public void removeFragment(int count){
-        @SuppressLint("CommitTransaction")
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
 
         for (int i = 0; i < count && mFragments.size() > 0; i++) {
@@ -176,21 +178,31 @@ public class FragmentChangeManager {
 //        transaction.commit();
     }
 
+
+    public FragmentChangeManager setAddToBackStack(boolean addToBackStack) {
+        isAddToBackStack = addToBackStack;
+        return this;
+    }
+
     //进入动画
-    public void setInAnim(int inEnter, int inExit) {
+    public FragmentChangeManager setInAnim(int inEnter, int inExit) {
         this.inEnter = inEnter;
         this.inExit = inExit;
+        return this;
     }
 
     //返回动画
-    public void setOutAnim(int outEnter, int outExit) {
+    public FragmentChangeManager setOutAnim(int outEnter, int outExit) {
         this.outEnter = outEnter;
         this.outExit = outExit;
+        return this;
     }
 
-    public void setStyleResAnim(int styleResAnim) {
+    public FragmentChangeManager setStyleResAnim(int styleResAnim) {
         this.styleResAnim = styleResAnim;
+        return this;
     }
+
 
     public int getCurrentTab() {
         return currentIndex;
