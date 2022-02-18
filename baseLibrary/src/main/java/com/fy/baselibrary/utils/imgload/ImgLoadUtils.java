@@ -51,7 +51,6 @@ public class ImgLoadUtils {
      * @param context
      * @param url
      */
-    @SuppressLint("CheckResult")
     public static File getImgCachePath(Context context, String url) throws ExecutionException, InterruptedException {
         FutureTarget<File> target = Glide.with(context)
                 .asFile()

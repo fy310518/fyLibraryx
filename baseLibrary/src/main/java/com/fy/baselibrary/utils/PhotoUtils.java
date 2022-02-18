@@ -288,7 +288,7 @@ public class PhotoUtils {
     }
 
 
-    private static BitmapFactory.Options getBitmapOption(int inSampleSize){
+    public static BitmapFactory.Options getBitmapOption(int inSampleSize){
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPurgeable = true;
         options.inSampleSize = inSampleSize;
