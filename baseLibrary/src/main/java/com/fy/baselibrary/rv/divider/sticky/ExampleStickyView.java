@@ -12,7 +12,7 @@ public class ExampleStickyView implements StickyView {
     @Override
     public boolean isStickyView(View view) {
         StickyBean stickyBean = (StickyBean) view.getTag();
-        return stickyBean.getItemType() == Constant.StickyType;
+        return null != stickyBean && stickyBean.getItemType() == Constant.StickyType;
     }
 
     @Override
