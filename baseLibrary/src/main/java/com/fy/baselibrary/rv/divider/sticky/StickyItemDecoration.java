@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 吸顶效果 item；仅限 recycleView 为 Linearlayoutmanager布局方式
+ * 吸顶效果 item；仅限 recycleView 为 Linearlayoutmanager布局方式，并且 recycleView 不能使用 paddingTop 设置内边距
  * Created by cpf on 2018/1/16.
  */
 public class StickyItemDecoration extends RecyclerView.ItemDecoration {
