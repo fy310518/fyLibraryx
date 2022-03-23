@@ -6,6 +6,14 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.PointF;
 import android.os.Build;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.TextView;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,13 +21,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.RadioButton;
-import android.widget.TextView;
 
 import com.fy.baselibrary.R;
 import com.fy.baselibrary.application.ioc.ConfigUtils;
@@ -250,4 +251,31 @@ public class AnimUtils {
         fragment.setHasOptionsMenu(true);//允许fragment 显示 menu
     }
 
+    /**
+     * 设置 toolbar 右边 图片按钮
+     * @param menuLayout
+     * @param rightIcon
+     * @param resId
+     * @param l
+     */
+    public static void initToolbarRight(View menuLayout, ImageView rightIcon, @DrawableRes int resId, View.OnClickListener l){
+        menuLayout.setVisibility(View.VISIBLE);
+        menuLayout.setOnClickListener(l);
+        rightIcon.setVisibility(View.VISIBLE);
+        rightIcon.setImageResource(resId);
+    }
+
+    /**
+     * 设置 toolbar 右边 文本按钮
+     * @param menuLayout
+     * @param btnRight
+     * @param text
+     * @param l
+     */
+    public static void initToolbarRight(View menuLayout, TextView btnRight, @NonNull CharSequence text, View.OnClickListener l){
+        menuLayout.setVisibility(View.VISIBLE);
+        menuLayout.setOnClickListener(l);
+        btnRight.setVisibility(View.VISIBLE);
+        btnRight.setText(text);
+    }
 }
