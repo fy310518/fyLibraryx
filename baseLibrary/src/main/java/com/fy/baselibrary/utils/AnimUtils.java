@@ -290,7 +290,7 @@ public class AnimUtils {
      * @param resID
      * @param queryTextListener
      */
-    private void initSearchView(@NonNull SearchView searchView, @DrawableRes int resID, SearchView.OnQueryTextListener queryTextListener) {
+    public static void initSearchView(@NonNull SearchView searchView, @DrawableRes int resID, SearchView.OnQueryTextListener queryTextListener) {
         ImageView mCollapsedIcon = searchView.findViewById(R.id.search_mag_icon);
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) mCollapsedIcon.getLayoutParams();
         layoutParams.width = (int) ResUtils.getDimen(R.dimen.spacing_medium_large);
