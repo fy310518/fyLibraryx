@@ -6,8 +6,11 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.PointF;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -17,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -25,6 +29,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.fy.baselibrary.R;
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.application.mvvm.BaseViewModel;
+import com.fy.baselibrary.utils.notify.T;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -277,5 +282,33 @@ public class AnimUtils {
         menuLayout.setOnClickListener(l);
         btnRight.setVisibility(View.VISIBLE);
         btnRight.setText(text);
+    }
+
+    /**
+     * 设置 搜索框
+     * @param searchView
+     * @param resID
+     * @param queryTextListener
+     */
+    private void initSearchView(@NonNull SearchView searchView, @DrawableRes int resID, SearchView.OnQueryTextListener queryTextListener) {
+        ImageView mCollapsedIcon = searchView.findViewById(R.id.search_mag_icon);
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) mCollapsedIcon.getLayoutParams();
+        layoutParams.width = (int) ResUtils.getDimen(R.dimen.spacing_medium_large);
+        layoutParams.setMargins(0, 0, 0, 0);
+        mCollapsedIcon.setLayoutParams(layoutParams);
+        if (resID != 0){
+            mCollapsedIcon.setImageResource(resID);
+        }
+
+        //设置输入文本的EditText
+        SearchView.SearchAutoComplete et = searchView.findViewById(R.id.search_src_text);
+        //设置输入框内提示文字样式
+        et.setTextSize(TypedValue.COMPLEX_UNIT_PX, ResUtils.getDimen(R.dimen.txt_small));
+        et.setHintTextColor(ResUtils.getColor(R.color.txtLight));//设置提示文字颜色
+        et.setTextColor(ResUtils.getColor(R.color.txtSuperColor));//设置内容文字颜色
+
+        et.clearFocus();
+        searchView.clearFocus();
+        searchView.setOnQueryTextListener(queryTextListener);
     }
 }

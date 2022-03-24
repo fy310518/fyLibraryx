@@ -1,63 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.appbar.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    app:theme="@style/appBarTheme">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <data>
+
+    </data>
+
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        style="@style/appBarStyle">
+        app:theme="@style/appBarTheme">
 
-        <TextView
-            android:id="@+id/toolbarTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:paddingLeft="24dp"
-            android:paddingRight="24dp"
-            android:drawablePadding="4dp"
-            android:singleLine="true"
-            android:text="ToolBar"
-            android:textSize="18sp"
-            android:visibility="gone" />
-
-        <!--   用于标题栏 显示搜索输入框预留   -->
-        <ViewStub
-            android:id="@+id/toolbarViewStub"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <FrameLayout
-            android:id="@+id/menuLayout"
-            android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
-            android:layout_gravity="right"
-            android:background="?attr/selectableItemBackground"
-            android:visibility="gone">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/rightIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="gone" />
+            style="@style/appBarStyle">
 
             <TextView
-                android:id="@+id/btnRight"
+                android:id="@+id/toolbarTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:gravity="center"
-                android:text="发布"
-                android:textColor="@color/txtSecondColor"
-                android:textSize="14sp"
-                android:visibility="gone"/>
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:drawablePadding="4dp"
+                android:singleLine="true"
+                android:text="ToolBar"
+                android:textSize="18sp"
+                android:visibility="gone" />
 
-        </FrameLayout>
+            <!--   用于标题栏 显示搜索输入框预留   -->
+            <ViewStub
+                android:id="@+id/toolbarViewStub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-    </androidx.appcompat.widget.Toolbar>
+            <FrameLayout
+                android:id="@+id/menuLayout"
+                android:layout_width="?attr/actionBarSize"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_gravity="right"
+                android:background="?attr/selectableItemBackground"
+                android:visibility="gone">
 
-</com.google.android.material.appbar.AppBarLayout>
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/rightIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/btnRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="发布"
+                    android:textColor="@color/txtSecondColor"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+
+            </FrameLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+</layout>
