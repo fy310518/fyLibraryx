@@ -13,7 +13,6 @@ import androidx.collection.SparseArrayCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.fy.baselibrary.aop.annotation.ClickFilter;
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.base.ViewHolder;
 import com.fy.baselibrary.rv.utils.WrapperUtils;
@@ -184,7 +183,6 @@ public abstract class RvCommonAdapter<Item, Holder extends ViewHolder> extends R
         holder.itemView.setTag(item);
     }
 
-    @ClickFilter()
     @Override
     public void onClick(View v) {
         if (null != itemClickListener) itemClickListener.onItemClick(v);
