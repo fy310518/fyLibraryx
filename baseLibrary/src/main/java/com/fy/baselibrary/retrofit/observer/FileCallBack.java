@@ -55,7 +55,7 @@ public abstract class FileCallBack extends RequestBaseObserver<Object> {
     @Override
     public void onNext(Object obj) {
         if (obj instanceof Double) {//说明是进度【一般请求不会发射 double类型数据，有问题后面再 自己定义一个对象吧】
-            String percent = TransfmtUtils.doubleToKeepTwoDecimalPlaces((Double) obj);
+            String percent = TransfmtUtils.doubleToKeepTwoDecimalPlaces((Double) obj, "##0.00");
             downProgress(percent);
         } else {
             super.onNext(obj);

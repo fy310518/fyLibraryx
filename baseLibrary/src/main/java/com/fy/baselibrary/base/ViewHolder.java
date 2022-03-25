@@ -147,4 +147,10 @@ public class ViewHolder extends RecyclerView.ViewHolder {
         return this;
     }
 
+    public ViewHolder setBackground(int viewId, @ColorRes int color) {
+        View view = getView(viewId);
+        view.setBackgroundColor(ResUtils.getColor(color));
+        return this;
+    }
+
 }

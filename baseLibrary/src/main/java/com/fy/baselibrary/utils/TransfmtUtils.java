@@ -20,12 +20,12 @@ public class TransfmtUtils {
     /**
      * double类型数字  保留一位小数(四舍五入)
      * DecimalFormat转换最简便
-     *
      * @param doubleDigital
+     * @param pattern  例如：##0.0 --》保留一位小数；##0.00 --》保留两位小数
      * @return String
      */
-    public static String doubleToKeepTwoDecimalPlaces(double doubleDigital) {
-        DecimalFormat df = new DecimalFormat("##0.0");
+    public static String doubleToKeepTwoDecimalPlaces(double doubleDigital, String pattern) {
+        DecimalFormat df = new DecimalFormat(pattern);
 
         return df.format(doubleDigital);
     }

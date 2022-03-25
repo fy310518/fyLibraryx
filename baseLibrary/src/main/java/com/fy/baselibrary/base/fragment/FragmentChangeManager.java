@@ -221,4 +221,12 @@ public class FragmentChangeManager {
         mFragments.clear();
         mCurrentFragment = null;
     }
+
+    public List<Fragment> getFragments() {
+        if (mFragments == null) {
+            return new ArrayList<>();
+        }
+        return mFragments;
+    }
+    
 }
