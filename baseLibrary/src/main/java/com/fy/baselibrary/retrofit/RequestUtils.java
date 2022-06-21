@@ -21,8 +21,6 @@ import com.fy.baselibrary.utils.notify.L;
 import java.io.File;
 import java.io.Serializable;
 
-import javax.inject.Inject;
-
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -40,21 +38,23 @@ import retrofit2.Retrofit;
  * 网络请求入口
  * Created by fangs on 2018/3/13.
  */
-public class RequestUtils {
+public final class RequestUtils {
 
     public volatile static RequestUtils instance;
 
-    @Inject
+//    @Inject
     protected Retrofit netRetrofit;
 
-    @Inject
+//    @Inject
     protected OkHttpClient.Builder okBuilder;//使 上层依赖 可以获得唯一的 OkHttpClient；
 
     protected CompositeDisposable mCompositeDisposable;
 
     private RequestUtils() {
-        DaggerRequestComponent.builder().build().inJect(this);
+//        DaggerRequestComponent.builder().build().inJect(this);
 
+        netRetrofit = RequestModule.getService();
+        okBuilder = RequestModule.getClient();
         mCompositeDisposable = new CompositeDisposable();
     }
 

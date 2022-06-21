@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import com.fy.baselibrary.retrofit.RequestUtils;
 import com.fy.baselibrary.statuslayout.OnStatusAdapter;
 
 import java.util.ArrayList;
@@ -20,81 +21,95 @@ import retrofit2.Converter;
  */
 public class ConfigUtils {
 
-    static ConfigComponent configComponent;
+    public volatile static ConfigUtils instance;
+    private ConfigBuilder builder;
 
-    public ConfigUtils(Context context, ConfigBiuder builder) {
-        configComponent = DaggerConfigComponent.builder()
-                .configModule(new ConfigModule(context, builder))
-                .build();
+    private ConfigUtils() {
+    }
+
+    public static synchronized ConfigUtils getInstance() {
+        if (null == instance) {
+            synchronized (ConfigUtils.class) {
+                if (null == instance) {
+                    instance = new ConfigUtils();
+                }
+            }
+        }
+
+        return instance;
+    }
+
+    private void setBuilder(ConfigBuilder builder) {
+        this.builder = builder;
     }
 
     public static Context getAppCtx() {
-        return configComponent.getContext();
+        return ConfigUtils.getInstance().builder.context;
     }
 
     public static String getFilePath() {
-        return configComponent.getConfigBiuder().filePath;
+        return ConfigUtils.getInstance().builder.filePath;
     }
 
     public static int getType() {
-        return configComponent.getConfigBiuder().type;
+        return ConfigUtils.getInstance().builder.type;
     }
 
     public static boolean isDEBUG() {
-        return configComponent.getConfigBiuder().DEBUG;
+        return ConfigUtils.getInstance().builder.DEBUG;
     }
 
     public static boolean isFontDefault() {
-        return configComponent.getConfigBiuder().isFontDefault;
+        return ConfigUtils.getInstance().builder.isFontDefault;
     }
 
     public static boolean isEnableCacheInterceptor() {
-        return configComponent.getConfigBiuder().isEnableCacheInterceptor;
+        return ConfigUtils.getInstance().builder.isEnableCacheInterceptor;
     }
 
     public static String getBaseUrl() {
-        return configComponent.getConfigBiuder().BASE_URL;
+        return ConfigUtils.getInstance().builder.BASE_URL;
     }
 
-    public static String getAddCookieKey(){return configComponent.getConfigBiuder().addCookieKey;}
-    public static String getCookieDataKey(){return configComponent.getConfigBiuder().cookieData;}
+    public static String getAddCookieKey(){return ConfigUtils.getInstance().builder.addCookieKey;}
+    public static String getCookieDataKey(){return ConfigUtils.getInstance().builder.cookieData;}
 
-    public static String getTokenKey(){return configComponent.getConfigBiuder().token;}
+    public static String getTokenKey(){return ConfigUtils.getInstance().builder.token;}
 
-    public static List<Interceptor> getInterceptor(){return configComponent.getConfigBiuder().interceptors;}
+    public static List<Interceptor> getInterceptor(){return ConfigUtils.getInstance().builder.interceptors;}
 
-    public static List<Interceptor> getNetInterceptor(){return configComponent.getConfigBiuder().netInterceptors;}
+    public static List<Interceptor> getNetInterceptor(){return ConfigUtils.getInstance().builder.netInterceptors;}
 
-    public static List<Converter.Factory> getConverterFactory(){return configComponent.getConfigBiuder().converterFactories;}
+    public static List<Converter.Factory> getConverterFactory(){return ConfigUtils.getInstance().builder.converterFactories;}
 
-    public static OnStatusAdapter getOnStatusAdapter(){return configComponent.getConfigBiuder().statusAdapter;}
+    public static OnStatusAdapter getOnStatusAdapter(){return ConfigUtils.getInstance().builder.statusAdapter;}
 
     public static String getCer() {
-        return configComponent.getConfigBiuder().cer;
+        return ConfigUtils.getInstance().builder.cer;
     }
 
     public static List<String> getCerFileName() {
-        return configComponent.getConfigBiuder().cerFileNames;
+        return ConfigUtils.getInstance().builder.cerFileNames;
     }
 
     public static int getTitleColor(){
-        return configComponent.getConfigBiuder().titleColor;
+        return ConfigUtils.getInstance().builder.titleColor;
     }
 
     public static int getBgColor(){
-        return configComponent.getConfigBiuder().bgColor;
+        return ConfigUtils.getInstance().builder.bgColor;
     }
 
     public static boolean isTitleCenter(){
-        return configComponent.getConfigBiuder().isTitleCenter;
+        return ConfigUtils.getInstance().builder.isTitleCenter;
     }
 
     public static int getBackImg(){
-        return configComponent.getConfigBiuder().backImg;
+        return ConfigUtils.getInstance().builder.backImg;
     }
 
 
-    public static class ConfigBiuder {
+    public static class ConfigBuilder {
         /** 是否  DEBUG 环境*/
         boolean DEBUG;
         /** 是否  跟随系统字体大小 默认跟随*/
@@ -139,95 +154,98 @@ public class ConfigUtils {
         /** 多状态布局 适配器 */
         OnStatusAdapter statusAdapter;
 
-        public ConfigBiuder setDEBUG(boolean DEBUG) {
+        Context context;
+
+        public ConfigBuilder setDEBUG(boolean DEBUG) {
             this.DEBUG = DEBUG;
             return this;
         }
 
-        public ConfigBiuder setFontDefault(boolean fontDefault) {
+        public ConfigBuilder setFontDefault(boolean fontDefault) {
             isFontDefault = fontDefault;
             return this;
         }
 
-        public ConfigBiuder setEnableCacheInterceptor(boolean enableCacheInterceptor) {
+        public ConfigBuilder setEnableCacheInterceptor(boolean enableCacheInterceptor) {
             isEnableCacheInterceptor = enableCacheInterceptor;
             return this;
         }
 
-        public ConfigBiuder setBASE_URL(String BASE_URL) {
+        public ConfigBuilder setBASE_URL(String BASE_URL) {
             this.BASE_URL = BASE_URL;
             return this;
         }
 
-        public ConfigBiuder addCerFileName(@NonNull String cerFileName) {
+        public ConfigBuilder addCerFileName(@NonNull String cerFileName) {
             this.cerFileNames.add(cerFileName);
             return this;
         }
 
-        public ConfigBiuder setCer(String cer) {
+        public ConfigBuilder setCer(String cer) {
             this.cer = cer;
             return this;
         }
 
-        public ConfigBiuder setBgColor(int bgColor) {
+        public ConfigBuilder setBgColor(int bgColor) {
             this.bgColor = bgColor;
             return this;
         }
 
-        public ConfigBiuder setTitleColor(int titleColor) {
+        public ConfigBuilder setTitleColor(int titleColor) {
             this.titleColor = titleColor;
             return this;
         }
 
-        public ConfigBiuder setTitleCenter(boolean titleCenter) {
+        public ConfigBuilder setTitleCenter(boolean titleCenter) {
             isTitleCenter = titleCenter;
             return this;
         }
 
-        public ConfigBiuder setBackImg(int backImg) {
+        public ConfigBuilder setBackImg(int backImg) {
             this.backImg = backImg;
             return this;
         }
 
-        public ConfigBiuder setBaseFile(String filePath, int type) {
+        public ConfigBuilder setBaseFile(String filePath, int type) {
             this.filePath = filePath == null ? "" : filePath;
             this.type = type;
             return this;
         }
 
-        public ConfigBiuder setCookie(String addCookieKey, String cookieData) {
+        public ConfigBuilder setCookie(String addCookieKey, String cookieData) {
             this.addCookieKey = TextUtils.isEmpty(addCookieKey) ? "" : addCookieKey;
             this.cookieData = TextUtils.isEmpty(cookieData) ? "" : cookieData;
             return this;
         }
 
-        public ConfigBiuder setToken(String token) {
+        public ConfigBuilder setToken(String token) {
             this.token = token == null ? "" : token;
             return this;
         }
 
-        public ConfigBiuder addInterceptor(Interceptor interceptor) {
+        public ConfigBuilder addInterceptor(Interceptor interceptor) {
             interceptors.add(interceptor);
             return this;
         }
 
-        public ConfigBiuder addNetInterceptor(Interceptor interceptor) {
+        public ConfigBuilder addNetInterceptor(Interceptor interceptor) {
             netInterceptors.add(interceptor);
             return this;
         }
 
-        public ConfigBiuder addConverterFactory(Converter.Factory converter) {
+        public ConfigBuilder addConverterFactory(Converter.Factory converter) {
             converterFactories.add(converter);
             return this;
         }
 
-        public ConfigBiuder setStatusAdapter(OnStatusAdapter statusAdapter) {
+        public ConfigBuilder setStatusAdapter(OnStatusAdapter statusAdapter) {
             this.statusAdapter = statusAdapter;
             return this;
         }
 
-        public ConfigUtils create(Context context){
-            return new ConfigUtils(context, this);
+        public void create(Context context){
+            this.context = context;
+            ConfigUtils.getInstance().setBuilder(this);
         }
     }
 }

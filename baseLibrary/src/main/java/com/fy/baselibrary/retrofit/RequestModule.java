@@ -2,7 +2,6 @@ package com.fy.baselibrary.retrofit;
 
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.retrofit.converter.file.FileConverterFactory;
-import com.fy.baselibrary.retrofit.converter.html.HtmlConverterFactory;
 import com.fy.baselibrary.retrofit.interceptor.FileDownInterceptor;
 import com.fy.baselibrary.retrofit.interceptor.RequestHeaderInterceptor;
 import com.fy.baselibrary.retrofit.interceptor.cache.CacheNetworkInterceptor;
@@ -20,12 +19,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Singleton;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
-import dagger.Module;
-import dagger.Provides;
 import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -40,19 +36,18 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * 提供依赖对象的实例
  * Created by fangs on 2017/5/15.
  */
-@Module
-public class RequestModule {
+//@Module
+public final class RequestModule {
 
-    @Singleton
-    @Provides
-    protected Retrofit getService(GsonConverterFactory gsonFactory, OkHttpClient.Builder okBuilder) {
-
+//    @Singleton
+//    @Provides
+    protected static Retrofit getService() {
         Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
                 .addConverterFactory(FileConverterFactory.create())
-                .addConverterFactory(gsonFactory)
+                .addConverterFactory(getGsonConvertFactory())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .baseUrl(ConfigUtils.getBaseUrl())
-                .client(okBuilder.build());
+                .client(getClient().build());
 
         List<Converter.Factory> converterFactors = ConfigUtils.getConverterFactory();
         for (Converter.Factory converter : converterFactors) {
@@ -62,9 +57,9 @@ public class RequestModule {
         return retrofitBuilder.build();
     }
 
-    @Singleton
-    @Provides
-    protected GsonConverterFactory getGsonConvertFactory() {
+//    @Singleton
+//    @Provides
+    protected static GsonConverterFactory getGsonConvertFactory() {
         return GsonConverterFactory.create(new GsonBuilder()
                 .setLenient()// json宽松
                 .enableComplexMapKeySerialization()//支持Map的key为复杂对象的形式
@@ -75,9 +70,9 @@ public class RequestModule {
 //        return DES3GsonConverterFactory.create();//使用 自定义 GsonConverter
     }
 
-    @Singleton
-    @Provides
-    protected OkHttpClient.Builder getClient(HttpLoggingInterceptor logInterceptor) {
+//    @Singleton
+//    @Provides
+    protected static OkHttpClient.Builder getClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .connectTimeout(Constant.DEFAULT_MILLISECONDS, TimeUnit.SECONDS)
                 .readTimeout(Constant.DEFAULT_MILLISECONDS, TimeUnit.SECONDS)
@@ -100,7 +95,7 @@ public class RequestModule {
         }
 
         if (ConfigUtils.isDEBUG()){//是否使用日志拦截器
-            builder.addInterceptor(logInterceptor);
+            builder.addInterceptor(getResponseIntercept());
         }
 
         List<Interceptor> interceptors = ConfigUtils.getInterceptor();
@@ -125,9 +120,9 @@ public class RequestModule {
         return builder;
     }
 
-    @Singleton
-    @Provides
-    protected HttpLoggingInterceptor getResponseIntercept() {
+//    @Singleton
+//    @Provides
+    protected static HttpLoggingInterceptor getResponseIntercept() {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
             public void log(String message) {
