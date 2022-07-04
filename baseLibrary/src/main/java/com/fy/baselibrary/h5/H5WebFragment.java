@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import androidx.annotation.Nullable;
 import androidx.databinding.ViewDataBinding;
 
 import com.fy.baselibrary.application.mvvm.BaseViewModel;
@@ -15,7 +16,6 @@ import com.fy.baselibrary.base.fragment.BaseFragment;
 import com.fy.baselibrary.utils.FileUtils;
 import com.fy.baselibrary.utils.net.NetUtils;
 
-import org.jetbrains.annotations.Nullable;
 
 /**
  * describe：简单封装 常用 webView 配置
