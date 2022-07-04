@@ -41,13 +41,13 @@ public final class RequestModule {
 
 //    @Singleton
 //    @Provides
-    protected static Retrofit getService() {
+    protected static Retrofit getService(OkHttpClient.Builder okBuilder) {
         Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
                 .addConverterFactory(FileConverterFactory.create())
                 .addConverterFactory(getGsonConvertFactory())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .baseUrl(ConfigUtils.getBaseUrl())
-                .client(getClient().build());
+                .client(okBuilder.build());
 
         List<Converter.Factory> converterFactors = ConfigUtils.getConverterFactory();
         for (Converter.Factory converter : converterFactors) {

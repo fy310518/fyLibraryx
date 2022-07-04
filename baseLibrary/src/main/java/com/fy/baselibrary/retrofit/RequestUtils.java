@@ -53,8 +53,8 @@ public final class RequestUtils {
     private RequestUtils() {
 //        DaggerRequestComponent.builder().build().inJect(this);
 
-        netRetrofit = RequestModule.getService();
         okBuilder = RequestModule.getClient();
+        netRetrofit = RequestModule.getService(okBuilder);
         mCompositeDisposable = new CompositeDisposable();
     }
 
