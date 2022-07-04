@@ -10,12 +10,17 @@ import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.utils.notify.L;
 import com.fy.baselibrary.utils.security.EncryptUtils;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -485,36 +490,56 @@ public class FileUtils {
      * @param source 输入文件
      * @param target 输出文件
      */
-    public static void copyFile(String source, String target) {
-        copyFile(new File(source), new File(target));
+    public static void copyFile(String source, String target) throws FileNotFoundException {
+        copyFile(new FileInputStream(new File(source)), new File(target), false);
     }
 
-    public static void copyFile(File source, File target) {
+    public static void copyFile(@NonNull InputStream is, @NonNull String target, boolean append) {
+        copyFile(is, new File(target), false);
+    }
+
+    /**
+     * 将输入流写入文件
+     * @param is
+     * @param target
+     * @param append   是否追加在文件末
+     */
+    public static void copyFile(@NonNull InputStream is, @NonNull File target, boolean append) {
         String targetPath = target.getPath();
         deleteFileSafely(target);//先删除已存在的
         target = fileIsExists(targetPath);//再创建一个文件；最后写入文件流
 
-        FileInputStream fileInputStream = null;
-        FileOutputStream fileOutputStream = null;
+        OutputStream os = null;
         try {
-            fileInputStream = new FileInputStream(source);
-            fileOutputStream = new FileOutputStream(target);
-            byte[] buffer = new byte[1024];
+            os = new BufferedOutputStream(new FileOutputStream(target, append));
+            byte data[] = new byte[1024];
             int len;
-            while ((len = fileInputStream.read(buffer)) > 0) {
-                fileOutputStream.write(buffer, 0, len);
+            while ((len = is.read(data, 0, 1024)) != -1) {
+                os.write(data, 0, len);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (fileInputStream != null) fileInputStream.close();
-                if (fileOutputStream != null) fileOutputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            closeIO(is, os);
+        }
+    }
+
+    /**
+     * 关闭IO
+     * @param closeables closeables
+     */
+    public static void closeIO(@NonNull Closeable... closeables) {
+        for (Closeable closeable : closeables) {
+            if (closeable != null) {
+                try {
+                    closeable.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
+
 
     /**
      * 获取SD卡的剩余容量 单位byte

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.telephony.TelephonyManager;
 
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 
@@ -18,6 +19,19 @@ public class NetUtils {
     private NetUtils() {
         /* cannot be instantiated */
         throw new UnsupportedOperationException("cannot be instantiated");
+    }
+
+    private static final int NETWORK_TYPE_GSM = 16;
+    private static final int NETWORK_TYPE_TD_SCDMA = 17;
+    private static final int NETWORK_TYPE_IWLAN = 18;
+
+    public interface NetworkType {
+        String NETWORK_WIFI = "wifi";
+        String NETWORK_4G = "4g";
+        String NETWORK_3G = "3g";
+        String NETWORK_2G = "2g";
+        String NETWORK_UNKNOWN = "unknown";
+        String NETWORK_NO = "no";
     }
 
     /**
@@ -38,26 +52,70 @@ public class NetUtils {
     }
 
     /**
-     * 获取当前的网络状态 -1：没有网络 1：WIFI网络 2：wap网络 3：net网络
-     * @param context
-     * @return
+     * 获取当前网络类型
+     * <p>需添加权限 {@code <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>}</p>
+     *
+     * @return 网络类型
+     * <ul>
+     * <li>{@link NetworkType#NETWORK_WIFI   } </li>
+     * <li>{@link NetworkType#NETWORK_4G     } </li>
+     * <li>{@link NetworkType#NETWORK_3G     } </li>
+     * <li>{@link NetworkType#NETWORK_2G     } </li>
+     * <li>{@link NetworkType#NETWORK_UNKNOWN} </li>
+     * <li>{@link NetworkType#NETWORK_NO     } </li>
+     * </ul>
      */
-    public static int getNetworkState(Context context) {
-        int netType = -1;
-        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo == null) {
-            return netType;
-        }
-        int nType = networkInfo.getType();
-        if (nType == ConnectivityManager.TYPE_MOBILE) {
-            if (networkInfo.getExtraInfo().toLowerCase().equals("cmnet")) {
-                netType = 3;
+    public static String getNetworkType() {
+        String netType = NetworkType.NETWORK_NO;
+        NetworkInfo info = getActiveNetworkInfo();
+        if (info != null && info.isAvailable()) {
+
+            if (info.getType() == ConnectivityManager.TYPE_WIFI) {
+                netType = NetworkType.NETWORK_WIFI;
+            } else if (info.getType() == ConnectivityManager.TYPE_MOBILE) {
+                switch (info.getSubtype()) {
+
+                    case NETWORK_TYPE_GSM:
+                    case TelephonyManager.NETWORK_TYPE_GPRS:
+                    case TelephonyManager.NETWORK_TYPE_CDMA:
+                    case TelephonyManager.NETWORK_TYPE_EDGE:
+                    case TelephonyManager.NETWORK_TYPE_1xRTT:
+                    case TelephonyManager.NETWORK_TYPE_IDEN:
+                        netType = NetworkType.NETWORK_2G;
+                        break;
+
+                    case NETWORK_TYPE_TD_SCDMA:
+                    case TelephonyManager.NETWORK_TYPE_EVDO_A:
+                    case TelephonyManager.NETWORK_TYPE_UMTS:
+                    case TelephonyManager.NETWORK_TYPE_EVDO_0:
+                    case TelephonyManager.NETWORK_TYPE_HSDPA:
+                    case TelephonyManager.NETWORK_TYPE_HSUPA:
+                    case TelephonyManager.NETWORK_TYPE_HSPA:
+                    case TelephonyManager.NETWORK_TYPE_EVDO_B:
+                    case TelephonyManager.NETWORK_TYPE_EHRPD:
+                    case TelephonyManager.NETWORK_TYPE_HSPAP:
+                        netType = NetworkType.NETWORK_3G;
+                        break;
+
+                    case NETWORK_TYPE_IWLAN:
+                    case TelephonyManager.NETWORK_TYPE_LTE:
+                        netType = NetworkType.NETWORK_4G;
+                        break;
+                    default:
+
+                        String subtypeName = info.getSubtypeName();
+                        if (subtypeName.equalsIgnoreCase("TD-SCDMA")
+                                || subtypeName.equalsIgnoreCase("WCDMA")
+                                || subtypeName.equalsIgnoreCase("CDMA2000")) {
+                            netType = NetworkType.NETWORK_3G;
+                        } else {
+                            netType = NetworkType.NETWORK_UNKNOWN;
+                        }
+                        break;
+                }
             } else {
-                netType = 2;
+                netType = NetworkType.NETWORK_UNKNOWN;
             }
-        } else if (nType == ConnectivityManager.TYPE_WIFI) {
-            netType = 1;
         }
         return netType;
     }
@@ -72,6 +130,16 @@ public class NetUtils {
             return false;
 
         return cm.getActiveNetworkInfo().getType() == ConnectivityManager.TYPE_WIFI;
+    }
+
+    /**
+     * 获取活动网络信息
+     * <p>需添加权限 {@code <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>}</p>
+     *
+     * @return NetworkInfo
+     */
+    private static NetworkInfo getActiveNetworkInfo() {
+        return ((ConnectivityManager) ConfigUtils.getAppCtx().getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
     }
 
     /**

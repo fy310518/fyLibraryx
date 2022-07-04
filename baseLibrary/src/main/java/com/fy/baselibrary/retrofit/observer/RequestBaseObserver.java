@@ -93,7 +93,7 @@ public abstract class RequestBaseObserver<V> implements Observer<V> {
         dismissProgress();
         onFail();
 
-        if (NetUtils.getNetworkState(ConfigUtils.getAppCtx()) < 0){
+        if (NetUtils.getNetworkType().equals(NetUtils.NetworkType.NETWORK_NO)){
             actionResponseError("网络不可用，请检查您的网络状态，稍后重试！");
             updateLayout(Constant.LAYOUT_NETWORK_ERROR_ID);
         } else if (!NetUtils.isConnected()) {

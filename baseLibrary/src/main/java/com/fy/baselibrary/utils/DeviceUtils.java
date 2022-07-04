@@ -8,11 +8,15 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.utils.notify.L;
+import com.fy.baselibrary.utils.security.EncryptUtils;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.util.UUID;
 
 /**
  * 获取设备信息 工具类
@@ -37,7 +41,7 @@ public class DeviceUtils {
      *
      * @return 手机型号
      */
-    public static String getSystemModel() {
+    public static String getModel() {
         String model = Build.MODEL;
 
         if (model != null) {
@@ -83,6 +87,30 @@ public class DeviceUtils {
     }
 
     /**
+     * 获取Sim卡运营商名称
+     * <p>中国移动、如中国联通、中国电信</p>
+     *
+     * @return 移动网络运营商名称
+     */
+    public static String getSimOperatorByMnc() {
+        TelephonyManager tm = (TelephonyManager) ConfigUtils.getAppCtx().getSystemService(Context.TELEPHONY_SERVICE);
+        String operator = tm != null ? tm.getSimOperator() : null;
+        if (operator == null) return "未知";
+        switch (operator) {
+            case "46000":
+            case "46002":
+            case "46007":
+                return "中国移动";
+            case "46001":
+                return "中国联通";
+            case "46003":
+                return "中国电信";
+            default:
+                return "未知";
+        }
+    }
+
+    /**
      * 获取当前APP所在手机的 IP 地址
      * @return ""
      */
@@ -114,6 +142,75 @@ public class DeviceUtils {
 
         return info != null ? info.getMacAddress() : "";
     }
+
+    /**
+     * 获取设备的UUID
+     * @return
+     */
+    public static String getUUID() {
+        Context context = ConfigUtils.getAppCtx();
+        UUID uuid = null;
+        // Android SOCKS_ACCOUNT_ID
+        final String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+        try {
+            if (!"9774d56d682e549c".equals(androidId)) {
+                uuid = UUID.nameUUIDFromBytes(androidId
+                        .getBytes("utf8"));
+            } else {
+                // IMEI
+                String deviceId = getIMEI(context);
+
+                if (TextUtils.isEmpty(deviceId)) {
+                    // MAC
+                    WifiManager wifi = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                    WifiInfo info = wifi.getConnectionInfo();
+                    deviceId = info.getMacAddress().replace(":", "");
+                }
+
+                uuid = deviceId != null ?
+                        UUID.nameUUIDFromBytes(deviceId.getBytes("utf8")) :
+                        UUID.randomUUID();
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        return uuid.toString();
+    }
+
+    /**
+     * 获取 DEVICE_ID, ANDROID_ID, MACId；三个值合并为一个字符串进行MD5作为设备唯一标识
+     * @return
+     */
+    public static String getUniqueDeviceID() {
+        Context context = ConfigUtils.getAppCtx();
+        String deviceId = getIMEI(context);
+        if (TextUtils.isEmpty(deviceId)) {
+            deviceId = "";
+        }
+
+        String androidid = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID)
+                .toLowerCase(); //统一使用小写，是否存在不同API获取的结果大小写不同的情况未知
+        if (TextUtils.isEmpty(androidid)) {
+            androidid = "";
+        } else {
+            if ("9774d56d682e549c".equals(androidid)) {
+                androidid = "";
+            }
+        }
+
+        String mac = getCurMac();
+
+        String uniqueID = deviceId + androidid + mac;
+        if (TextUtils.isEmpty(uniqueID)) {
+            //为空的话生成随机字符串
+            uniqueID = EncryptUtils.getMD5(UUID.randomUUID().toString());
+        } else {
+            uniqueID = EncryptUtils.getMD5(uniqueID);
+        }
+
+        return uniqueID;
+    }
+
 
     /**
      * 打印设备内存信息
