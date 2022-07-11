@@ -150,73 +150,60 @@ final public class SpfAgent {
     }
 
 
-
     /**
-     * 从 SharedPreferences 取String数据
-     * @param fileName 文件名称
+     * 从 SharedPreferences 取String 数据
      * @param key key
-     * @return   没有对应的key 默认返回的""
+     * @return   没有对应的key  默认返回 ""
      */
-    public String getString(String fileName, String key){
-        return getSpf(fileName).getString(key, "");
-    }
-
     public String getString(String key){
         return getSpf().getString(key, "");
     }
 
+    public String getString(String key, String defValue){
+        return getSpf().getString(key, defValue);
+    }
+
     /**
      * 从 SharedPreferences 取int数据
-     * @param fileName 文件名称
      * @param key key
      * @return   没有对应的key  默认返回 -1
      */
-    public int getInt(String fileName, String key){
-        return getSpf(fileName).getInt(key, -1);
-    }
-
     public int getInt(String key){
         return getSpf().getInt(key, -1);
+    }
+    public int getInt(String key, int defValue) {
+        return getSpf().getInt(key, defValue);
     }
 
     /**
      * 从 SharedPreferences 取 long 数据
-     * @param fileName 文件名称
      * @param key key
      * @return   没有对应的key  默认返回 0
      */
-    public long getLong(String fileName, String key){
-        return getSpf(fileName).getLong(key, 0);
-    }
-
     public long getLong(String key){
         return getSpf().getLong(key, 0);
+    }
+    public long getLong(String key, long defValue){
+        return getSpf().getLong(key, defValue);
     }
 
     /**
      * 从 SharedPreferences 获取 float 数据
-     * @param fileName 文件名称
      * @param key       key
      * @return          没有对应的key 默认返回 0f
      */
-    public float getFloat(String fileName, String key){
-        return getSpf(fileName).getFloat(key, 0f);
-    }
-
     public float getFloat(String key){
         return getSpf().getFloat(key, 0f);
+    }
+    public float getFloat(String key, float defValue){
+        return getSpf().getFloat(key, defValue);
     }
 
     /**
      * 从 SharedPreferences 获取 boolean数据
-     * @param fileName 文件名称
      * @param key   key
      * @return      没有对应的key 默认返回false
      */
-    public boolean getBoolean(String fileName, String key){
-        return getSpf(fileName).getBoolean(key, false);
-    }
-
     public boolean getBoolean(String key){
         return getSpf().getBoolean(key, false);
     }
@@ -224,6 +211,7 @@ final public class SpfAgent {
     public boolean getBoolean(String key, boolean def){
         return getSpf().getBoolean(key, def);
     }
+
 
     /**
      * 获取所有键值对
