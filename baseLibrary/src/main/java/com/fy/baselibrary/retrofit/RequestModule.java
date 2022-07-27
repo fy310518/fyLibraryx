@@ -94,10 +94,6 @@ public final class RequestModule {
                     .cache(new Cache(FileUtils.folderIsExists(FileUtils.cache, ConfigUtils.getType()), 1024 * 1024 * 30L));
         }
 
-        if (ConfigUtils.isDEBUG()){//是否使用日志拦截器
-            builder.addInterceptor(getResponseIntercept());
-        }
-
         List<Interceptor> interceptors = ConfigUtils.getInterceptor();
         for (Interceptor interceptor : interceptors) {
             builder.addInterceptor(interceptor);
@@ -106,6 +102,10 @@ public final class RequestModule {
         List<Interceptor> netInterceptors = ConfigUtils.getNetInterceptor();
         for (Interceptor interceptor : netInterceptors) {
             builder.addNetworkInterceptor(interceptor);
+        }
+
+        if (ConfigUtils.isDEBUG()){//是否使用日志拦截器
+            builder.addInterceptor(getResponseIntercept());
         }
 
         List<String> cerFileNames = ConfigUtils.getCerFileName();
