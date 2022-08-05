@@ -48,7 +48,7 @@ public class PhotoUtils {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         takePictureIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
+//        if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
             Uri uri;
 
             File takeImageFile = FileUtils.createFile("Pictures/" + ConfigUtils.getFilePath(), "IMG_", ".jpg", 2);
@@ -77,7 +77,7 @@ public class PhotoUtils {
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
             takePictureIntent.putExtra("newFilePath", takeImageFile.getPath());
             takePictureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        }
+//        }
 
         return takePictureIntent;
     }
