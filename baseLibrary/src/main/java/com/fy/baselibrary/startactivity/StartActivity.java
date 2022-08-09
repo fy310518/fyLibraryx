@@ -29,12 +29,7 @@ public abstract class StartActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         L.e("StartActivity", "onNewIntent- false");
-
-        boolean b = (Intent.FLAG_ACTIVITY_CLEAR_TOP & intent.getFlags()) != 0;
-        boolean c = intent.getBooleanExtra("exitApp", false);
-        if (b && c) {
-            exitApp();
-        }
+        exitOrIn(intent);
     }
 
     // 避免从桌面启动程序后，会重新实例化入口类的activity
