@@ -2,7 +2,9 @@ package com.fy.baselibrary.retrofit.observer;
 
 import android.widget.Toast;
 
-import com.fy.baselibrary.application.ioc.ConfigUtils;
+import androidx.annotation.StringRes;
+
+import com.fy.baselibrary.R;
 import com.fy.baselibrary.base.dialog.CommonDialog;
 import com.fy.baselibrary.retrofit.ServerException;
 import com.fy.baselibrary.statuslayout.OnSetStatusView;
@@ -94,29 +96,29 @@ public abstract class RequestBaseObserver<V> implements Observer<V> {
         onFail();
 
         if (NetUtils.getNetworkType().equals(NetUtils.NetworkType.NETWORK_NO)){
-            actionResponseError("网络不可用，请检查您的网络状态，稍后重试！");
+            actionResponseError(R.string.networkUnavailable);
             updateLayout(Constant.LAYOUT_NETWORK_ERROR_ID);
         } else if (!NetUtils.isConnected()) {
-            actionResponseError("网络未连接...");
+            actionResponseError(R.string.networkUnavailable);
             updateLayout(Constant.LAYOUT_NETWORK_ERROR_ID);
 
         } else if (e instanceof SocketTimeoutException) {
-            actionResponseError("服务器响应超时，请稍后再试...");
+            actionResponseError(R.string.responseTimeout);
             updateLayout(Constant.LAYOUT_NETWORK_ERROR_ID);
         } else if (e instanceof ConnectException) {
-            actionResponseError("服务器连接异常，请稍后重试...");
+            actionResponseError(R.string.connectionException);
             updateLayout(Constant.LAYOUT_NETWORK_ERROR_ID);
         } else if (e instanceof ConnectTimeoutException) {
-            actionResponseError("网络连接超时，请稍后重试！");
+            actionResponseError(R.string.netConnTimeout);
             updateLayout(Constant.LAYOUT_NETWORK_ERROR_ID);
         } else if (e instanceof UnknownHostException) {
-            actionResponseError("域名解析错误，请联系管理员解决后重试！");
+            actionResponseError(R.string.DomainError);
             updateLayout(Constant.LAYOUT_NETWORK_ERROR_ID);
         } else if (e instanceof SSLException) {
-            actionResponseError("证书验证失败！");
+            actionResponseError(R.string.certificateValidationFailed);
             updateLayout(Constant.LAYOUT_ERROR_ID);
         } else if (e instanceof ClassCastException) {
-            actionResponseError("类型转换错误！");
+            actionResponseError(R.string.typeConversionError);
             updateLayout(Constant.LAYOUT_ERROR_ID);
         } else if (e instanceof JsonParseException
                 || e instanceof JSONException
@@ -124,12 +126,12 @@ public abstract class RequestBaseObserver<V> implements Observer<V> {
                 || e instanceof JsonSerializer
                 || e instanceof NotSerializableException
                 || e instanceof ParseException) {
-            actionResponseError("数据解析错误！");
+            actionResponseError(R.string.dataParsingError);
         } else if (e instanceof ServerException){
             actionResponseError(e.getMessage());
             updateLayout(((ServerException) e).code);
         } else {
-            actionResponseError("请求失败，请稍后再试...");
+            actionResponseError(R.string.requestFail);
         }
     }
 
@@ -145,6 +147,9 @@ public abstract class RequestBaseObserver<V> implements Observer<V> {
      */
     protected void actionResponseError(String msg) {
         T.show(msg, Toast.LENGTH_LONG);
+    }
+    protected void actionResponseError(@StringRes int msg) {
+        T.show(msg);
     }
 
     /**

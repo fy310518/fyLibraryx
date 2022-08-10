@@ -4,25 +4,22 @@
     <string name="idle">下拉有惊喜!!!</string>
     <string name="ready">松开刷新!!!</string>
 
-    <!-- 适配字符串 后面有一个汉字宽度的空格 -->
-<!--    <string name="space">%1$s&#160;&#160;&#8201;</string>-->
-
     <string name="data_loading">正在加载&#8230;</string>
+
+<!--    <string name="photograph">拍照</string>-->
+<!--    <string name="album_selection">相册选择</string>-->
+
+<!--    <string name="save">保存</string>-->
+<!--    <string name="delete">删除</string>-->
+
+<!--    <string name="man">男</string>-->
+<!--    <string name="woman">女</string>-->
+
+<!--    <string name="success">成功</string>-->
+<!--    <string name="error">错误</string>-->
 
     <string name="back">返回</string>
     <string name="complete">完成</string>
-
-    <string name="save">保存</string>
-    <string name="delete">删除</string>
-
-    <string name="photograph">拍照</string>
-    <string name="album_selection">相册选择</string>
-
-    <string name="man">男</string>
-    <string name="woman">女</string>
-
-    <string name="success">成功</string>
-    <string name="error">错误</string>
 
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
@@ -30,16 +27,9 @@
     <string name="set">设置</string>
     <string name="search">搜索</string>
 
-    <string name="daytimeMode">日间模式</string>
-    <string name="nightMode">夜间模式</string>
-    <string name="theme_mode_">跟随系统设置</string>
-    <string name="theme_mode_0">一直开启</string>
-    <string name="theme_mode_1">一直关闭</string>
-    <string name="theme_mode_2">定时开启</string>
-
     <string name="permission">权限管理</string>
-    <string name="default_first_message">\u3000需要您授予以下权限才可以正常使用</string>
-    <string name="default_always_message">\u3000缺少以下权限，您需要设置对应的权限才可以正常使用</string>
+    <string name="default_first_message">需要您授予以下权限才可以正常使用</string>
+    <string name="default_always_message">缺少以下权限，您需要设置对应的权限才可以正常使用</string>
     <!--  允许 "APP" 启用 通讯录 权限吗？  -->
     <string name="default_special_permission">允许 "%1$s" 启用 %2$s 权限吗？</string>
     <!--  开启通讯录权限，使app 访问通讯录，从而更好为您服务  -->
@@ -53,6 +43,19 @@
     <string name="clickRetry">点击空白区域重试</string>
     <string name="internetError">网络错误</string>
     <string name="confirmInternetRetry">请确认网络连接后点击空白区域重试</string>
+
+    <string name="networkUnavailable">网络不可用，请检查您的网络状态</string>
+    <string name="netConnTimeout">网络连接超时</string>
+    <string name="responseTimeout">服务器响应超时</string>
+    <string name="connectionException">服务器连接异常</string>
+    <string name="DomainError">域名解析错误</string>
+    <string name="certificateValidationFailed">证书验证失败</string>
+    <string name="typeConversionError">类型转换错误</string>
+    <string name="dataParsingError">数据解析错误</string>
+    <string name="requestFail">请求失败，请稍后再试...</string>
+
+
+
 
     <!--  生成头像的 背景色数组  -->
     <string-array name="imgHeadBgColor">
