@@ -42,7 +42,7 @@ public abstract class RequestBaseObserver<V> implements Observer<V> {
     private CommonDialog dialog;
 
     /** 传递进来的 环境（AppCompatActivity or v4.app.Fragment） */
-    private Object context;
+    protected Object context;
 
     public RequestBaseObserver() {}
 
@@ -146,7 +146,7 @@ public abstract class RequestBaseObserver<V> implements Observer<V> {
      * @param msg 内容
      */
     protected void actionResponseError(String msg) {
-        T.show(msg, Toast.LENGTH_LONG);
+        T.show(msg);
     }
     protected void actionResponseError(@StringRes int msg) {
         T.show(msg);

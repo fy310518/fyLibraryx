@@ -18,6 +18,7 @@ import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import com.fy.baselibrary.R;
 import com.fy.baselibrary.utils.notify.T;
 
 import java.io.File;
@@ -285,7 +286,7 @@ public class JumpUtils {
             }
             act.startActivity(intent);
         } catch (Exception e) {
-            T.show("应用未安装", Toast.LENGTH_LONG);
+            T.show(R.string.appNoInstall);
             e.printStackTrace();
         }
     }
@@ -308,7 +309,7 @@ public class JumpUtils {
         try {
             act.startActivity(intent);
         } catch (Exception e) {
-            T.show("应用未安装", Toast.LENGTH_LONG);
+            T.show(R.string.appNoInstall);
             e.printStackTrace();
         }
     }
@@ -332,7 +333,7 @@ public class JumpUtils {
         try {
             act.startActivityForResult(intent, requestCode);
         } catch (Exception e) {
-            T.show("应用未安装", Toast.LENGTH_LONG);
+            T.show(R.string.appNoInstall);
             e.printStackTrace();
         }
     }
@@ -356,7 +357,7 @@ public class JumpUtils {
         try {
             fragment.startActivityForResult(intent, requestCode);
         } catch (Exception e) {
-            T.show("应用未安装", Toast.LENGTH_LONG);
+            T.show(R.string.appNoInstall);
             e.printStackTrace();
         }
     }
@@ -414,7 +415,7 @@ public class JumpUtils {
             intent.setData(data);
             ctx.startActivity(intent);
         } else {
-            T.show("请使用正确的号码！", Toast.LENGTH_LONG);
+            T.show(R.string.pleaseUseCorrectNumber);
         }
     }
 

@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
 import androidx.core.app.NotificationCompat;
 
+import com.fy.baselibrary.R;
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.utils.AppUtils;
 import com.fy.baselibrary.utils.ResUtils;
@@ -146,7 +147,7 @@ public class N {
             intent.putExtras(bundle);
             act.startActivity(intent);
 
-            T.show("请手动打开通知权限", Toast.LENGTH_LONG);
+            T.show(R.string.openNotificationPermission);
         }
     }
 

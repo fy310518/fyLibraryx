@@ -58,7 +58,7 @@ public class IProgressDialog {
         return dialog;
     }
 
-
-
-
+    public Object getObj() {
+        return obj;
+    }
 }

@@ -258,7 +258,7 @@ public abstract class CommonDialog extends DialogFragment {
     @Override
     public void show(FragmentManager manager, String tag) {
         try {
-            Class c=Class.forName("android.support.v4.app.DialogFragment");
+            Class c=Class.forName("androidx.fragment.app.DialogFragment");
             Constructor con = c.getConstructor();
             Object obj = con.newInstance();
             Field dismissed = c.getDeclaredField("mDismissed");

@@ -55,6 +55,16 @@
     <string name="requestFail">请求失败，请稍后再试...</string>
 
 
+    <string name="appNoInstall">应用未安装</string>
+    <string name="pleaseUseCorrectNumber">请使用正确的号码！</string>
+    <string name="systemNoTorch">系统不支持电筒</string>
+
+    <string name="systemNoNfc">设备不支持NFC功能!</string>
+    <string name="nfcTurnedOn">NFC功能已打开!</string>
+
+    <string name="openNotificationPermission">请手动打开通知权限</string>
+
+
 
 
     <!--  生成头像的 背景色数组  -->
