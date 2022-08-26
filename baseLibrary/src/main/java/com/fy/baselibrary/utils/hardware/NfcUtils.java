@@ -43,13 +43,13 @@ public class NfcUtils {
     public static NfcAdapter NfcCheck(Activity activity) {
         NfcAdapter mNfcAdapter = NfcAdapter.getDefaultAdapter(activity);
         if (mNfcAdapter == null) {
-            T.show(R.string.systemNoNfc);
+            T.show(R.string.systemNoNfc, -1);
             return null;
         } else {
             if (!mNfcAdapter.isEnabled()) {
                 goToSet(activity);
             } else {
-                T.show(R.string.nfcTurnedOn);
+                T.show(R.string.nfcTurnedOn, -1);
             }
         }
         return mNfcAdapter;

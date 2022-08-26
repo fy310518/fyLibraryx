@@ -146,10 +146,10 @@ public abstract class RequestBaseObserver<V> implements Observer<V> {
      * @param msg 内容
      */
     protected void actionResponseError(String msg) {
-        T.show(msg);
+        T.show(msg, -1);
     }
     protected void actionResponseError(@StringRes int msg) {
-        T.show(msg);
+        T.show(msg, -1);
     }
 
     /**

@@ -61,7 +61,7 @@ public class PermissionFilterAspect {
                 public void hasPermission(List<String> denied, boolean isAll) {
 
                     int permission = isAll ? R.string.permissionSuccess : R.string.permissionAllSuccess;
-                    T.show(permission);
+                    T.show(permission, -1);
 
                     if (isAll || needPermission.isRun()) {
                         try {
@@ -74,7 +74,7 @@ public class PermissionFilterAspect {
 
                 @Override
                 public void noPermission(List<String> denied) {
-                    T.show(R.string.permissionFail);
+                    T.show(R.string.permissionFail, -1);
                     if (needPermission.isRun()) {
                         try {
                             joinPoint.proceed();

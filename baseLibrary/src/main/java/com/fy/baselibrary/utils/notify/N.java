@@ -147,7 +147,7 @@ public class N {
             intent.putExtras(bundle);
             act.startActivity(intent);
 
-            T.show(R.string.openNotificationPermission);
+            T.show(R.string.openNotificationPermission, -1);
         }
     }
 

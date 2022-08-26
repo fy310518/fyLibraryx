@@ -286,7 +286,7 @@ public class JumpUtils {
             }
             act.startActivity(intent);
         } catch (Exception e) {
-            T.show(R.string.appNoInstall);
+            T.show(R.string.appNoInstall, -1);
             e.printStackTrace();
         }
     }
@@ -309,7 +309,7 @@ public class JumpUtils {
         try {
             act.startActivity(intent);
         } catch (Exception e) {
-            T.show(R.string.appNoInstall);
+            T.show(R.string.appNoInstall, -1);
             e.printStackTrace();
         }
     }
@@ -333,7 +333,7 @@ public class JumpUtils {
         try {
             act.startActivityForResult(intent, requestCode);
         } catch (Exception e) {
-            T.show(R.string.appNoInstall);
+            T.show(R.string.appNoInstall, -1);
             e.printStackTrace();
         }
     }
@@ -357,7 +357,7 @@ public class JumpUtils {
         try {
             fragment.startActivityForResult(intent, requestCode);
         } catch (Exception e) {
-            T.show(R.string.appNoInstall);
+            T.show(R.string.appNoInstall, -1);
             e.printStackTrace();
         }
     }
@@ -415,7 +415,7 @@ public class JumpUtils {
             intent.setData(data);
             ctx.startActivity(intent);
         } else {
-            T.show(R.string.pleaseUseCorrectNumber);
+            T.show(R.string.pleaseUseCorrectNumber, -1);
         }
     }
 
