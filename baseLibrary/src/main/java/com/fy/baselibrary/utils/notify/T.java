@@ -74,7 +74,12 @@ public class T {
         return this;
     }
 
-
+    public static void show(@StringRes int message) {
+        show(message, -1);
+    }
+    public static void show(CharSequence message) {
+        show(message, -1);
+    }
 
     /**
      * 长时间显示Toast
