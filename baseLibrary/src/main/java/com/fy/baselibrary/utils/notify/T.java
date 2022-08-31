@@ -24,7 +24,8 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
  * Created by fangs on 2017/3/1.
  */
 public class T {
-    public volatile static T instance;
+
+    private volatile static T instance;
     public static synchronized T getInstance() {
         if (null == instance) {
             synchronized (T.class) {
@@ -37,10 +38,6 @@ public class T {
         return instance;
     }
 
-    /**
-     * 是否显示 系统 toast
-     */
-    public static boolean isSystemShow = true;
     private static Toast toast;
     private View llToast;
     private TextView txtToast;
@@ -58,10 +55,8 @@ public class T {
 
         if (toast == null) {
             toast = new Toast(ConfigUtils.getAppCtx());
-            toast.setView(llToast);
         }
     }
-
 
 
     public T setGravity(int gravity) {
@@ -73,6 +68,7 @@ public class T {
         this.duration = duration;
         return this;
     }
+
 
     public static void show(@StringRes int message) {
         show(message, -1);
@@ -86,10 +82,10 @@ public class T {
      * @param message
      */
     public static void show(CharSequence message, @DrawableRes final int imageResource) {
-        if (isSystemShow){
+        if (instance == null){
             show(message.toString(), Toast.LENGTH_LONG);
         } else {
-            instance.showToastWithImg(message, imageResource);
+            getInstance().showToastWithImg(message, imageResource);
         }
     }
 
@@ -99,10 +95,10 @@ public class T {
      */
     public static void show(@StringRes int message, @DrawableRes final int imageResource) {
         String msgContent = ResUtils.getStr(message);
-        if (isSystemShow){
+        if (instance == null){
             show(msgContent, Toast.LENGTH_LONG);
         } else {
-            instance.showToastWithImg(msgContent, imageResource);
+            getInstance().showToastWithImg(msgContent, imageResource);
         }
     }
 
@@ -140,9 +136,10 @@ public class T {
 
 
         NotificationManagerCompat.from(ConfigUtils.getAppCtx()).areNotificationsEnabled();
-        toast.setGravity(gravity, 0, 100);
+        toast.setView(llToast);
+
+        toast.setGravity(gravity, 0, 200);
         toast.setDuration(duration);
-        toast.cancel();
         toast.show();
     }
 
