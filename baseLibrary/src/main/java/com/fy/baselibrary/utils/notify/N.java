@@ -212,7 +212,7 @@ public class N {
         NotifyChannel.setBypassDnd(true); //设置绕过免打扰模式
         NotifyChannel.setLockscreenVisibility(channel.lockScreenVisibility);//设置在锁屏界面上显示这条通知
 
-        NotifyChannel.setShowBadge(true);//桌面小红点
+        NotifyChannel.setShowBadge(channel.showBadge);//桌面小红点
         NotificationManager notificationManager = (NotificationManager) ConfigUtils.getAppCtx().getSystemService(Context.NOTIFICATION_SERVICE);
         assert notificationManager != null;
         notificationManager.createNotificationChannel(NotifyChannel);
@@ -321,6 +321,9 @@ public class N {
         /** 描述 */
         private String description;
 
+        /** 通知 是否显示桌面 小红点 */
+        private boolean showBadge;
+
         /** 重要性级别  【1 - 5】*/
         private int importance = NotificationManager.IMPORTANCE_DEFAULT;
         /** 锁定屏幕公开范围 */
@@ -352,6 +355,11 @@ public class N {
             this.channelIdKey = channelIdKey;
             this.channelName = channelName;
             this.description = description;
+            return this;
+        }
+
+        public Channel setShowBadge(boolean showBadge) {
+            this.showBadge = showBadge;
             return this;
         }
 
