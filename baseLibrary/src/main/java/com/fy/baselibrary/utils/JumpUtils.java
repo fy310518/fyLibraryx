@@ -252,6 +252,17 @@ public class JumpUtils {
     }
 
     /**
+     * 重启app
+     * @param act
+     * @param actClass  启动页activity
+     */
+    public static void restartApp(Activity act, Class actClass) {
+        Intent intent = new Intent(act, actClass);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        act.startActivity(intent);
+    }
+
+    /**
      * 启动指定 url 的 第三方应用 界面
      * @param act
      * @param url  如："gc://pull.gc.circle/conn/start?type=110"
