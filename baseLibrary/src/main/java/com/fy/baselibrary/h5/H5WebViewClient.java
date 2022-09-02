@@ -1,6 +1,8 @@
 package com.fy.baselibrary.h5;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -8,17 +10,21 @@ import android.net.http.SslError;
 import android.os.Build;
 import android.text.TextUtils;
 import android.webkit.SslErrorHandler;
+import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
+import com.fy.baselibrary.R;
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.statuslayout.OnSetStatusView;
 import com.fy.baselibrary.utils.Constant;
 import com.fy.baselibrary.utils.FileUtils;
+import com.fy.baselibrary.utils.ResUtils;
 import com.fy.baselibrary.utils.imgload.ImgLoadUtils;
 import com.fy.baselibrary.utils.notify.L;
 
@@ -72,7 +78,25 @@ public abstract class H5WebViewClient extends WebViewClient {
 
     @Override
     public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-        handler.proceed();
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+        builder.setMessage(ResUtils.getStr(R.string.sslAuthenticationFail));
+        builder.setPositiveButton(ResUtils.getStr(R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                handler.proceed(); // 接受https所有网站的证书
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNegativeButton(ResUtils.getStr(R.string.cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                handler.cancel();
+                dialog.dismiss();
+            }
+        });
+
+        builder.create().show();
     }
 
     //当加载的网页需要重定向的时候就会回调这个函数告知我们应用程序是否需要接管控制网页加载，如果应用程序接管，
@@ -126,10 +150,19 @@ public abstract class H5WebViewClient extends WebViewClient {
     @Override
     public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
         super.onReceivedError(view, errorCode, description, failingUrl);
-//        view.loadUrl(blank); // 避免出现默认的错误界面
-        // 断网或者网络连接超时
-        if (errorCode == ERROR_HOST_LOOKUP || errorCode == ERROR_CONNECT || errorCode == ERROR_TIMEOUT) {
-            setTips(Constant.LAYOUT_NETWORK_ERROR_ID);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            return;
+        }
+
+        setTips(Constant.LAYOUT_ERROR_ID);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+        super.onReceivedError(view, request, error);
+        if (request.isForMainFrame()){
+            setTips(Constant.LAYOUT_ERROR_ID);
         }
     }
 
@@ -140,8 +173,8 @@ public abstract class H5WebViewClient extends WebViewClient {
 //        view.loadUrl(blank);// 避免出现默认的错误界面
         int statusCode = errorResponse.getStatusCode();
         if (request.getUrl().toString().toLowerCase().endsWith("favicon.ico")) return;//说明网页没有配置 网页 图标
-        if (400 == statusCode || 401 == statusCode || 404 == statusCode || 500 == statusCode) {
-            setTips(Constant.LAYOUT_ERROR_ID);
+        if (404 == statusCode || 500 == statusCode) {
+            setTips(Constant.LAYOUT_NETWORK_ERROR_ID);
         }
     }
 

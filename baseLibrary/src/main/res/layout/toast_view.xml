@@ -20,6 +20,7 @@
         android:id="@+id/txtToast"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:ellipsize="end"
         android:maxLines="2"
         android:padding="@dimen/spacing_small"

@@ -24,7 +24,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     // 用来存储设备信息和异常信息
     private Map<String, String> infos = new HashMap<String, String>();
     // 用来显示Toast中的信息
-    private static String error = "服务器正在维护中，请稍后再试";
+    private static String error = "";
 
     /**
      * 保证只有一个 CrashHandler 实例

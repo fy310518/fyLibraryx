@@ -154,6 +154,7 @@ public abstract class H5WebFragment<VM extends BaseViewModel, VDB extends ViewDa
 
     /**
      * web页面 回退
+     * activity 的 onBackPressed() 调用此方法
      */
     public void onBackPressed() {
         if (webView != null && webView.canGoBack()) {

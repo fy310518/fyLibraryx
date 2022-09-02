@@ -50,6 +50,7 @@
     <string name="connectionException">服务器连接异常</string>
     <string name="DomainError">域名解析错误</string>
     <string name="certificateValidationFailed">证书验证失败</string>
+    <string name="sslAuthenticationFail">SSL认证失败. 是否继续访问？</string>
     <string name="typeConversionError">类型转换错误</string>
     <string name="dataParsingError">数据解析错误</string>
     <string name="requestFail">请求失败，请稍后再试...</string>
