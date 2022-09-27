@@ -39,20 +39,10 @@ public class T {
     }
 
     private static Toast toast;
-    private View llToast;
-    private TextView txtToast;
-    private ImageView imgToast;
-
     private int gravity = Gravity.BOTTOM;
     private int duration = Toast.LENGTH_LONG;
 
     private T() {
-        if (llToast == null) {
-            llToast = LayoutInflater.from(ConfigUtils.getAppCtx()).inflate(R.layout.toast_view, null);
-            txtToast = llToast.findViewById(R.id.txtToast);
-            imgToast = llToast.findViewById(R.id.imgToast);
-        }
-
         if (toast == null) {
             toast = new Toast(ConfigUtils.getAppCtx());
         }
@@ -125,6 +115,11 @@ public class T {
      */
     @SuppressLint("ResourceType")
     private void showToastWithImg(@NonNull final CharSequence message, @DrawableRes final int imageResource) {
+
+        View llToast = LayoutInflater.from(ConfigUtils.getAppCtx()).inflate(R.layout.toast_view, null);
+        TextView txtToast = llToast.findViewById(R.id.txtToast);
+        ImageView imgToast = llToast.findViewById(R.id.imgToast);
+
         if (imageResource > 0) {
             imgToast.setVisibility(View.VISIBLE);
             imgToast.setImageResource(imageResource);
@@ -135,6 +130,7 @@ public class T {
         txtToast.setText(message);
 
 
+        toast.cancel();
         NotificationManagerCompat.from(ConfigUtils.getAppCtx()).areNotificationsEnabled();
         toast.setView(llToast);
 

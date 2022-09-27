@@ -6,6 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 
@@ -106,7 +107,13 @@ public class GsonUtils {
      * @return
      */
     public static JsonObject jsonStrToJsonObj(String jsonStr){
-        JsonObject returnData = new JsonParser().parse(jsonStr).getAsJsonObject();
+        JsonObject returnData = null;
+        try {
+            returnData = new JsonParser().parse(jsonStr).getAsJsonObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+            returnData = new JsonObject();
+        }
 
         return returnData;
     }
@@ -120,9 +127,13 @@ public class GsonUtils {
     public static <T> List<T> jsonToList(String jsonStr, Class<T> clazz) {
         List<T> lst = new ArrayList<>();
 
-        JsonArray array = new JsonParser().parse(jsonStr).getAsJsonArray();
-        for (final JsonElement elem : array) {
-            lst.add(new Gson().fromJson(elem, clazz));
+        try {
+            JsonArray array = new JsonParser().parse(jsonStr).getAsJsonArray();
+            for (final JsonElement elem : array) {
+                lst.add(new Gson().fromJson(elem, clazz));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return lst;
