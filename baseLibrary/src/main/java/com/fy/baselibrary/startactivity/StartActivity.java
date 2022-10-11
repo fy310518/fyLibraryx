@@ -1,24 +1,16 @@
 package com.fy.baselibrary.startactivity;
 
 import android.content.Intent;
-import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.fy.baselibrary.utils.notify.L;
 
 /**
- * 不可见Activity 用于控制程序 退出(入口activity)
+ * description 启动页 父类 activity 用于控制程序 退出(入口activity)
  * Created by fangs on 2017/4/26.
  */
 public abstract class StartActivity extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        exitOrIn(getIntent());
-    }
 
     /**
      * 应用 自己业务处理 方法
@@ -40,7 +32,6 @@ public abstract class StartActivity extends AppCompatActivity {
                 String action = intent.getAction();
                 if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN.equals(action)) {
                     exitApp();
-                    return;
                 } else {
                     businessJump();
                 }
@@ -72,4 +63,5 @@ public abstract class StartActivity extends AppCompatActivity {
         finish();
         System.exit(0);
     }
+
 }

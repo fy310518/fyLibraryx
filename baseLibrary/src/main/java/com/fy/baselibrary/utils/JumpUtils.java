@@ -260,6 +260,7 @@ public class JumpUtils {
         Intent intent = new Intent(act, actClass);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         act.startActivity(intent);
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     /**
