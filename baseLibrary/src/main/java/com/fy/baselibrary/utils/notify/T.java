@@ -15,6 +15,7 @@ import androidx.core.app.NotificationManagerCompat;
 
 import com.fy.baselibrary.R;
 import com.fy.baselibrary.application.ioc.ConfigUtils;
+import com.fy.baselibrary.utils.DensityUtils;
 import com.fy.baselibrary.utils.ResUtils;
 
 /**
@@ -24,7 +25,8 @@ import com.fy.baselibrary.utils.ResUtils;
 public class T {
 
     private static Toast toast;
-    private int gravity = Gravity.BOTTOM;
+    public static boolean isShowSystem = false; // 是否显示系统 toast
+    public static int gravity = Gravity.BOTTOM;
 
     private T() {}
 
@@ -42,11 +44,7 @@ public class T {
      */
     @SuppressLint("ResourceType")
     public static void show(CharSequence message, @DrawableRes final int imageResource) {
-        if (null == toast) {
-            toast = Toast.makeText(ConfigUtils.getAppCtx(), "", Toast.LENGTH_LONG);
-        }
-
-        if (imageResource > 0) {
+        if (!isShowSystem) {
             showToastWithImg(message, imageResource);
         } else {
             show(message.toString());
@@ -59,12 +57,8 @@ public class T {
      */
     @SuppressLint("ResourceType")
     public static void show(@StringRes int message, @DrawableRes final int imageResource) {
-        if (null == toast) {
-            toast = Toast.makeText(ConfigUtils.getAppCtx(), "", Toast.LENGTH_LONG);
-        }
-
         String msgContent = ResUtils.getStr(message);
-        if (imageResource > 0){
+        if (!isShowSystem){
             showToastWithImg(msgContent, imageResource);
         } else {
             show(msgContent);
@@ -78,21 +72,30 @@ public class T {
      */
     @SuppressLint("ShowToast")
     private static void show(String message) {
-        NotificationManagerCompat.from(ConfigUtils.getAppCtx()).areNotificationsEnabled();
+        if (null != toast) toast.cancel();
+
+        toast = Toast.makeText(ConfigUtils.getAppCtx(), "", Toast.LENGTH_LONG);
         toast.setText(message);
 
-        toast.cancel();
+        NotificationManagerCompat.from(ConfigUtils.getAppCtx()).areNotificationsEnabled();
+
         toast.show();
     }
+
 
     /**
      * 显示 自定义 toast
      */
     @SuppressLint("ResourceType")
     private static void showToastWithImg(@NonNull final CharSequence message, @DrawableRes final int imageResource) {
+        if (null != toast) toast.cancel();
+        toast = Toast.makeText(ConfigUtils.getAppCtx(), "", Toast.LENGTH_LONG);
         View llToast = LayoutInflater.from(ConfigUtils.getAppCtx()).inflate(R.layout.toast_view, null);
+
         TextView txtToast = llToast.findViewById(R.id.txtToast);
         ImageView imgToast = llToast.findViewById(R.id.imgToast);
+
+        toast.setView(llToast);
 
         txtToast.setText(message);
         if (imageResource > 0) {
@@ -104,10 +107,9 @@ public class T {
 
 
         NotificationManagerCompat.from(ConfigUtils.getAppCtx()).areNotificationsEnabled();
-        toast.setView(llToast);
 
-//        toast.setGravity(gravity, 0, 200);
-        toast.cancel();
+        toast.setGravity(gravity, 0, DensityUtils.dp2px(150));
+        toast.setDuration(Toast.LENGTH_LONG);
         toast.show();
     }
 
