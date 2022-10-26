@@ -38,15 +38,15 @@ public class MultiLanguage {
 
     // 支持切换的语言 集合
     public static HashMap<String, Locale> mAllLanguages = new HashMap<String, Locale>() {{
-        put(English, Locale.US);
-        put(Japanese, Locale.JAPAN);
-        put(Korean, Locale.KOREA);
-        put(ChineseSimplified, Locale.CHINA);
-        put(ChineseTraditional, Locale.TAIWAN);
+//        put(English, Locale.US);
+//        put(Japanese, Locale.JAPAN);
+//        put(Korean, Locale.KOREA);
+//        put(ChineseSimplified, Locale.CHINA);
+//        put(ChineseTraditional, Locale.TAIWAN);
     }};
 
     /**
-     * 添加语言
+     * 初始化 先添加语言
      * @param languageKey  格式 参考 默认添加的
      * @param locale
      */
@@ -71,14 +71,16 @@ public class MultiLanguage {
      * @param newConfig
      */
     public static void saveSystemCurrentLanguage(Configuration newConfig, Application context) {
-        mAllLanguages.put(MultiLanguage.system, MultiLanguage.getSystemLocal(newConfig));
+        if(!mAllLanguages.get(MultiLanguage.system).equals(MultiLanguage.getSystemLocal(newConfig))){
+            mAllLanguages.put(MultiLanguage.system, MultiLanguage.getSystemLocal(newConfig));
 
-        updateResources(context, getSetLanguageLocale());
-        setApplicationLanguage(context);
+            updateResources(context, getSetLanguageLocale());
+            setApplicationLanguage(context);
 
-        // 标记 系统语言已经改变
-        SpfAgent.init().saveBoolean(MultiLanguage.SYS_localeStatus, true)
-                .commit(true);
+            // 标记 系统语言已经改变
+            SpfAgent.init().saveBoolean(MultiLanguage.SYS_localeStatus, true)
+                    .commit(true);
+        }
     }
 
     /**
