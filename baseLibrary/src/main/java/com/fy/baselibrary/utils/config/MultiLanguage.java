@@ -1,5 +1,6 @@
 package com.fy.baselibrary.utils.config;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -9,6 +10,7 @@ import android.os.LocaleList;
 import android.util.DisplayMetrics;
 
 import com.fy.baselibrary.R;
+import com.fy.baselibrary.utils.JumpUtils;
 import com.fy.baselibrary.utils.ResUtils;
 import com.fy.baselibrary.utils.cache.SpfAgent;
 
@@ -23,6 +25,9 @@ public class MultiLanguage {
 
     // 缓存 的 语言key；根据 这个的值 从 mAllLanguages 获取 Locale 对象
     public static final String SP_LANGUAGE = "SP_LANGUAGE";
+    // 系统 语言已改变 key
+    public static final String SYS_localeStatus = "SYS_localeStatus";
+
 
     public static final String system = "Language0";
     public static final String English = "Language1";
@@ -51,12 +56,12 @@ public class MultiLanguage {
 
     /**
      * 第一次进入app时保存系统选择的语言(为了选择跟随系统语言时使用，如果不保存，切换语言后就拿不到了）
-     * 1、Application 的 super.attachBaseContext 前 调用保存系统语言
+     * 1、Application 的 super.attachBaseContext(saveSystemCurrentLanguage(context)) 调用
      */
-    public static void saveSystemCurrentLanguage(Context context) {
+    public static Context saveSystemCurrentLanguage(Context context) {
         mAllLanguages.put(MultiLanguage.system, MultiLanguage.getSystemLocal());
 
-        updateResources(context, getSetLanguageLocale());
+        return updateResources(context, getSetLanguageLocale());
     }
 
     /**
@@ -70,8 +75,22 @@ public class MultiLanguage {
 
         updateResources(context, getSetLanguageLocale());
         setApplicationLanguage(context);
+
+        // 标记 系统语言已经改变
+        SpfAgent.init().saveBoolean(MultiLanguage.SYS_localeStatus, true)
+                .commit(true);
     }
 
+    /**
+     * 2.1 如果系统语言已经改变 重启app 【避免系统配置改变，app 界面文案错乱】
+     * ActivityLifecycleCallbacks  onActivityResumed 中调用
+     */
+    public static void restartApp(Activity act, Class actClass) {
+        if (SpfAgent.init().getBoolean(MultiLanguage.SYS_localeStatus)) { // 系统语言已经改变
+            SpfAgent.init().remove(MultiLanguage.SYS_localeStatus, true);
+            JumpUtils.restartApp(act, actClass);
+        }
+    }
 
     /**
      * 设置语言类型

@@ -1,6 +1,7 @@
 package com.fy.baselibrary.utils.notify;
 
 import android.annotation.SuppressLint;
+import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -17,6 +19,7 @@ import com.fy.baselibrary.R;
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.utils.DensityUtils;
 import com.fy.baselibrary.utils.ResUtils;
+import com.fy.baselibrary.utils.drawable.TintUtils;
 
 /**
  * Toast统一管理类 (解决多次弹出toast)
@@ -45,7 +48,7 @@ public class T {
     @SuppressLint("ResourceType")
     public static void show(CharSequence message, @DrawableRes final int imageResource) {
         if (!isShowSystem) {
-            showToastWithImg(message, imageResource);
+            Builder.create(message).setImageResource(imageResource).showToast();
         } else {
             show(message.toString());
         }
@@ -59,7 +62,7 @@ public class T {
     public static void show(@StringRes int message, @DrawableRes final int imageResource) {
         String msgContent = ResUtils.getStr(message);
         if (!isShowSystem){
-            showToastWithImg(msgContent, imageResource);
+            Builder.create(message).setImageResource(imageResource).showToast();
         } else {
             show(msgContent);
         }
@@ -87,7 +90,7 @@ public class T {
      * 显示 自定义 toast
      */
     @SuppressLint("ResourceType")
-    private static void showToastWithImg(@NonNull final CharSequence message, @DrawableRes final int imageResource) {
+    private static void showToastWithImg(Builder builder) {
         if (null != toast) toast.cancel();
         toast = Toast.makeText(ConfigUtils.getAppCtx(), "", Toast.LENGTH_LONG);
         View llToast = LayoutInflater.from(ConfigUtils.getAppCtx()).inflate(R.layout.toast_view, null);
@@ -95,22 +98,91 @@ public class T {
         TextView txtToast = llToast.findViewById(R.id.txtToast);
         ImageView imgToast = llToast.findViewById(R.id.imgToast);
 
-        toast.setView(llToast);
+        txtToast.setText(builder.message);
+        if (builder.txtColor > 0) {
+            txtToast.setTextColor(ResUtils.getColor(builder.txtColor));
+        }
 
-        txtToast.setText(message);
-        if (imageResource > 0) {
+        if (builder.imageResource > 0) {
             imgToast.setVisibility(View.VISIBLE);
-            imgToast.setImageResource(imageResource);
+            imgToast.setImageResource(builder.imageResource);
         } else {
             imgToast.setVisibility(View.GONE);
         }
 
+        if (builder.bgDrawable > 0){
+            Drawable bgDrawable;
+            if (builder.bgTintColor > 0){
+                bgDrawable = TintUtils.getTintDrawable(builder.bgDrawable, 0, builder.bgTintColor);
+            } else {
+                bgDrawable = TintUtils.getDrawable(builder.bgDrawable, 0);
+            }
+            llToast.setBackground(bgDrawable);
+        }
 
         NotificationManagerCompat.from(ConfigUtils.getAppCtx()).areNotificationsEnabled();
+
+        toast.setView(llToast);
 
         toast.setGravity(gravity, 0, DensityUtils.dp2px(150));
         toast.setDuration(Toast.LENGTH_LONG);
         toast.show();
+    }
+
+
+    public static class Builder {
+        private @DrawableRes int imageResource;
+        private @NonNull CharSequence message;
+        private @ColorRes int txtColor;
+
+        private @DrawableRes int bgDrawable;
+        private @ColorRes int bgTintColor;
+
+        private Builder(@NonNull CharSequence message) {
+            this.message = message;
+        }
+
+        public Builder setTxtColor(int txtColor) {
+            this.txtColor = txtColor;
+            return this;
+        }
+
+        public Builder setImageResource(int imageResource) {
+            this.imageResource = imageResource;
+            return this;
+        }
+
+        public Builder setBgColor(@DrawableRes int bgDrawable) {
+            this.bgDrawable = bgDrawable;
+            return this;
+        }
+
+        public Builder setBgColor(@DrawableRes int bgDrawable, @ColorRes int bgTintColor) {
+            this.bgDrawable = bgDrawable;
+            this.bgTintColor = bgTintColor;
+            return this;
+        }
+
+        /**
+         * 构建参数 对象
+         * @param message
+         * @return
+         */
+        public static Builder create(CharSequence message){
+            return new Builder(message);
+        }
+
+        public static Builder create(@StringRes int message){
+            return new Builder(ResUtils.getStr(message));
+        }
+
+        /**
+         * 显示 自定义 toast
+         */
+        public void showToast() {
+            T.showToastWithImg(this);
+        }
+
     }
 
 }
