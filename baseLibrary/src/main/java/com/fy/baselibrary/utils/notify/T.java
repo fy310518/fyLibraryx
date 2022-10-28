@@ -88,6 +88,7 @@ public class T {
         toast.show();
     }
 
+    // 取消 toast
     public static void cancel(){
         if (null != toast) toast.cancel();
     }
