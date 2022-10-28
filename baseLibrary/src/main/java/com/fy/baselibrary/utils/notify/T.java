@@ -2,6 +2,8 @@ package com.fy.baselibrary.utils.notify;
 
 import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,7 @@ import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.utils.DensityUtils;
 import com.fy.baselibrary.utils.ResUtils;
 import com.fy.baselibrary.utils.drawable.TintUtils;
+import com.fy.baselibrary.utils.notify.L;
 
 /**
  * Toast统一管理类 (解决多次弹出toast)
@@ -86,11 +89,26 @@ public class T {
     }
 
 
+
+    public volatile static T instance;
+
+    public static synchronized T getInstance() {
+        if (null == instance) {
+            synchronized (T.class) {
+                if (null == instance) {
+                    instance = new T();
+                }
+            }
+        }
+
+        return instance;
+    }
+
     /**
      * 显示 自定义 toast
      */
     @SuppressLint("ResourceType")
-    private static void showToastWithImg(Builder builder) {
+    private void showToastWithImg(Builder builder) {
         if (null != toast) toast.cancel();
         toast = Toast.makeText(ConfigUtils.getAppCtx(), "", Toast.LENGTH_LONG);
         View llToast = LayoutInflater.from(ConfigUtils.getAppCtx()).inflate(R.layout.toast_view, null);
@@ -125,8 +143,12 @@ public class T {
         toast.setView(llToast);
 
         toast.setGravity(gravity, 0, DensityUtils.dp2px(150));
-        toast.setDuration(Toast.LENGTH_LONG);
-        toast.show();
+        if (builder.duration > Toast.LENGTH_LONG){
+            showTime(builder.duration);
+        } else {
+            toast.setDuration(Toast.LENGTH_LONG);
+            toast.show();
+        }
     }
 
 
@@ -137,6 +159,8 @@ public class T {
 
         private @DrawableRes int bgDrawable;
         private @ColorRes int bgTintColor;
+
+        private int duration = 3500; //
 
         private Builder(@NonNull CharSequence message) {
             this.message = message;
@@ -154,6 +178,11 @@ public class T {
 
         public Builder setBgColor(@DrawableRes int bgDrawable) {
             this.bgDrawable = bgDrawable;
+            return this;
+        }
+
+        public Builder setDuration(int duration) {
+            this.duration = duration;
             return this;
         }
 
@@ -180,9 +209,71 @@ public class T {
          * 显示 自定义 toast
          */
         public void showToast() {
-            T.showToastWithImg(this);
+            T.getInstance().showToastWithImg(this);
+        }
+    }
+
+
+    private Handler mHandler = new Handler();
+    private static boolean canceled = true;
+
+    /**
+     * 隐藏toast
+     */
+    public void hide() {
+        if (toast != null) {
+            toast.cancel();
+        }
+        canceled = true;
+    }
+
+    /**
+     * 自定义时长、居中显示toast
+     * @param duration 单位毫秒ms
+     */
+    private void showTime(int duration) {
+        TimeCount timeCount = new TimeCount(duration, 1000);
+        if (canceled) {
+            timeCount.start();
+            canceled = false;
+            showUntilCancel();
+        }
+    }
+
+    private void showUntilCancel() {
+        if (canceled) { //如果已经取消显示，就直接return
+            return;
+        }
+        toast.show();
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showUntilCancel();
+            }
+        }, Toast.LENGTH_LONG);
+    }
+
+
+    /**
+     *  自定义计时器
+     */
+    private class TimeCount extends CountDownTimer {
+
+        public TimeCount(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval); //millisInFuture总计时长，countDownInterval时间间隔(一般为1000ms)
         }
 
+        @Override
+        public void onTick(long millisUntilFinished) {
+//            mTextView.setText(message + ": " + millisUntilFinished / 1000 + "s后消失");
+            L.e("CountDownTimer", "倒计时：" + millisUntilFinished / 1000);
+        }
+
+        @Override
+        public void onFinish() {
+            hide();
+        }
     }
+
 
 }
