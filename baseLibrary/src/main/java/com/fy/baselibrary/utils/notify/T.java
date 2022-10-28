@@ -2,6 +2,8 @@ package com.fy.baselibrary.utils.notify;
 
 import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,7 @@ import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.utils.DensityUtils;
 import com.fy.baselibrary.utils.ResUtils;
 import com.fy.baselibrary.utils.drawable.TintUtils;
+import com.fy.baselibrary.utils.notify.L;
 
 /**
  * Toast统一管理类 (解决多次弹出toast)
@@ -48,7 +51,7 @@ public class T {
     @SuppressLint("ResourceType")
     public static void show(CharSequence message, @DrawableRes final int imageResource) {
         if (!isShowSystem) {
-            Builder.create(message).setImageResource(imageResource).showToast();
+            Builder.create(message).setImageResource(imageResource).show();
         } else {
             show(message.toString());
         }
@@ -62,7 +65,7 @@ public class T {
     public static void show(@StringRes int message, @DrawableRes final int imageResource) {
         String msgContent = ResUtils.getStr(message);
         if (!isShowSystem){
-            Builder.create(message).setImageResource(imageResource).showToast();
+            Builder.create(message).setImageResource(imageResource).show();
         } else {
             show(msgContent);
         }
@@ -85,6 +88,9 @@ public class T {
         toast.show();
     }
 
+    public static void cancel(){
+        if (null != toast) toast.cancel();
+    }
 
     /**
      * 显示 自定义 toast
@@ -125,7 +131,7 @@ public class T {
         toast.setView(llToast);
 
         toast.setGravity(gravity, 0, DensityUtils.dp2px(150));
-        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setDuration(builder.duration);
         toast.show();
     }
 
@@ -137,6 +143,8 @@ public class T {
 
         private @DrawableRes int bgDrawable;
         private @ColorRes int bgTintColor;
+
+        private int duration = Toast.LENGTH_SHORT; //
 
         private Builder(@NonNull CharSequence message) {
             this.message = message;
@@ -154,6 +162,11 @@ public class T {
 
         public Builder setBgColor(@DrawableRes int bgDrawable) {
             this.bgDrawable = bgDrawable;
+            return this;
+        }
+
+        public Builder setDuration(int duration) {
+            this.duration = duration;
             return this;
         }
 
@@ -179,10 +192,10 @@ public class T {
         /**
          * 显示 自定义 toast
          */
-        public void showToast() {
+        public void show() {
             T.showToastWithImg(this);
         }
-
     }
+
 
 }
