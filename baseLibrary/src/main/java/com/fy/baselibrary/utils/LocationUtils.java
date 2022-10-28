@@ -40,8 +40,7 @@ public class LocationUtils {
 
                 Address address = getAddress(location.getLatitude(), location.getLongitude());
 
-                if (null != onLocationListener) {
-                    assert address != null;
+                if (null != onLocationListener && null != address) {
                     onLocationListener.getCountry(address.getLocale().getCountry());
                 }
             }
