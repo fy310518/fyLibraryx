@@ -145,7 +145,7 @@ public class T {
         private @DrawableRes int bgDrawable;
         private @ColorRes int bgTintColor;
 
-        private int duration = Toast.LENGTH_SHORT; //
+        private int duration = Toast.LENGTH_LONG; //
 
         private Builder(@NonNull CharSequence message) {
             this.message = message;
