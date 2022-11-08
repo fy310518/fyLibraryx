@@ -72,7 +72,7 @@ public final class RequestModule {
 
 //    @Singleton
 //    @Provides
-    protected static OkHttpClient.Builder getClient() {
+    public static OkHttpClient.Builder getClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .connectTimeout(Constant.DEFAULT_MILLISECONDS, TimeUnit.SECONDS)
                 .readTimeout(Constant.DEFAULT_MILLISECONDS, TimeUnit.SECONDS)
