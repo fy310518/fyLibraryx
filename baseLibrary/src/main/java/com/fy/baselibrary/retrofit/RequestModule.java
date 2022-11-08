@@ -72,7 +72,7 @@ public final class RequestModule {
 
 //    @Singleton
 //    @Provides
-    public static OkHttpClient.Builder getClient() {
+    protected static OkHttpClient.Builder getClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .connectTimeout(Constant.DEFAULT_MILLISECONDS, TimeUnit.SECONDS)
                 .readTimeout(Constant.DEFAULT_MILLISECONDS, TimeUnit.SECONDS)
@@ -122,7 +122,7 @@ public final class RequestModule {
 
 //    @Singleton
 //    @Provides
-    protected static HttpLoggingInterceptor getResponseIntercept() {
+    public static HttpLoggingInterceptor getResponseIntercept() {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
             public void log(String message) {
