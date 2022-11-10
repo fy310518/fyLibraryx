@@ -52,6 +52,10 @@ public class TintUtils {
     public static Drawable getTintColorDrawable(@DrawableRes int drawableId, int drawableType, @ColorInt int color) {
         Drawable drawable = getDrawable(drawableId, drawableType);
 
+        return setDrawableTintColor(drawable, color);
+    }
+
+    public static Drawable setDrawableTintColor(Drawable drawable, @ColorInt int color) {
         Drawable.ConstantState state = drawable.getConstantState();
         Drawable drawable1 = DrawableCompat
                 .wrap(state == null ? drawable : state.newDrawable())

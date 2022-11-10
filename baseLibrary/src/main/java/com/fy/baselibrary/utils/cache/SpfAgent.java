@@ -67,6 +67,7 @@ final public class SpfAgent {
      * @return SpfAgent
      */
     public SpfAgent saveString(String key, String value){
+        if (TextUtils.isEmpty(value)) value = "";
         this.editor.putString(key, value);
         return this;
     }
