@@ -287,6 +287,8 @@ public abstract class CommonDialog extends DialogFragment {
     public void dismiss(boolean isDismiss) {
         if (isDismiss) return;
 
+        if(null != getFragmentManager() && getFragmentManager().isDestroyed()) return;
+
         super.dismiss();
         if (null != dialogList)dialogList.onDismiss();
         L.v("dialog", "dismiss");
