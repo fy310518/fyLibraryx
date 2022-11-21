@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.fy.baselibrary.base.dialog.CommonDialog;
-import com.fy.baselibrary.widget.refresh.EasyPullLayout;
+import com.fy.baselibrary.retrofit.NetAnimListener;
 
 /**
  * 自定义对话框的dialog
@@ -20,7 +20,7 @@ public class IProgressDialog {
     protected Object obj;
     protected CommonDialog dialog;
 
-    protected EasyPullLayout epl;
+    protected NetAnimListener netAnimListener;
 
 
     /**
@@ -48,8 +48,8 @@ public class IProgressDialog {
     public void close() {
         if (null != dialog && null != mContext) {
             dialog.dismiss(false);
-        }  else if (null != epl && null != mContext){
-            epl.stop();
+        }  else if (null != netAnimListener && null != mContext){
+            netAnimListener.stop();
         }
     }
 

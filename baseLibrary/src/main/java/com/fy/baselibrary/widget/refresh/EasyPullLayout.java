@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 
 import com.fy.baselibrary.R;
+import com.fy.baselibrary.retrofit.NetAnimListener;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
@@ -24,7 +25,7 @@ import java.util.Map;
  * 支持上下左右 拉动刷新控件
  * http://blog.csdn.net/u012199331/article/details/77014607（核心来源）
  */
-public class EasyPullLayout extends ViewGroup {
+public class EasyPullLayout extends ViewGroup implements NetAnimListener {
 
     private int trigger_offset_left = 0;
     private int trigger_offset_top = 0;
@@ -565,6 +566,7 @@ public class EasyPullLayout extends ViewGroup {
     /**
      * stop triggering
      */
+    @Override
     public void stop() {
         switch (currentType) {
             case TYPE_EDGE_LEFT:
@@ -582,6 +584,7 @@ public class EasyPullLayout extends ViewGroup {
      * 定义 启动动画
      * 设置 currentType （横向拉伸 or 纵向拉伸）
      */
+    @Override
     public void start(int currentType){
         this.currentType = currentType;
         switch (currentType) {

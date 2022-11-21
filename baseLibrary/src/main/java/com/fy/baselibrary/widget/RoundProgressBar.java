@@ -48,14 +48,12 @@ public class RoundProgressBar extends View {
         for (int i = 0; i < count; i++) {
             int index = array.getIndex(i);
             if (index == R.styleable.RoundProgressBar_textSizeRound) {
-                /**
-                 * 默认设置为16sp，TypeValue也可以把sp转化为px
-                 */
+                // 默认设置为16sp，TypeValue也可以把sp转化为px
                 mTextSize = array.getDimensionPixelSize(index, (int) TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_SP, 16, getResources().getDisplayMetrics()));
-            } else if (index == R.styleable.RoundProgressBar_textColorRound) {/**
-             * 默认设置为黑色
-             */
+            } else if (index == R.styleable.RoundProgressBar_textColorRound) {
+
+                // 默认设置为黑色
                 mTextColor = array.getColor(index, Color.BLACK);
             } else if (index == R.styleable.RoundProgressBar_bgColorRound) {
                 mBgColor = array.getColor(index, Color.BLACK);
