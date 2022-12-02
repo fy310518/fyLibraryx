@@ -1,6 +1,7 @@
 package com.fy.baselibrary.utils;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -19,9 +20,12 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.fy.baselibrary.R;
+import com.fy.baselibrary.application.ioc.ConfigUtils;
+import com.fy.baselibrary.utils.media.UriUtils;
 import com.fy.baselibrary.utils.notify.T;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * 界面跳转工具类
@@ -375,17 +379,6 @@ public class JumpUtils {
     }
 
     /**
-     * 跳转到浏览器 打开指定 URL链接
-     * @param act
-     * @param url
-     */
-    public static void jump(Activity act, String url){
-        Uri uri = Uri.parse(url);
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        act.startActivity(intent);
-    }
-
-    /**
      * 跳转到 对应 action的设置界面
      * @param act
      * @param action 如：Settings.ACTION_APPLICATION_DETAILS_SETTINGS(权限设置)
@@ -413,6 +406,17 @@ public class JumpUtils {
     }
 
     /**
+     * 跳转到浏览器 打开指定 URL链接
+     * @param act
+     * @param url
+     */
+    public static void jump(Activity act, String url){
+        Uri uri = Uri.parse(url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        act.startActivity(intent);
+    }
+
+    /**
      * 拨打电话
      * 直接拨打电话 需要申请权限：<uses-permission android:name="android.permission.CALL_PHONE" />
      * 手动点击拨打 不需要权限
@@ -420,14 +424,57 @@ public class JumpUtils {
      * @param phoneNum 电话号码
      */
     public static void callPhone(Context ctx, String action, String phoneNum) {
-        if (Validator.isMobile(phoneNum) || Validator.isPhone(phoneNum)){
-            Intent intent = new Intent(action);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            Uri data = Uri.parse("tel:" + phoneNum);
-            intent.setData(data);
-            ctx.startActivity(intent);
+//        if (Validator.isMobile(phoneNum) || Validator.isPhone(phoneNum)){
+        Intent intent = new Intent(action);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Uri data = Uri.parse("tel:" + phoneNum);
+        intent.setData(data);
+        ctx.startActivity(intent);
+    }
+
+    /**
+     * 系统 分享
+     * @param act
+     * @param action		Intent.EXTRA_TEXT 文本分享；Intent.EXTRA_STREAM，单文件分享；Intent.ACTION_SEND_MULTIPLE多图分享
+     * @param title			分享 标题
+     * @param shareData		分享 内容
+     * @expand 注册广播 在 onReceive 回调中 通过 ComponentName extra = intent.getParcelableExtra(Intent.EXTRA_CHOSEN_COMPONENT);可以得知 用户分享到哪里去
+     */
+    public static void jumpShare(Activity act, String action, String title, String... shareData){
+        Intent intent = new Intent();
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+        if (action.equals(Intent.EXTRA_TEXT) && shareData.length > 0){
+            intent.putExtra(Intent.EXTRA_TEXT, shareData[0]);
+            intent.setAction(Intent.ACTION_SEND);
+            intent.setType("text/*");
+        } else if (action.equals(Intent.EXTRA_STREAM) && shareData.length > 0) {
+            if(!FileUtils.fileIsExist(shareData[0])) return;
+
+            intent.putExtra(Intent.EXTRA_STREAM, UriUtils.fileToUri(new File(shareData[0])));
+            intent.setAction(Intent.ACTION_SEND);
+            intent.setType("*/*");
+        } else if (action.equals(Intent.ACTION_SEND_MULTIPLE) && shareData.length > 0) {
+            ArrayList<Uri> imageUris = new ArrayList<>();
+            for(String data : shareData){
+                if(FileUtils.fileIsExist(data)){
+                    imageUris.add(UriUtils.fileToUri(new File(data)));
+                }
+            }
+
+            intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, imageUris);
+            intent.setAction(Intent.ACTION_SEND_MULTIPLE);
+            intent.setType("image/*");
         } else {
-            T.show(R.string.pleaseUseCorrectNumber, -1);
+            return;
+        }
+
+        PendingIntent pi = PendingIntent.getBroadcast(ConfigUtils.getAppCtx(), 10000, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            act.startActivity(Intent.createChooser(intent, title, pi.getIntentSender()));
+        } else {
+            act.startActivity(Intent.createChooser(intent, title));
         }
     }
 

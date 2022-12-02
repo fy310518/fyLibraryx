@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 
 import androidx.core.content.FileProvider;
 
+import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.utils.AppUtils;
 
 import java.io.File;
@@ -30,15 +31,14 @@ public class UriUtils {
 
     /**
      * 获取 指定 文件Uri
-     * @param context
      * @param file
      */
-    public static Uri fileToUri(Context context, File file){
+    public static Uri fileToUri(File file){
         Uri uri;
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             uri = Uri.fromFile(file);
         } else {
-            uri = FileProvider.getUriForFile(context, AppUtils.getFileProviderName(), file);
+            uri = FileProvider.getUriForFile(ConfigUtils.getAppCtx(), AppUtils.getFileProviderName(), file);
         }
 
         return uri;

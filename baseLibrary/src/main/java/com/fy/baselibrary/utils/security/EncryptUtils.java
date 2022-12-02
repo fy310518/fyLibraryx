@@ -8,8 +8,11 @@ import com.fy.baselibrary.utils.FileUtils;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,6 +80,86 @@ public class EncryptUtils {
 			dest = m.replaceAll("");
 		}
 		return dest;
+	}
+
+
+
+	private static final String AES_MODE = "AES/CBC/PKCS7Padding";
+	private static final String HASH_ALGORITHM = "SHA-256";
+	private static final String CHARSET = "UTF-8";
+	private static final byte[] ivBytes = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+	/**
+	 * AES/CBC/PKCS7Padding 模式 解密数据
+	 * @param password
+	 * @param base64EncodedCipherText
+	 * @return
+	 */
+	public static String decrypt(final String password, String base64EncodedCipherText) {
+		try {
+			final SecretKeySpec key = generateKey(password);
+
+			byte[] decodedCipherText = Base64.decode(base64EncodedCipherText, Base64.NO_WRAP);
+
+			byte[] decryptedBytes = decrypt(key, ivBytes, decodedCipherText);
+
+			String message = new String(decryptedBytes, CHARSET);
+
+			return message;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public static byte[] decrypt(final SecretKeySpec key, final byte[] iv, final byte[] decodedCipherText)
+			throws GeneralSecurityException {
+		final Cipher cipher = Cipher.getInstance(AES_MODE);
+		IvParameterSpec ivSpec = new IvParameterSpec(iv);
+		cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
+		byte[] decryptedBytes = cipher.doFinal(decodedCipherText);
+
+		return decryptedBytes;
+	}
+
+
+	/**
+	 * AES/CBC/PKCS7Padding 模式 加密数据
+	 * @param password
+	 * @param message
+	 * @return
+	 * @throws GeneralSecurityException
+	 */
+	public static String encrypt(String password, String message) {
+		try {
+			SecretKeySpec key = generateKey(password);
+			byte[] cipherText = encrypt(key, ivBytes, message.getBytes("UTF-8"));
+			String encoded = Base64.encodeToString(cipherText, 2);
+			return encoded;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public static byte[] encrypt(SecretKeySpec key, byte[] iv, byte[] message) throws GeneralSecurityException {
+		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
+		IvParameterSpec ivSpec = new IvParameterSpec(iv);
+		cipher.init(1, key, ivSpec);
+		byte[] cipherText = cipher.doFinal(message);
+		return cipherText;
+	}
+
+	private static SecretKeySpec generateKey(final String password) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+		final MessageDigest digest = MessageDigest.getInstance(HASH_ALGORITHM);
+		byte[] bytes = password.getBytes("UTF-8");
+		digest.update(bytes, 0, bytes.length);
+		byte[] key = digest.digest();
+
+		SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+		return secretKeySpec;
 	}
 
 	/**

@@ -5,10 +5,18 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.net.NetworkRequest;
 import android.telephony.TelephonyManager;
 
 import com.fy.baselibrary.application.ioc.ConfigUtils;
+import com.fy.baselibrary.utils.notify.L;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * 网络相关的工具类
@@ -140,6 +148,65 @@ public class NetUtils {
      */
     private static NetworkInfo getActiveNetworkInfo() {
         return ((ConnectivityManager) ConfigUtils.getAppCtx().getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+    }
+
+    // 强制使用蜂窝数据网络-移动数据
+    public static void forceSendRequestByMobileData() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) ConfigUtils.getAppCtx().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkRequest.Builder builder = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            builder = new NetworkRequest.Builder();
+            builder.addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+            // 强制使用蜂窝数据网络-移动数据
+            builder.addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR);
+            NetworkRequest build = builder.build();
+            connectivityManager.requestNetwork(build, new ConnectivityManager.NetworkCallback() {
+                @Override
+                public void onAvailable(Network network) {
+                    super.onAvailable(network);
+                    L.e("network", "" + network);
+                    String body = "json";
+//				String result = doJsonPost(network, "url", body);
+//				L.e("result", result);
+                }
+            });
+        }
+    }
+
+    /**
+     * wifi连接时判断当前WiFi是否可用
+     * @param ipString 例如：www.baidu.com
+     * @return success表示网络畅通，否则网络不通
+     */
+    public static boolean Ping(String ipString) {
+        boolean resault;
+        Process p;
+        try {
+            // ping -c 2 -w 100 中 ，-c 是指ping的次数 2是指ping 2次 ，-w 100
+            // 以秒为单位指定超时间隔，是指超时时间为100秒
+            p = Runtime.getRuntime().exec("ping -c 2 -w 2 " + ipString);
+            int status = p.waitFor();
+
+            InputStream input = p.getInputStream();
+            BufferedReader in = new BufferedReader(new InputStreamReader(input));
+            StringBuffer buffer = new StringBuffer();
+            String line = "";
+            while ((line = in.readLine()) != null) {
+                buffer.append(line);
+            }
+            System.out.println("Return ============" + buffer.toString());
+
+            if (status == 0) {
+                resault = true;
+            } else {
+                resault = false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resault = false;
+        }
+
+        return resault;
     }
 
     /**
