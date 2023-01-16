@@ -2,7 +2,9 @@ package com.fy.baselibrary.retrofit;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.fy.baselibrary.application.ioc.ConfigUtils;
@@ -179,7 +181,9 @@ public final class RequestUtils {
      * @param pDialog
      * @param loadListener
      */
-    public static void downLoadFile(final String url, @Nullable IProgressDialog pDialog, DownLoadListener<File> loadListener){
+    public static void downLoadFile(@NonNull final String url, @Nullable IProgressDialog pDialog, DownLoadListener<File> loadListener){
+        if(TextUtils.isEmpty(url)) return;
+
         final String filePath = FileUtils.folderIsExists(FileUtils.DOWN, ConfigUtils.getType()).getPath();
         final File tempFile = FileUtils.getTempFile(url, filePath);
 
