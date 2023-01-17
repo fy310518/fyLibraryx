@@ -184,13 +184,12 @@ public final class RequestUtils {
     public static void downLoadFile(@NonNull final String url, @Nullable IProgressDialog pDialog, DownLoadListener<File> loadListener){
         if(TextUtils.isEmpty(url)) return;
 
-        final String filePath = FileUtils.folderIsExists(FileUtils.DOWN, ConfigUtils.getType()).getPath();
-        final File tempFile = FileUtils.getTempFile(url, filePath);
-
         Observable.just(url)
                 .map(new Function<String, String>() {
                     @Override
-                    public String apply(String downUrl) throws Exception {
+                    public String apply(@NonNull String downUrl) throws Exception {
+                        final String filePath = FileUtils.folderIsExists(FileUtils.DOWN, ConfigUtils.getType()).getPath();
+                        final File tempFile = FileUtils.getTempFile(downUrl, filePath);
 
                         File targetFile = FileUtils.getFile(downUrl, filePath);
                         if (targetFile.exists()) {
@@ -211,6 +210,8 @@ public final class RequestUtils {
                             FileResponseBodyConverter.addListener(url, loadOnSubscribe);
                             return Observable.merge(Observable.create(loadOnSubscribe), RequestUtils.create(LoadService.class).download(downParam, url));
                         } else {
+                            final String filePath = FileUtils.folderIsExists(FileUtils.DOWN, ConfigUtils.getType()).getPath();
+                            final File tempFile = FileUtils.getTempFile(url, filePath);
                             SpfAgent.init("").saveInt(tempFile.getName() + Constant.FileDownStatus, 4).commit(false);
                             return Observable.just(new File(downParam));
                         }
