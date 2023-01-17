@@ -15,6 +15,7 @@ import android.provider.Settings;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
@@ -586,4 +587,28 @@ public class JumpUtils {
         boolean isWhite = pm.isIgnoringBatteryOptimizations(packageName);
         return isWhite;
     }
+
+
+    /**
+     * 适配 8.0以上系统  不再允许后台service直接通过startService方式去启动，
+     *
+     * manifest 添加 权限：<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+     * 在 service 的 onStartCommand 中调用 startForeground() 启动前台服务
+     * @param act
+     * @param actClass
+     * @param bundle
+     */
+    public static void jumpService(@NonNull Activity act, @NonNull Class actClass, @Nullable Bundle bundle) {
+        Intent intent = new Intent(act, actClass);
+        if (null != bundle) {
+            intent.putExtras(bundle);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            act.startForegroundService(intent);
+        } else {
+            act.startService(intent);
+        }
+    }
+
 }
