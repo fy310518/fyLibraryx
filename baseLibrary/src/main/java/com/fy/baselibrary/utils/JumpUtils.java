@@ -605,7 +605,9 @@ public class JumpUtils {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            act.startForegroundService(intent);
+            if(!AppUtils.isBackground(act)){
+                act.startForegroundService(intent);
+            }
         } else {
             act.startService(intent);
         }
