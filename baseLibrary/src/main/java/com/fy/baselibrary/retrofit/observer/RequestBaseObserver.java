@@ -1,7 +1,5 @@
 package com.fy.baselibrary.retrofit.observer;
 
-import android.widget.Toast;
-
 import androidx.annotation.StringRes;
 
 import com.fy.baselibrary.R;
