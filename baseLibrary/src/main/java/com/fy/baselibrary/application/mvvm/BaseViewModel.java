@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
+import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.utils.notify.L;
 
 /**
@@ -12,6 +13,10 @@ import com.fy.baselibrary.utils.notify.L;
  * Created by fangs on 2022/7/4 17:01.
  */
 public class BaseViewModel extends AndroidViewModel {
+
+    public BaseViewModel() {
+        super((Application) ConfigUtils.getInstance().getAppCtx());
+    }
 
     public BaseViewModel(@NonNull Application application) {
         super(application);
