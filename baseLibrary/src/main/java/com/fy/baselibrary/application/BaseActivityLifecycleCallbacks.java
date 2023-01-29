@@ -46,8 +46,7 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
 //        }
 
         ResUtils.setFontDefault(activity);
-
-        behaviorSubjectMap.put(activity.getTaskId() + "", BehaviorSubject.create());
+        behaviorSubjectMap.put(activity.getClass().getSimpleName() + "-" + activity.getTaskId(), BehaviorSubject.create());
 //        BaseActivityBean activityBean = new BaseActivityBean();
 
         ViewDataBinding vdb = null;
@@ -68,7 +67,7 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
 
                 //检查系统是否开启自动旋转
                 if (autoRotateOn) orientoinListener.enable();
-                orientationListenerMap.put(activity.getTaskId() + "", orientoinListener);
+                orientationListenerMap.put(activity.getClass().getSimpleName() + "-" + activity.getTaskId(), orientoinListener);
             }
 
             //设置 activity 多状态布局
@@ -116,16 +115,16 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
         L.e(TAG + activity.getClass().getSimpleName(), "--Destroy()");
 
         //销毁 屏幕旋转监听
-        BaseOrientoinListener orientationListener = orientationListenerMap.get(activity.getTaskId() + "");
+        BaseOrientoinListener orientationListener = orientationListenerMap.get(activity.getClass().getSimpleName() + "-" + activity.getTaskId());
         if (null != orientationListener){
             orientationListener.disable();
-            orientationListenerMap.remove(activity.getTaskId() + "");
+            orientationListenerMap.remove(activity.getClass().getSimpleName() + "-" + activity.getTaskId());
         }
 
-        BehaviorSubject<String> subject = behaviorSubjectMap.get(activity.getTaskId() + "");
+        BehaviorSubject<String> subject = behaviorSubjectMap.get(activity.getClass().getSimpleName() + "-" + activity.getTaskId());
         if (null != subject) {
             subject.onNext(Constant.DESTROY);
-            behaviorSubjectMap.remove(activity.getTaskId() + "");
+            behaviorSubjectMap.remove(activity.getClass().getSimpleName() + "-" + activity.getTaskId());
         }
     }
 
@@ -158,7 +157,7 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
     public static BehaviorSubject<String> getCurrentSubject(Context context) {
         if (context instanceof Activity) {
             Activity activity = (Activity) context;
-            BehaviorSubject<String> subject = behaviorSubjectMap.get(activity.getTaskId() + "");
+            BehaviorSubject<String> subject = behaviorSubjectMap.get(activity.getClass().getSimpleName() + "-" + activity.getTaskId());
 
             return subject;
         }
