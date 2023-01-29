@@ -86,8 +86,12 @@ public class FileUtils {
      * @return "SDCard/Android/data/你的应用的包名/files/ "
      */
     public static String getExternalFiles(){
-        return ConfigUtils.getAppCtx().getExternalFilesDir(null)
-                .getAbsolutePath() + File.separator;
+        File file = ConfigUtils.getAppCtx().getExternalFilesDir(null);
+        if (null == file){
+            return getFilesDir();
+        } else {
+            return file.getAbsolutePath() + File.separator;
+        }
     }
 
     /**
@@ -95,8 +99,12 @@ public class FileUtils {
      * @return "SDCard/Android/data/你的应用包名/cache/"
      */
     public static String getExternalCacheDir(){
-        return ConfigUtils.getAppCtx().getExternalCacheDir()
-                .getAbsolutePath() + File.separator;
+        File file = ConfigUtils.getAppCtx().getExternalCacheDir();
+        if (null == file){
+            return getCacheDir();
+        } else {
+            return file.getAbsolutePath() + File.separator;
+        }
     }
 
     /**
