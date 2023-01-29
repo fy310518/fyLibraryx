@@ -14,15 +14,15 @@ public class BaseActivityBean implements Serializable {
 
 
 
-    private BaseOrientoinListener orientoinListener;
-
-    public BaseOrientoinListener getOrientoinListener() {
-        return orientoinListener;
-    }
-
-    public void setOrientoinListener(BaseOrientoinListener orientoinListener) {
-        this.orientoinListener = orientoinListener;
-    }
+//    private BaseOrientoinListener orientoinListener;
+//
+//    public BaseOrientoinListener getOrientoinListener() {
+//        return orientoinListener;
+//    }
+//
+//    public void setOrientoinListener(BaseOrientoinListener orientoinListener) {
+//        this.orientoinListener = orientoinListener;
+//    }
 
 
     private StatusLayoutManager slManager;
@@ -36,13 +36,13 @@ public class BaseActivityBean implements Serializable {
     }
 
 
-    private BehaviorSubject<String> subject;
-
-    public BehaviorSubject<String> getSubject() {
-        return subject;
-    }
-
-    public void setSubject(BehaviorSubject<String> subject) {
-        this.subject = subject;
-    }
+//    private BehaviorSubject<String> subject;
+//
+//    public BehaviorSubject<String> getSubject() {
+//        return subject;
+//    }
+//
+//    public void setSubject(BehaviorSubject<String> subject) {
+//        this.subject = subject;
+//    }
 }

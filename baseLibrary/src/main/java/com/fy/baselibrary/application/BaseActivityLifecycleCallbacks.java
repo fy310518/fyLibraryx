@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.ArrayMap;
 
 import androidx.annotation.RequiresApi;
 import androidx.databinding.DataBindingUtil;
@@ -14,9 +15,6 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.fy.baselibrary.application.mvvm.BaseViewModel;
 import com.fy.baselibrary.application.mvvm.IBaseMVVM;
-import com.fy.baselibrary.statuslayout.LoadSirUtils;
-import com.fy.baselibrary.statuslayout.OnSetStatusView;
-import com.fy.baselibrary.statuslayout.StatusLayoutManager;
 import com.fy.baselibrary.utils.AnimUtils;
 import com.fy.baselibrary.utils.Constant;
 import com.fy.baselibrary.utils.ResUtils;
@@ -33,6 +31,9 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
     public static final String TAG = "lifeCycle --> ";
     public static int actNum;
 
+    private static ArrayMap<String, BehaviorSubject<String>> behaviorSubjectMap = new ArrayMap<>();
+    private ArrayMap<String, BaseOrientoinListener> orientationListenerMap = new ArrayMap<>();
+
     @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -46,8 +47,8 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
 
         ResUtils.setFontDefault(activity);
 
-        BaseActivityBean activityBean = new BaseActivityBean();
-        activityBean.setSubject(BehaviorSubject.create());
+        behaviorSubjectMap.put(activity.getTaskId() + "", BehaviorSubject.create());
+//        BaseActivityBean activityBean = new BaseActivityBean();
 
         ViewDataBinding vdb = null;
         BaseViewModel bvm = null;
@@ -67,18 +68,18 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
 
                 //检查系统是否开启自动旋转
                 if (autoRotateOn) orientoinListener.enable();
-                activityBean.setOrientoinListener(orientoinListener);
+                orientationListenerMap.put(activity.getTaskId() + "", orientoinListener);
             }
 
             //设置 activity 多状态布局
-            if (activity instanceof OnSetStatusView) {
-                StatusLayoutManager slManager = LoadSirUtils.initStatusLayout(activity);
-                activityBean.setSlManager(slManager);
-            }
+//            if (activity instanceof OnSetStatusView) {
+//                StatusLayoutManager slManager = LoadSirUtils.initStatusLayout(activity);
+//                activityBean.setSlManager(slManager);
+//            }
         }
 
 
-        activity.getIntent().putExtra("ActivityBean", activityBean);
+//        activity.getIntent().putExtra("ActivityBean", activityBean);
         //基础配置 执行完成，再执行 初始化 activity 操作
         if (null != act) act.initData(bvm, vdb, savedInstanceState);
     }
@@ -114,16 +115,17 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
     public void onActivityDestroyed(Activity activity) {
         L.e(TAG + activity.getClass().getSimpleName(), "--Destroy()");
 
-        BaseActivityBean activityBean = (BaseActivityBean) activity.getIntent()
-                .getSerializableExtra("ActivityBean");
+        //销毁 屏幕旋转监听
+        BaseOrientoinListener orientationListener = orientationListenerMap.get(activity.getTaskId() + "");
+        if (null != orientationListener){
+            orientationListener.disable();
+            orientationListenerMap.remove(activity.getTaskId() + "");
+        }
 
-        if (null != activityBean) {
-            //销毁 屏幕旋转监听
-            if (null != activityBean.getOrientoinListener())
-                activityBean.getOrientoinListener().disable();
-
-            if (null != activityBean.getSubject())
-                activityBean.getSubject().onNext(Constant.DESTROY);
+        BehaviorSubject<String> subject = behaviorSubjectMap.get(activity.getTaskId() + "");
+        if (null != subject) {
+            subject.onNext(Constant.DESTROY);
+            behaviorSubjectMap.remove(activity.getTaskId() + "");
         }
     }
 
@@ -149,6 +151,19 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
         }
 
         return isrun;
+    }
+
+
+
+    public static BehaviorSubject<String> getCurrentSubject(Context context) {
+        if (context instanceof Activity) {
+            Activity activity = (Activity) context;
+            BehaviorSubject<String> subject = behaviorSubjectMap.get(activity.getTaskId() + "");
+
+            return subject;
+        }
+
+        return null;
     }
 
 }

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.fy.baselibrary.application.BaseActivityBean;
+import com.fy.baselibrary.application.BaseActivityLifecycleCallbacks;
 import com.fy.baselibrary.utils.Constant;
 import com.fy.baselibrary.utils.GsonUtils;
 import com.fy.baselibrary.utils.notify.L;
@@ -155,48 +156,36 @@ public class RxHelper {
      * @return 包装过的被观察者
      */
     public static <T> ObservableTransformer<T, T> bindToLifecycle(@NonNull Context context) {
-        BehaviorSubject<String> subject = null;
-        if (context instanceof Activity) {
-            Activity activity = (Activity) context;
-            subject = ((BaseActivityBean) activity.getIntent()
-                    .getSerializableExtra("ActivityBean"))
-                    .getSubject();
-        }
+        BehaviorSubject<String> finalSubject = BaseActivityLifecycleCallbacks.getCurrentSubject(context);
 
-        BehaviorSubject<String> finalSubject = subject;
-        return new ObservableTransformer<T, T>() {
-            @Override
-            public ObservableSource<T> apply(Observable<T> upstream) {
-                return upstream.takeUntil(
-                        finalSubject.filter(new Predicate<String>() {
-                            @Override
-                            public boolean test(String anObject) throws Exception {
-                                L.e("net 请求or响应", anObject);
-                                return Constant.DESTROY.equals(anObject);
-                            }
-                        })
-                );
-            }
-        };
+        if (null == finalSubject){
+            return new ObservableTransformer<T, T>() {
+                @Override
+                public ObservableSource<T> apply(Observable<T> upstream) {
+                    return upstream.takeUntil(new Predicate<T>() {
+                        @Override
+                        public boolean test(@NonNull T t) throws Exception {
+                            return false;
+                        }
+                    });
+                }
+            };
+        } else {
+            return new ObservableTransformer<T, T>() {
+                @Override
+                public ObservableSource<T> apply(Observable<T> upstream) {
+                    return upstream.takeUntil(
+                            finalSubject.filter(new Predicate<String>() {
+                                @Override
+                                public boolean test(String anObject) throws Exception {
+                                    L.e("net 请求or响应", anObject);
+                                    return Constant.DESTROY.equals(anObject);
+                                }
+                            })
+                    );
+                }
+            };
+        }
     }
 
-    /**
-     //   ┏┓　　　┏┓
-     //┏┛┻━━━┛┻┓
-     //┃　　　　　　　┃
-     //┃　　　━　　　┃
-     //┃　┳┛　┗┳　┃
-     //┃　　　　　　　┃
-     //┃　　　┻　　　┃
-     //┗━┓　　　┏━┛
-     //   ┃　　　┃   阿弥陀佛
-     //   ┃　　　┃   神兽保佑
-     //   ┃      ┃  代码无BUG
-     //   ┃　　　┗━━━━━┓
-     //   ┃　　　　　　     ┣━┓
-     //   ┃　　　　　　    ┏━┛
-     //   ┗┓┓ ┏━┳┓┏┛
-     //     ┃┫┫　┃┫┫
-     //    ┗┻┛　┗┻┛
-     */
 }
