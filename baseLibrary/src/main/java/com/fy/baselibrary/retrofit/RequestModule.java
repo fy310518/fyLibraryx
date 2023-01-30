@@ -8,6 +8,7 @@ import com.fy.baselibrary.retrofit.interceptor.cache.CacheNetworkInterceptor;
 import com.fy.baselibrary.retrofit.interceptor.cache.IsUseCacheInterceptor;
 import com.fy.baselibrary.retrofit.interceptor.cookie.AddCookiesInterceptor;
 import com.fy.baselibrary.retrofit.interceptor.cookie.CacheCookiesInterceptor;
+import com.fy.baselibrary.retrofit.load.TimeoutInterceptor;
 import com.fy.baselibrary.utils.Constant;
 import com.fy.baselibrary.utils.FileUtils;
 import com.fy.baselibrary.utils.notify.L;
@@ -79,6 +80,7 @@ public final class RequestModule {
                 .writeTimeout(Constant.DEFAULT_MILLISECONDS, TimeUnit.SECONDS)
                 .retryOnConnectionFailure(true)//错误重连
                 .addInterceptor(new RequestHeaderInterceptor())
+                .addInterceptor(new TimeoutInterceptor())
                 .addInterceptor(new FileDownInterceptor())
                 .addInterceptor(new CacheCookiesInterceptor())
                 .addNetworkInterceptor(new AddCookiesInterceptor())

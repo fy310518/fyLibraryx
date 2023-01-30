@@ -15,6 +15,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.HeaderMap;
+import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
@@ -79,6 +80,7 @@ public interface LoadService {
      * params.put("token", "123");
      */
     @UpLoadFileType
+    @Headers({"CONNECT_TIMEOUT:100", "READ_TIMEOUT:100", "WRITE_TIMEOUT:100"})
     @POST()
     Observable<Object> uploadFile(@Url String apiUrl,
                                   @HeaderMap ArrayMap<String, Object> heads,
@@ -92,6 +94,7 @@ public interface LoadService {
      * @return
      */
     @Multipart
+    @Headers({"CONNECT_TIMEOUT:100", "READ_TIMEOUT:100", "WRITE_TIMEOUT:100"})
     @POST
     Observable<Object> uploadFile2(@Url String apiUrl,
                                    @Part MultipartBody.Part txtParams,
