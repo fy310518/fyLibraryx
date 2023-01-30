@@ -35,6 +35,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Function3;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -175,11 +176,11 @@ public final class RequestUtils {
      * 文件下载
      */
     public static void downLoadFile(@NonNull String url, DownLoadListener<File> loadListener){
-        downLoadFile(url, "", null, loadListener);
+        downLoadFile(url, "", "", null, loadListener);
     }
 
-    public static void downLoadFile(@NonNull String url, @NonNull String targetPath, DownLoadListener<File> loadListener){
-        downLoadFile(url, targetPath, null, loadListener);
+    public static void downLoadFile(@NonNull String url, @NonNull String targetPath, @NonNull String reNameFile, DownLoadListener<File> loadListener){
+        downLoadFile(url, targetPath, reNameFile, null, loadListener);
     }
 
     /**
@@ -189,16 +190,19 @@ public final class RequestUtils {
      * @param pDialog
      * @param loadListener
      */
-    public static void downLoadFile(@NonNull final String url, @NonNull String targetPath, @Nullable IProgressDialog pDialog, DownLoadListener<File> loadListener){
+    public static void downLoadFile(@NonNull final String url, @NonNull String targetPath, @NonNull String reNameFile, @Nullable IProgressDialog pDialog, DownLoadListener<File> loadListener){
         if(TextUtils.isEmpty(url)) return;
 
-        Observable.zip(Observable.just(url), Observable.just(targetPath), new BiFunction<String, String, ArrayMap<String, String>>(){
+        Observable.zip(Observable.just(url), Observable.just(targetPath), Observable.just(reNameFile), new Function3<String, String, String, ArrayMap<String, String>>(){
             @Override
-            public ArrayMap<String, String> apply(@NonNull String url, @NonNull String targetFilePath) throws Exception {
+            public ArrayMap<String, String> apply(@NonNull String url, @NonNull String targetFilePath, @NonNull String reNameFile) throws Exception {
                 ArrayMap<String, String> data = new ArrayMap<>();
                 data.put("requestUrl", url);
                 if(!TextUtils.isEmpty(targetFilePath)){
                     data.put("targetFilePath", targetFilePath);
+                }
+                if(!TextUtils.isEmpty(reNameFile)){
+                    data.put("reNameFile", reNameFile);
                 }
                 return data;
             }
@@ -210,6 +214,11 @@ public final class RequestUtils {
                     filePath = FileUtils.folderIsExists(arrayMap.get("targetFilePath")).getPath();
                 } else {
                     filePath = FileUtils.folderIsExists(FileUtils.DOWN, ConfigUtils.getType()).getPath();
+                }
+
+                String reNameFile = "";
+                if(arrayMap.containsKey("targetFilePath")){
+                    reNameFile = arrayMap.get("reNameFile");
                 }
 
                 String downUrl = arrayMap.get("requestUrl");
@@ -228,7 +237,7 @@ public final class RequestUtils {
                 if (downParam.startsWith("bytes=")) {
                     L.e("fy_file_FileDownInterceptor", "文件下载开始---" + Thread.currentThread().getName());
                     LoadOnSubscribe loadOnSubscribe = new LoadOnSubscribe();
-                    FileResponseBodyConverter.addListener(downUrl, filePath, loadOnSubscribe);
+                    FileResponseBodyConverter.addListener(downUrl, filePath, reNameFile, loadOnSubscribe);
 
                     return Observable.merge(Observable.create(loadOnSubscribe), RequestUtils.create(LoadService.class).download(downParam, url));
                 } else {

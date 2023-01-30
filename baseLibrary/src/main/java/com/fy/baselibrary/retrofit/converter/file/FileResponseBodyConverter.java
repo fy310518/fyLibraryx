@@ -30,11 +30,17 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
     private static final long CALL_BACK_LENGTH = 1024 * 1024;
     public static final ArrayMap<String, LoadOnSubscribe> LISTENER_MAP = new ArrayMap<>();
     public static final ArrayMap<String, String> targetPath_MAP = new ArrayMap<>();
+    public static final ArrayMap<String, String> reName_MAP = new ArrayMap<>();
 
     //添加 进度发射器
-    public static void addListener(String url, String targetFilePath, LoadOnSubscribe loadOnSubscribe) {
+    public static void addListener(String url, String targetFilePath, String reName, LoadOnSubscribe loadOnSubscribe) {
         LISTENER_MAP.put(url, loadOnSubscribe);
-        targetPath_MAP.put(url, targetFilePath);
+        if (!TextUtils.isEmpty(targetFilePath)){
+            targetPath_MAP.put(url, targetFilePath);
+        }
+        if (!TextUtils.isEmpty(reName)){
+            reName_MAP.put(url, reName);
+        }
     }
 
     //取消注册下载监听
@@ -42,6 +48,7 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
         if (!TextUtils.isEmpty(url)) {
             LISTENER_MAP.remove(url);
             targetPath_MAP.remove(url);
+            reName_MAP.remove(url);
         }
     }
 
@@ -88,9 +95,20 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
             file = writeFileToDisk(loadOnSubscribe, responseBody, tempFile.getAbsolutePath());
 
             int FileDownStatus = SpfAgent.init("").getInt(file.getName() + Constant.FileDownStatus);
+
+            boolean renameSuccess;
             if (FileDownStatus == 4) {
-                boolean renameSuccess = FileUtils.reNameFile(url, tempFile.getPath());
-                return FileUtils.getFile(url, filePath);
+                if(reName_MAP.containsKey(url)){
+                    renameSuccess = tempFile.renameTo(new File(tempFile.getParent(), reName_MAP.get(url)));
+                } else {
+                    renameSuccess = FileUtils.reNameFile(url, tempFile.getPath());
+                }
+
+                if(renameSuccess){
+                    return FileUtils.getFile(url, filePath);
+                } else {
+                    return tempFile;
+                }
             } else if (FileDownStatus == 3) {//取消下载则 删除下载内容
                 FileUtils.deleteFileSafely(tempFile);
             }
