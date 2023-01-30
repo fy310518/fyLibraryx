@@ -3,6 +3,7 @@ package com.fy.baselibrary.retrofit;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.ArrayMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,9 +28,11 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -171,67 +174,83 @@ public final class RequestUtils {
     /**
      * 文件下载
      */
-    public static void downLoadFile(String url, DownLoadListener<File> loadListener){
-        downLoadFile(url, null, loadListener);
+    public static void downLoadFile(@NonNull String url, DownLoadListener<File> loadListener){
+        downLoadFile(url, "", null, loadListener);
+    }
+
+    public static void downLoadFile(@NonNull String url, @NonNull String targetPath, DownLoadListener<File> loadListener){
+        downLoadFile(url, targetPath, null, loadListener);
     }
 
     /**
      * 文件下载
      * @param url
+     * @param targetPath  下载文件到 此目录
      * @param pDialog
      * @param loadListener
      */
-    public static void downLoadFile(@NonNull final String url, @Nullable IProgressDialog pDialog, DownLoadListener<File> loadListener){
+    public static void downLoadFile(@NonNull final String url, @NonNull String targetPath, @Nullable IProgressDialog pDialog, DownLoadListener<File> loadListener){
         if(TextUtils.isEmpty(url)) return;
 
-        Observable.just(url)
-                .map(new Function<String, String>() {
-                    @Override
-                    public String apply(@NonNull String downUrl) throws Exception {
-                        final String filePath = FileUtils.folderIsExists(FileUtils.DOWN, ConfigUtils.getType()).getPath();
-                        final File tempFile = FileUtils.getTempFile(downUrl, filePath);
+        Observable.zip(Observable.just(url), Observable.just(targetPath), new BiFunction<String, String, ArrayMap<String, String>>(){
+            @Override
+            public ArrayMap<String, String> apply(@NonNull String url, @NonNull String targetFilePath) throws Exception {
+                ArrayMap<String, String> data = new ArrayMap<>();
+                data.put("requestUrl", url);
+                if(!TextUtils.isEmpty(targetFilePath)){
+                    data.put("targetFilePath", targetFilePath);
+                }
+                return data;
+            }
+        }).flatMap(new Function<ArrayMap<String, String>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(@NonNull ArrayMap<String, String> arrayMap) throws Exception {
+                String filePath;
+                if(arrayMap.containsKey("targetFilePath")){
+                    filePath = FileUtils.folderIsExists(arrayMap.get("targetFilePath")).getPath();
+                } else {
+                    filePath = FileUtils.folderIsExists(FileUtils.DOWN, ConfigUtils.getType()).getPath();
+                }
 
-                        File targetFile = FileUtils.getFile(downUrl, filePath);
-                        if (targetFile.exists()) {
-                            SpfAgent.init("").saveInt(tempFile.getName() + Constant.FileDownStatus, 4).commit(false);//下载完成
-                            return targetFile.getPath();
-                        } else {
-                            return "bytes=" + tempFile.length() + "-";
-                        }
-                    }
-                })
-                .flatMap(new Function<String, ObservableSource<Object>>() {
-                    @Override
-                    public ObservableSource<Object> apply(String downParam) throws Exception {
-                        L.e("fy_file_FileDownInterceptor", "文件下载开始---" + Thread.currentThread().getName());
-                        if (downParam.startsWith("bytes=")) {
-//                            return RequestUtils.create(LoadService.class).download(downParam, url);
-                            LoadOnSubscribe loadOnSubscribe = new LoadOnSubscribe();
-                            FileResponseBodyConverter.addListener(url, loadOnSubscribe);
-                            return Observable.merge(Observable.create(loadOnSubscribe), RequestUtils.create(LoadService.class).download(downParam, url));
-                        } else {
-                            final String filePath = FileUtils.folderIsExists(FileUtils.DOWN, ConfigUtils.getType()).getPath();
-                            final File tempFile = FileUtils.getTempFile(url, filePath);
-                            SpfAgent.init("").saveInt(tempFile.getName() + Constant.FileDownStatus, 4).commit(false);
-                            return Observable.just(new File(downParam));
-                        }
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .subscribe(new FileCallBack(url, pDialog) {
-                    @Override
-                    protected void downSuccess(File file) {
-                        loadListener.onProgress("100");
-                        runUiThread(() -> {
-                            loadListener.onSuccess((File) file);//已在主线程中，可以更新UI
-                        });
-                    }
+                String downUrl = arrayMap.get("requestUrl");
+                final File tempFile = FileUtils.getTempFile(downUrl, filePath);
 
-                    @Override
-                    protected void downProgress(String percent) {
-                        loadListener.onProgress(percent);
-                    }
+                File targetFile = FileUtils.getFile(downUrl, filePath);
+
+                String downParam;
+                if (targetFile.exists()) {
+                    SpfAgent.init("").saveInt(tempFile.getName() + Constant.FileDownStatus, 4).commit(false);//下载完成
+                    downParam = targetFile.getPath();
+                } else {
+                    downParam = "bytes=" + tempFile.length() + "-";
+                }
+
+                if (downParam.startsWith("bytes=")) {
+                    L.e("fy_file_FileDownInterceptor", "文件下载开始---" + Thread.currentThread().getName());
+                    LoadOnSubscribe loadOnSubscribe = new LoadOnSubscribe();
+                    FileResponseBodyConverter.addListener(downUrl, filePath, loadOnSubscribe);
+
+                    return Observable.merge(Observable.create(loadOnSubscribe), RequestUtils.create(LoadService.class).download(downParam, url));
+                } else {
+                    SpfAgent.init("").saveInt(tempFile.getName() + Constant.FileDownStatus, 4).commit(false);
+                    return Observable.just(new File(downParam));
+                }
+            }
+        }).subscribeOn(Schedulers.io())
+        .subscribe(new FileCallBack(url, pDialog) {
+            @Override
+            protected void downSuccess(File file) {
+                loadListener.onProgress("100");
+                runUiThread(() -> {
+                    loadListener.onSuccess((File) file);//已在主线程中，可以更新UI
                 });
+            }
+
+            @Override
+            protected void downProgress(String percent) {
+                loadListener.onProgress(percent);
+            }
+        });
     }
 
     public interface OnRunUiThreadListener{

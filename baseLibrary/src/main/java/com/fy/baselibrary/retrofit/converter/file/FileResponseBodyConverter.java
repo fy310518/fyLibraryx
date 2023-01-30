@@ -2,6 +2,7 @@ package com.fy.baselibrary.retrofit.converter.file;
 
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
+import android.util.ArrayMap;
 
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.retrofit.load.LoadOnSubscribe;
@@ -16,8 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
@@ -29,16 +28,21 @@ import retrofit2.Converter;
 public class FileResponseBodyConverter implements Converter<ResponseBody, File> {
 
     private static final long CALL_BACK_LENGTH = 1024 * 1024;
-    public static final Map<String, LoadOnSubscribe> LISTENER_MAP = new HashMap<>();
+    public static final ArrayMap<String, LoadOnSubscribe> LISTENER_MAP = new ArrayMap<>();
+    public static final ArrayMap<String, String> targetPath_MAP = new ArrayMap<>();
 
     //添加 进度发射器
-    public static void addListener(String url, LoadOnSubscribe loadOnSubscribe) {
+    public static void addListener(String url, String targetFilePath, LoadOnSubscribe loadOnSubscribe) {
         LISTENER_MAP.put(url, loadOnSubscribe);
+        targetPath_MAP.put(url, targetFilePath);
     }
 
     //取消注册下载监听
     public static void removeListener(String url) {
-        if (!TextUtils.isEmpty(url)) LISTENER_MAP.remove(url);
+        if (!TextUtils.isEmpty(url)) {
+            LISTENER_MAP.remove(url);
+            targetPath_MAP.remove(url);
+        }
     }
 
     @Override
@@ -58,17 +62,22 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
             e.printStackTrace();
         }
 
-
-        final String filePath = FileUtils.folderIsExists(FileUtils.DOWN, ConfigUtils.getType()).getPath();
+        String filePath = "";
+        if(targetPath_MAP.containsKey(requestUrl)){
+            filePath = FileUtils.folderIsExists(targetPath_MAP.get(requestUrl)).getPath();
+        } else {
+            filePath = FileUtils.folderIsExists(FileUtils.DOWN, ConfigUtils.getType()).getPath();
+        }
         return saveFile(LISTENER_MAP.get(requestUrl), responseBody, requestUrl, filePath);
     }
 
 
     /**
      * 根据ResponseBody 写文件
+     *
      * @param responseBody
      * @param url
-     * @param filePath   文件保存路径
+     * @param filePath     文件保存路径
      * @return
      */
     public static File saveFile(LoadOnSubscribe loadOnSubscribe, final ResponseBody responseBody, String url, final String filePath) {
@@ -82,7 +91,7 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
             if (FileDownStatus == 4) {
                 boolean renameSuccess = FileUtils.reNameFile(url, tempFile.getPath());
                 return FileUtils.getFile(url, filePath);
-            } else if (FileDownStatus == 3){//取消下载则 删除下载内容
+            } else if (FileDownStatus == 3) {//取消下载则 删除下载内容
                 FileUtils.deleteFileSafely(tempFile);
             }
 
@@ -95,6 +104,7 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
 
     /**
      * 单线程 断点下载
+     *
      * @param loadOnSubscribe
      * @param responseBody
      * @param filePath
@@ -110,7 +120,7 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         } else {
-            if (null != loadOnSubscribe){
+            if (null != loadOnSubscribe) {
                 loadOnSubscribe.setmSumLength(file.length() + totalByte);
                 loadOnSubscribe.onRead(file.length());
             }

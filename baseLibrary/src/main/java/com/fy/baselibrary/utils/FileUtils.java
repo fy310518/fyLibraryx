@@ -219,6 +219,23 @@ public class FileUtils {
     }
 
     /**
+     * 判断指定路径的 文件夹 是否存在，不存在创建文件夹
+     * @param filePath
+     * @return
+     */
+    public static File folderIsExists(String filePath) {
+        File folder = new File(filePath);
+        try {
+            if (!folder.isDirectory()) {
+                folder.mkdirs();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return folder;
+    }
+
+    /**
      * 判断指定路径的 文件 是否存在，不存在创建文件
      *
      * @param filePath
