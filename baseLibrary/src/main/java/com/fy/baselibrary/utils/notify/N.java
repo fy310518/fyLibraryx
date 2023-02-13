@@ -290,12 +290,13 @@ public class N {
 
         /**
          * 设置 通知点击 跳转事件
+         *
+         * intent 【intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+         *             if (null != bundle)intent.putExtras(bundle); 】
+         * flags  PendingIntent.FLAG_UPDATE_CURRENT
          */
-        public NotifyBuild setPendingIntent(Context context, @NonNull Class actClass, Bundle bundle) {
-            Intent intent = new Intent(context, actClass);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            if (null != bundle)intent.putExtras(bundle);
-            this.pendingIntent = PendingIntent.getActivity(context, N.requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        public NotifyBuild setPendingIntent(Context context, Intent intent, int flags) {
+            this.pendingIntent = PendingIntent.getActivity(context, N.requestCode, intent, flags);
             return this;
         }
 
@@ -303,8 +304,8 @@ public class N {
          * 设置 通知点击 跳转事件
          * @param intents
          */
-        public NotifyBuild setPendingIntent(Context context, @NonNull Intent[] intents) {
-            this.pendingIntent = PendingIntent.getActivities(context, N.requestCode, intents, PendingIntent.FLAG_UPDATE_CURRENT);
+        public NotifyBuild setPendingIntent(Context context, @NonNull Intent[] intents, int flags) {
+            this.pendingIntent = PendingIntent.getActivities(context, N.requestCode, intents, flags);
             return this;
         }
     }
