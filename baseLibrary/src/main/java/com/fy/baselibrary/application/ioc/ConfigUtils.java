@@ -47,6 +47,10 @@ public class ConfigUtils {
         return ConfigUtils.getInstance().builder.context;
     }
 
+    public static void setAppCtx(Context context) {
+        ConfigUtils.getInstance().builder.setContext(context);
+    }
+
     public static String getFilePath() {
         return ConfigUtils.getInstance().builder.filePath;
     }
@@ -240,6 +244,11 @@ public class ConfigUtils {
 
         public ConfigBuilder setStatusAdapter(OnStatusAdapter statusAdapter) {
             this.statusAdapter = statusAdapter;
+            return this;
+        }
+
+        public ConfigBuilder setContext(Context context){
+            this.context = context;
             return this;
         }
 

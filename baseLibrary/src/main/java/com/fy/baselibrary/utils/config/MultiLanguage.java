@@ -97,6 +97,11 @@ public class MultiLanguage {
     /**
      * 设置语言类型
      * 3、Application 的 super.onCreate() 后 和 所有 Activity 的 super.onCreate() 前
+     *
+     * 3.1 解决加载 webView 导致语言混乱
+     *      * 1、Application 的 super.onCreate() 后添加 WebView(applicationContext).destroy()
+     *      * 2、在每个包含WebView的Activity中添加一次手动设置语言得逻辑---> MultiLanguage.setApplicationLanguage(applicationContext)
+     *      * 3、使用 Context.getString() 获取字符串时候，Content 要使用 第二部 传递的 context
      */
     public static void setApplicationLanguage(Context context) {
         Resources resources = context.getResources();
