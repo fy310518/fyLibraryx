@@ -175,25 +175,19 @@ public final class RequestUtils {
     /**
      * 文件下载
      */
-    public static void downLoadFile(@NonNull String url, DownLoadListener<File> loadListener){
-        downLoadFile(url, "", "", null, loadListener);
-    }
-
-    public static void downLoadFile(@NonNull String url, @NonNull String targetPath, @NonNull String reNameFile, DownLoadListener<File> loadListener){
-        downLoadFile(url, targetPath, reNameFile, null, loadListener);
+    public static Observable<Object> downLoadFile(@NonNull String url){
+        return downLoadFile(url, "", "");
     }
 
     /**
      * 文件下载
      * @param url
      * @param targetPath  下载文件到 此目录
-     * @param pDialog
-     * @param loadListener
+     * @param reNameFile
      */
-    public static void downLoadFile(@NonNull final String url, @NonNull String targetPath, @NonNull String reNameFile, @Nullable IProgressDialog pDialog, DownLoadListener<File> loadListener){
-        if(TextUtils.isEmpty(url)) return;
+    public static Observable<Object> downLoadFile(@NonNull final String url, @NonNull String targetPath, @NonNull String reNameFile){
 
-        Observable.zip(Observable.just(url), Observable.just(targetPath), Observable.just(reNameFile), new Function3<String, String, String, ArrayMap<String, String>>(){
+        return Observable.zip(Observable.just(url), Observable.just(targetPath), Observable.just(reNameFile), new Function3<String, String, String, ArrayMap<String, String>>(){
             @Override
             public ArrayMap<String, String> apply(@NonNull String url, @NonNull String targetFilePath, @NonNull String reNameFile) throws Exception {
                 ArrayMap<String, String> data = new ArrayMap<>();
@@ -245,21 +239,22 @@ public final class RequestUtils {
                     return Observable.just(new File(downParam));
                 }
             }
-        }).subscribeOn(Schedulers.io())
-        .subscribe(new FileCallBack(url, pDialog) {
-            @Override
-            protected void downSuccess(File file) {
-                loadListener.onProgress("100");
-                runUiThread(() -> {
-                    loadListener.onSuccess((File) file);//已在主线程中，可以更新UI
-                });
-            }
+        }).subscribeOn(Schedulers.io());
 
-            @Override
-            protected void downProgress(String percent) {
-                loadListener.onProgress(percent);
-            }
-        });
+//                .subscribe(new FileCallBack(url, pDialog) {
+//                    @Override
+//                    protected void downSuccess(File file) {
+//                        loadListener.onProgress("100");
+//                        runUiThread(() -> {
+//                            loadListener.onSuccess((File) file);//已在主线程中，可以更新UI
+//                        });
+//                    }
+//
+//                    @Override
+//                    protected void downProgress(String percent) {
+//                        loadListener.onProgress(percent);
+//                    }
+//                });
     }
 
     public interface OnRunUiThreadListener{

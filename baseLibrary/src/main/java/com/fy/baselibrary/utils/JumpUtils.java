@@ -240,6 +240,7 @@ public class JumpUtils {
      */
     public static void backDesktop(Activity act){
         Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addCategory(Intent.CATEGORY_HOME);
         act.startActivity(intent);
@@ -414,6 +415,7 @@ public class JumpUtils {
     public static void jump(Activity act, String url){
         Uri uri = Uri.parse(url);
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         act.startActivity(intent);
     }
 
@@ -427,6 +429,7 @@ public class JumpUtils {
     public static void callPhone(Context ctx, String action, String phoneNum) {
 //        if (Validator.isMobile(phoneNum) || Validator.isPhone(phoneNum)){
         Intent intent = new Intent(action);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Uri data = Uri.parse("tel:" + phoneNum);
         intent.setData(data);
