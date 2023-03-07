@@ -41,7 +41,7 @@ public abstract class H5WebFragment<VM extends BaseViewModel, VDB extends ViewDa
             webView.loadUrl(initializer.getLoadUrl());
         } else {
             webView.loadUrl(initializer.getLoadUrl());
-            webView.loadDataWithBaseURL(null, initializer.getLoadUrl() , "text/html",  "utf-8", null);
+            webView.loadDataWithBaseURL(null, initializer.getLoadUrl() , "text/html;charset=utf-8",  "utf-8", null);
         }
     }
 
