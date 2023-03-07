@@ -36,7 +36,13 @@ public abstract class H5WebFragment<VM extends BaseViewModel, VDB extends ViewDa
         initWebView();
         initWebViewSetting();
         webViewSetting();
-        webView.loadUrl(initializer.getLoadUrl());
+
+        if (initializer.getLoadUrl().startsWith("http") || initializer.getLoadUrl().startsWith("file:///")){
+            webView.loadUrl(initializer.getLoadUrl());
+        } else {
+            webView.loadUrl(initializer.getLoadUrl());
+            webView.loadDataWithBaseURL(null, initializer.getLoadUrl() , "text/html",  "utf-8", null);
+        }
     }
 
     @SuppressLint("JavascriptInterface")
