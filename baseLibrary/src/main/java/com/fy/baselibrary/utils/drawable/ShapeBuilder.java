@@ -1,5 +1,6 @@
 package com.fy.baselibrary.utils.drawable;
 
+import android.annotation.SuppressLint;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 
@@ -161,15 +162,21 @@ public class ShapeBuilder {
      * @param centerColor 中心颜色
      * @param endColor    结束颜色
      */
-    public ShapeBuilder gradient(GradientDrawable.Orientation orientation, @ColorRes int startColor, @ColorRes int centerColor, int endColor) {
+    public ShapeBuilder gradient(GradientDrawable.Orientation orientation, @ColorRes int startColor, int centerColor, @ColorRes int endColor) {
         return gradientInit(orientation, startColor, centerColor, endColor);
     }
 
     /**
      * 重新构造 drawable
      */
-    private ShapeBuilder gradientInit(GradientDrawable.Orientation orientation, @ColorRes int startColor, @ColorRes int centerColor, int endColor) {
-        drawable = new GradientDrawable(orientation, new int[]{ResUtils.getColor(startColor), ResUtils.getColor(centerColor), endColor});
+    private ShapeBuilder gradientInit(GradientDrawable.Orientation orientation, @ColorRes int startColor, int centerColor, @ColorRes int endColor) {
+        int[] colors;
+        if (centerColor < 1) {
+            colors = new int[]{ResUtils.getColor(startColor), ResUtils.getColor(endColor)};
+        } else {
+            colors = new int[]{ResUtils.getColor(startColor), ResUtils.getColor(centerColor), ResUtils.getColor(endColor)};
+        }
+        drawable = new GradientDrawable(orientation, colors);
         return this;
     }
 
@@ -182,7 +189,7 @@ public class ShapeBuilder {
      * @param centerColor 中心颜色
      * @param endColor    结束颜色
      */
-    public ShapeBuilder gradient(int angle, @ColorRes int startColor, @ColorRes int centerColor, int endColor) {
+    public ShapeBuilder gradient(int angle, @ColorRes int startColor, int centerColor, @ColorRes int endColor) {
         angle = angle % 360;
         GradientDrawable.Orientation orientation = null;
         switch (angle) {

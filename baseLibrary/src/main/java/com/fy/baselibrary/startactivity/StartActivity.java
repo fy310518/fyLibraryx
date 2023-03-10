@@ -45,7 +45,7 @@ public abstract class StartActivity extends AppCompatActivity {
      * 根据intent 判断进入应用还是退出应用
      * @param intent
      */
-    private void exitOrIn(Intent intent){
+    protected void exitOrIn(Intent intent){
         boolean b = (Intent.FLAG_ACTIVITY_CLEAR_TOP & intent.getFlags())!= 0;
         boolean c = intent.getBooleanExtra("exitApp", false);
         if (b && c) {
