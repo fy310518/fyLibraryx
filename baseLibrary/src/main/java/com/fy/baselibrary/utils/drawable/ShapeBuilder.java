@@ -1,6 +1,5 @@
 package com.fy.baselibrary.utils.drawable;
 
-import android.annotation.SuppressLint;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 
@@ -108,82 +107,21 @@ public class ShapeBuilder {
 
 
     /**
-     * 渐变type
-     * @param type linear (default.)-LINEAR_GRADIENT
-     *             circular-RADIAL_GRADIENT
-     *             sweep-SWEEP_GRADIENT
+     * 设置 渐变角度和颜色 【同下】  注意 最后设置 渐变type，以及其它属性
+     * @param angle
+     * @param startColor
+     * @param endColor
+     * @return
      */
-    public ShapeBuilder gradientType(int type) {
-        drawable.setGradientType(type);
-        return this;
-    }
-
-    /**
-     * 渐变，默认 Linear 渐变
-     * @param startColor  开始颜色
-     * @param centerColor 中心颜色
-     * @param endColor    结束颜色
-     */
-    public ShapeBuilder gradient(@ColorRes int startColor, @ColorRes int centerColor, int endColor) {
-        return gradientInit(GradientDrawable.Orientation.TOP_BOTTOM, startColor, centerColor, endColor);
-    }
-
-    /**
-     * 这两个属性只有在type不为linear情况下起作用。
-     * @param x 相对X的渐变位置
-     * @param y 相对Y的渐变位置
-     */
-    public ShapeBuilder gradientCenter(float x, float y) {
-        drawable.setGradientCenter(x, y);
-        return this;
-    }
-
-    /**
-     * 该属性只有在type="radial"有效
-     * @param radius 渐变颜色的半径
-     */
-    public ShapeBuilder gradientRadius(float radius) {
-        drawable.setGradientRadius(radius);
-        return this;
-    }
-
-    /**
-     * 渐变，设置渐变方向
-     * @param orientation 方向支持类型
-     *                    0-LEFT_RIGHT
-     *                    45-BL_TR
-     *                    90-BOTTOM_TOP
-     *                    135-BR_TL
-     *                    180-RIGHT_LEFT
-     *                    225-TR_BL
-     *                    270-TOP_BOTTOM
-     *                    315-TL_BR
-     * @param startColor  开始颜色
-     * @param centerColor 中心颜色
-     * @param endColor    结束颜色
-     */
-    public ShapeBuilder gradient(GradientDrawable.Orientation orientation, @ColorRes int startColor, int centerColor, @ColorRes int endColor) {
-        return gradientInit(orientation, startColor, centerColor, endColor);
-    }
-
-    /**
-     * 重新构造 drawable
-     */
-    private ShapeBuilder gradientInit(GradientDrawable.Orientation orientation, @ColorRes int startColor, int centerColor, @ColorRes int endColor) {
-        int[] colors;
-        if (centerColor < 1) {
-            colors = new int[]{ResUtils.getColor(startColor), ResUtils.getColor(endColor)};
-        } else {
-            colors = new int[]{ResUtils.getColor(startColor), ResUtils.getColor(centerColor), ResUtils.getColor(endColor)};
-        }
-        drawable = new GradientDrawable(orientation, colors);
+    public ShapeBuilder gradient(int angle, @ColorRes int startColor, @ColorRes int endColor) {
+        gradient(angle, startColor, -1, endColor);
         return this;
     }
 
     /**
      * 渐变，设置角度(实质调用的Gradient(GradientDrawable.Orientation orientation, int startColor, int
      * centerColor, int endColor)方法)
-     *
+     *  注意 最后设置 渐变type，以及其它属性
      * @param angle       角度，需要是45的整数倍
      * @param startColor  开始颜色
      * @param centerColor 中心颜色
@@ -218,8 +156,54 @@ public class ShapeBuilder {
                 orientation = GradientDrawable.Orientation.TL_BR;
                 break;
         }
-        return gradient(orientation, startColor, centerColor, endColor);
+        return gradientInit(orientation, startColor, centerColor, endColor);
     }
+
+    /**
+     * 重新构造 drawable
+     */
+    private ShapeBuilder gradientInit(GradientDrawable.Orientation orientation, @ColorRes int startColor, int centerColor, @ColorRes int endColor) {
+        int[] colors;
+        if (centerColor < 1) {
+            colors = new int[]{ResUtils.getColor(startColor), ResUtils.getColor(endColor)};
+        } else {
+            colors = new int[]{ResUtils.getColor(startColor), ResUtils.getColor(centerColor), ResUtils.getColor(endColor)};
+        }
+
+        drawable = new GradientDrawable(orientation, colors);
+        return this;
+    }
+
+    /**
+     * 渐变type
+     * @param type linear (default.)-LINEAR_GRADIENT
+     *             circular-RADIAL_GRADIENT
+     *             sweep-SWEEP_GRADIENT
+     */
+    public ShapeBuilder gradientType(int type) {
+        drawable.setGradientType(type);
+        return this;
+    }
+
+    /**
+     * 这两个属性只有在type不为linear情况下起作用。
+     * @param x 相对X的渐变位置
+     * @param y 相对Y的渐变位置
+     */
+    public ShapeBuilder gradientCenter(float x, float y) {
+        drawable.setGradientCenter(x, y);
+        return this;
+    }
+
+    /**
+     * 该属性只有在type="radial"有效
+     * @param radius 渐变颜色的半径
+     */
+    public ShapeBuilder gradientRadius(float radius) {
+        drawable.setGradientRadius(radius);
+        return this;
+    }
+
 
 
     public void setBackBg(View v){
