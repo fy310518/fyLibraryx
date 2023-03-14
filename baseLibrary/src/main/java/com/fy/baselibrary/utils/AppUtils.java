@@ -290,6 +290,8 @@ public class AppUtils {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
 
+        if (null == appProcesses) return false;
+
         for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
             if (appProcess.processName.equals(context.getPackageName())) {
 //                BACKGROUND=400 EMPTY=500 FOREGROUND=100
