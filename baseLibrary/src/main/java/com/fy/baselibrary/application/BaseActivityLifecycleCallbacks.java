@@ -139,7 +139,7 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
 
     // 设置 activity 进出动画
     private void setAnim(Activity activity) {
-        String transition = activity.getIntent().getExtras().getString("transition", "");
+        String transition = activity.getIntent().getStringExtra("transition");
 
         if (TextUtils.isEmpty(transition)) return;
 
