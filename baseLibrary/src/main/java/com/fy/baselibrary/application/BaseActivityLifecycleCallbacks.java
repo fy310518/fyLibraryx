@@ -6,7 +6,13 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.TextUtils;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.Visibility;
 import android.util.ArrayMap;
+import android.view.Window;
 
 import androidx.annotation.RequiresApi;
 import androidx.databinding.DataBindingUtil;
@@ -48,6 +54,8 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
         ResUtils.setFontDefault(activity);
         behaviorSubjectMap.put(activity.getClass().getSimpleName() + "-" + activity.getTaskId(), BehaviorSubject.create());
 //        BaseActivityBean activityBean = new BaseActivityBean();
+
+        setAnim(activity);
 
         ViewDataBinding vdb = null;
         BaseViewModel bvm = null;
@@ -127,6 +135,36 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
             behaviorSubjectMap.remove(activity.getClass().getSimpleName() + "-" + activity.getTaskId());
         }
     }
+
+
+    // 设置 activity 进出动画
+    private void setAnim(Activity activity) {
+        String transition = activity.getIntent().getExtras().getString("transition", "");
+
+        if (TextUtils.isEmpty(transition)) return;
+
+        Visibility animType = null;
+
+        // 设置进入时进入动画
+        if (transition.equals("explode")) {
+            animType = new Explode();  // 分解
+        } else if (transition.equals("slide")) {
+            animType = new Slide();  // 滑进滑出
+        } else if (transition.equals("fade")) {
+            animType = new Fade(); // 淡入淡出
+        }
+
+        if (null != animType){
+            activity.getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS); // 开启动画的特征
+
+            animType.setDuration(500);
+            activity.getWindow().setEnterTransition(animType);
+            activity.getWindow().setExitTransition(animType);
+        }
+    }
+
+
+
 
 
     /**

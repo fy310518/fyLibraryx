@@ -1,6 +1,7 @@
 package com.fy.baselibrary.utils;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -47,11 +49,17 @@ public class JumpUtils {
      */
     public static void jump(Fragment fragment, Class actClass, Bundle bundle) {
         Intent intent = new Intent(fragment.getContext(), actClass);
+
+        Bundle options = null;
         if (null != bundle) {
             intent.putExtras(bundle);
+            String transition =  bundle.getString("transition", "");
+            if (!TextUtils.isEmpty(transition)){
+                options = ActivityOptions.makeSceneTransitionAnimation(fragment.getActivity()).toBundle();
+            }
         }
 
-        fragment.startActivity(intent);
+        fragment.startActivity(intent, options);
     }
 
     /**
@@ -61,11 +69,17 @@ public class JumpUtils {
      */
     public static void jump(Activity act, Class actClass, Bundle bundle) {
         Intent intent = new Intent(act, actClass);
+
+        Bundle options = null;
         if (null != bundle) {
             intent.putExtras(bundle);
+            String transition =  bundle.getString("transition", "");
+            if (!TextUtils.isEmpty(transition)){
+                options = ActivityOptions.makeSceneTransitionAnimation(act).toBundle();
+            }
         }
 
-        act.startActivity(intent);
+        act.startActivity(intent, options);
 //        第一个参数 下一界面进入效果；第二个参数 当前界面退出效果
 //        act.overridePendingTransition(R.anim.anim_slide_left_in, R.anim.anim_slide_left_out);
     }
@@ -80,11 +94,17 @@ public class JumpUtils {
         String act = action.startsWith(".") ? AppUtils.getLocalPackageName() + action : action;
 
         Intent intent = new Intent(act);
+
+        Bundle options = null;
         if (null != bundle) {
             intent.putExtras(bundle);
+            String transition =  bundle.getString("transition", "");
+            if (!TextUtils.isEmpty(transition)){
+                options = ActivityOptions.makeSceneTransitionAnimation(fragment.getActivity()).toBundle();
+            }
         }
 
-        fragment.startActivity(intent);
+        fragment.startActivity(intent, options);
     }
 
     /**
@@ -97,11 +117,17 @@ public class JumpUtils {
         String act = action.startsWith(".") ? AppUtils.getLocalPackageName() + action : action;
 
         Intent intent = new Intent(act);
+
+        Bundle options = null;
         if (null != bundle) {
             intent.putExtras(bundle);
+            String transition =  bundle.getString("transition", "");
+            if (!TextUtils.isEmpty(transition)){
+                options = ActivityOptions.makeSceneTransitionAnimation(activity).toBundle();
+            }
         }
 
-        activity.startActivity(intent);
+        activity.startActivity(intent, options);
     }
 
     /**
@@ -114,11 +140,16 @@ public class JumpUtils {
         String act = action.startsWith(".") ? AppUtils.getLocalPackageName() + action : action;
 
         Intent intent = new Intent(act);
+        Bundle options = null;
         if (null != bundle) {
             intent.putExtras(bundle);
+            String transition =  bundle.getString("transition", "");
+            if (!TextUtils.isEmpty(transition)){
+                options = ActivityOptions.makeSceneTransitionAnimation(activity).toBundle();
+            }
         }
 
-        activity.startActivityForResult(intent, requestCode);
+        activity.startActivityForResult(intent, requestCode, options);
     }
 
     /**
@@ -129,11 +160,16 @@ public class JumpUtils {
      */
     public static void jump(Activity act, Class actClass, Bundle bundle, int requestCode) {
         Intent intent = new Intent(act, actClass);
+        Bundle options = null;
         if (null != bundle) {
             intent.putExtras(bundle);
+            String transition =  bundle.getString("transition", "");
+            if (!TextUtils.isEmpty(transition)){
+                options = ActivityOptions.makeSceneTransitionAnimation(act).toBundle();
+            }
         }
 
-        act.startActivityForResult(intent, requestCode);
+        act.startActivityForResult(intent, requestCode, options);
     }
 
 
@@ -156,11 +192,16 @@ public class JumpUtils {
      */
     public static void jump(Fragment fragment, Class actClass, Bundle bundle, int requestCode) {
         Intent intent = new Intent(fragment.getContext(), actClass);
+        Bundle options = null;
         if (null != bundle) {
             intent.putExtras(bundle);
+            String transition =  bundle.getString("transition", "");
+            if (!TextUtils.isEmpty(transition)){
+                options = ActivityOptions.makeSceneTransitionAnimation(fragment.getActivity()).toBundle();
+            }
         }
 
-        fragment.startActivityForResult(intent, requestCode);
+        fragment.startActivityForResult(intent, requestCode, options);
     }
 
     /**
@@ -174,11 +215,16 @@ public class JumpUtils {
         String act = action.startsWith(".") ? AppUtils.getLocalPackageName() + action : action;
 
         Intent intent = new Intent(act);
+        Bundle options = null;
         if (null != bundle) {
             intent.putExtras(bundle);
+            String transition =  bundle.getString("transition", "");
+            if (!TextUtils.isEmpty(transition)){
+                options = ActivityOptions.makeSceneTransitionAnimation(fragment.getActivity()).toBundle();
+            }
         }
 
-        fragment.startActivityForResult(intent, requestCode);
+        fragment.startActivityForResult(intent, requestCode, options);
     }
 
 //////////////////////////////////反射跳转 start///////////////////////////////////////////////
@@ -224,14 +270,14 @@ public class JumpUtils {
             intent.putExtras(bundle);
         }
         act.setResult(Activity.RESULT_OK, intent);
-        act.finish();
+        act.finishAfterTransition();
     }
 
     /**
      * 退出当前activity
      */
     public static void exitActivity(Activity act) {
-        act.finish();
+        act.finishAfterTransition();
     }
 
     /**
@@ -280,11 +326,16 @@ public class JumpUtils {
         Intent intent = new Intent();
         intent.setData(uri);
 
+        Bundle options = null;
         if (null != bundle) {
             intent.putExtras(bundle);
+            String transition =  bundle.getString("transition", "");
+            if (!TextUtils.isEmpty(transition)){
+                options = ActivityOptions.makeSceneTransitionAnimation(act).toBundle();
+            }
         }
 
-        act.startActivity(intent);
+        act.startActivity(intent, options);
     }
 
     /**
@@ -320,12 +371,17 @@ public class JumpUtils {
         Intent intent = new Intent();
         ComponentName componentName = new ComponentName(packageName, path);
         intent.setComponent(componentName);
+        Bundle options = null;
         if (null != bundle) {
             intent.putExtras(bundle);
+            String transition =  bundle.getString("transition", "");
+            if (!TextUtils.isEmpty(transition)){
+                options = ActivityOptions.makeSceneTransitionAnimation(act).toBundle();
+            }
         }
 
         try {
-            act.startActivity(intent);
+            act.startActivity(intent, options);
         } catch (Exception e) {
             T.show(R.string.appNoInstall, -1);
             e.printStackTrace();
@@ -344,12 +400,17 @@ public class JumpUtils {
         Intent intent = new Intent();
         ComponentName componentName = new ComponentName(packageName, path);
         intent.setComponent(componentName);
+        Bundle options = null;
         if (null != bundle) {
             intent.putExtras(bundle);
+            String transition =  bundle.getString("transition", "");
+            if (!TextUtils.isEmpty(transition)){
+                options = ActivityOptions.makeSceneTransitionAnimation(act).toBundle();
+            }
         }
 
         try {
-            act.startActivityForResult(intent, requestCode);
+            act.startActivityForResult(intent, requestCode, options);
         } catch (Exception e) {
             T.show(R.string.appNoInstall, -1);
             e.printStackTrace();
@@ -368,12 +429,17 @@ public class JumpUtils {
         Intent intent = new Intent();
         ComponentName componentName = new ComponentName(packageName, path);
         intent.setComponent(componentName);
+        Bundle options = null;
         if (null != bundle) {
             intent.putExtras(bundle);
+            String transition =  bundle.getString("transition", "");
+            if (!TextUtils.isEmpty(transition)){
+                options = ActivityOptions.makeSceneTransitionAnimation(fragment.getActivity()).toBundle();
+            }
         }
 
         try {
-            fragment.startActivityForResult(intent, requestCode);
+            fragment.startActivityForResult(intent, requestCode, options);
         } catch (Exception e) {
             T.show(R.string.appNoInstall, -1);
             e.printStackTrace();
