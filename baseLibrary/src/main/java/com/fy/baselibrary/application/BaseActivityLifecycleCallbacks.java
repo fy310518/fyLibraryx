@@ -55,8 +55,6 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
         behaviorSubjectMap.put(activity.getClass().getSimpleName() + "-" + activity.getTaskId(), BehaviorSubject.create());
 //        BaseActivityBean activityBean = new BaseActivityBean();
 
-        setAnim(activity);
-
         ViewDataBinding vdb = null;
         BaseViewModel bvm = null;
         IBaseMVVM act = null;
