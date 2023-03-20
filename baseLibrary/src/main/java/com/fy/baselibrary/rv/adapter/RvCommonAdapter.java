@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.collection.SparseArrayCompat;
@@ -37,7 +38,8 @@ public abstract class RvCommonAdapter<Item, Holder extends ViewHolder> extends R
     private static final int TYPE_EMPTY = -2;// 空布局的ViewType
     // 是否显示空布局，默认不显示
     private boolean showEmptyView = false;
-    private int emptyLayoutId = -1; // 空布局 内部 必须 包含 一个 id 为 tvTry 的 View，用于点击重试
+    private @LayoutRes int emptyLayoutId = -1; // 空布局
+    private @IdRes int emptyClickId = -1;  // 空布局 内部 点击事件 id
 
     protected Context mContext;
     protected int mLayoutId = -1;
@@ -103,9 +105,15 @@ public abstract class RvCommonAdapter<Item, Holder extends ViewHolder> extends R
         } else if (viewType == TYPE_EMPTY){//空布局
 
             viewHolder = createBaseViewHolder(parent, emptyLayoutId == -1 ? ConfigUtils.getOnStatusAdapter().emptyDataView() : emptyLayoutId);
-            viewHolder.itemView.setOnClickListener(view -> {
-                if (null != OnEmptyClickListener) OnEmptyClickListener.onRetry();
-            });
+            if(emptyClickId != -1) {
+                viewHolder.setOnClickListener(emptyClickId, v -> {
+                    if (null != OnEmptyClickListener) OnEmptyClickListener.onRetry();
+                });
+            } else {
+                viewHolder.itemView.setOnClickListener(view -> {
+                    if (null != OnEmptyClickListener) OnEmptyClickListener.onRetry();
+                });
+            }
         } else if (mLayoutId != -1){//主体
             viewHolder = createBaseViewHolder(parent, mLayoutId);
             bindOnClick(viewHolder);
@@ -329,9 +337,10 @@ public abstract class RvCommonAdapter<Item, Holder extends ViewHolder> extends R
         this.showEmptyView = showEmptyView;
     }
 
-    public void setShowEmptyView(boolean showEmptyView, @LayoutRes int emptyLayoutId){
+    public void setShowEmptyView(boolean showEmptyView, @LayoutRes int emptyLayoutId, @IdRes int emptyClickId){
         this.showEmptyView = showEmptyView;
         this.emptyLayoutId = emptyLayoutId;
+        this.emptyClickId = emptyClickId;
     }
 
     /**
