@@ -11,6 +11,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
@@ -48,7 +49,7 @@ public abstract class CommonDialog extends DialogFragment {
 
     protected View mRootView;
 
-    PopupDismissListner dialogList;
+    protected PopupDismissListner dialogList;
 
     /** dialog显示位置 */
     protected int gravity = Gravity.CENTER;
@@ -291,10 +292,15 @@ public abstract class CommonDialog extends DialogFragment {
 
 //        super.dismiss();
         super.dismissAllowingStateLoss();
-        if (null != dialogList)dialogList.onDismiss();
+//        if (null != dialogList)dialogList.onDismiss();
         L.v("dialog", "dismiss");
     }
 
+    @Override
+    public void onDismiss(@NonNull @io.reactivex.annotations.NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        if (null != dialogList) dialogList.onDismiss();
+    }
 
     protected void setOnKeyListener() {
         this.getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
