@@ -297,7 +297,7 @@ public abstract class CommonDialog extends DialogFragment {
     }
 
     @Override
-    public void onDismiss(@NonNull @io.reactivex.annotations.NonNull DialogInterface dialog) {
+    public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
         if (null != dialogList) dialogList.onDismiss();
     }
