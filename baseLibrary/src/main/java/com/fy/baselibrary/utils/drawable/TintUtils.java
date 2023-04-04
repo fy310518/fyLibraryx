@@ -193,16 +193,17 @@ public class TintUtils {
 
         switch (position) {
             case 1:
-                tv.setCompoundDrawables(drawable, null, null, null);
+                tv.setCompoundDrawablesRelative(drawable, null, null, null);
                 break;
             case 2:
-                tv.setCompoundDrawables(null, drawable, null, null);
+//                tv.setCompoundDrawables(null, drawable, null, null);
+                tv.setCompoundDrawablesRelative(null, drawable, null, null);
                 break;
             case 3:
-                tv.setCompoundDrawables(null, null, drawable, null);
+                tv.setCompoundDrawablesRelative(null, null, drawable, null);
                 break;
             case 4:
-                tv.setCompoundDrawables(null, null, null, drawable);
+                tv.setCompoundDrawablesRelative(null, null, null, drawable);
                 break;
         }
     }
