@@ -176,7 +176,7 @@ public final class RequestUtils {
      * 文件下载
      */
     public static Observable<Object> downLoadFile(@NonNull String url){
-        return downLoadFile(url, "", "");
+        return downLoadFile(url, "", "", false);
     }
 
     /**
@@ -185,7 +185,7 @@ public final class RequestUtils {
      * @param targetPath  下载文件到 此目录
      * @param reNameFile
      */
-    public static Observable<Object> downLoadFile(@NonNull final String url, @NonNull String targetPath, @NonNull String reNameFile){
+    public static Observable<Object> downLoadFile(@NonNull final String url, @NonNull String targetPath, @NonNull String reNameFile, boolean isReturnProcess){
 
         return Observable.zip(Observable.just(url), Observable.just(targetPath), Observable.just(reNameFile), new Function3<String, String, String, ArrayMap<String, String>>(){
             @Override
@@ -230,10 +230,13 @@ public final class RequestUtils {
 
                 if (downParam.startsWith("bytes=")) {
                     L.e("fy_file_FileDownInterceptor", "文件下载开始---" + Thread.currentThread().getName());
-                    LoadOnSubscribe loadOnSubscribe = new LoadOnSubscribe();
-                    FileResponseBodyConverter.addListener(downUrl, filePath, reNameFile, loadOnSubscribe);
-
-                    return Observable.merge(Observable.create(loadOnSubscribe), RequestUtils.create(LoadService.class).download(downParam, url));
+                    if(isReturnProcess){
+                        LoadOnSubscribe loadOnSubscribe = new LoadOnSubscribe();
+                        FileResponseBodyConverter.addListener(downUrl, filePath, reNameFile, loadOnSubscribe);
+                        return Observable.merge(Observable.create(loadOnSubscribe), RequestUtils.create(LoadService.class).download(downParam, url));
+                    } else {
+                        return Observable.just(RequestUtils.create(LoadService.class).download(downParam, url));
+                    }
                 } else {
                     SpfAgent.init("").saveInt(tempFile.getName() + Constant.FileDownStatus, 4).commit(false);
                     return Observable.just(new File(downParam));
