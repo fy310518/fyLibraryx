@@ -235,7 +235,16 @@ public final class RequestUtils {
                         FileResponseBodyConverter.addListener(downUrl, filePath, reNameFile, loadOnSubscribe);
                         return Observable.merge(Observable.create(loadOnSubscribe), RequestUtils.create(LoadService.class).download(downParam, url));
                     } else {
-                        return Observable.just(RequestUtils.create(LoadService.class).download(downParam, url));
+                        return RequestUtils.create(LoadService.class)
+                                .download(downParam, url)
+                                .flatMap(new Function<File, ObservableSource<File>>() {
+                                    @Override
+                                    public ObservableSource<File> apply(@NonNull File file) throws Exception {
+                                        L.e("fy_file_FileDownInterceptor", "文件下载完成---" + Thread.currentThread().getName());
+                                        return Observable.just(file);
+                                    }
+                                });
+//                        return Observable.just(RequestUtils.create(LoadService.class).download(downParam, url));
                     }
                 } else {
                     SpfAgent.init("").saveInt(tempFile.getName() + Constant.FileDownStatus, 4).commit(false);
