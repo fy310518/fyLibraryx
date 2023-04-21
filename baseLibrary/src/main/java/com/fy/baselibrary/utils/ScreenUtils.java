@@ -10,6 +10,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 
 import com.fy.baselibrary.application.ioc.ConfigUtils;
@@ -112,6 +113,24 @@ public class ScreenUtils {
         Resources resources = context.getResources();
         int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
         return resources.getDimensionPixelSize(resourceId);
+    }
+
+
+    /**
+     * 是否使屏幕常亮
+     * @param activity 当前的页面的Activity
+     */
+    public static void keepScreenLongLight(Activity activity, boolean isOpenLight, boolean maxBrightness) {
+        Window window = activity.getWindow();
+        if (isOpenLight) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+
+        WindowManager.LayoutParams windowLayoutParams = window.getAttributes();
+        windowLayoutParams.screenBrightness = maxBrightness ? WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL : WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
+        window.setAttributes(windowLayoutParams);
     }
 
     /**
