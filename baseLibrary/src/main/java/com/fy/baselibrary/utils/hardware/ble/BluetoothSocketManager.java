@@ -49,7 +49,8 @@ public class BluetoothSocketManager {
         return manager;
     }
 
-    final String UUIDString = "00001101-0000-1000-8000-00805F9B34FB";
+    public static final String UUIDString = "00001101-0000-1000-8000-00805F9B34FB";
+    public static final String receiveData = "receive_data";
     private BluetoothAdapter mBluetoothAdapter;
 
     private BluetoothSocket mSocket;
@@ -75,36 +76,6 @@ public class BluetoothSocketManager {
             e.printStackTrace();
         }
     }
-
-
-    private void connect(){
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    synchronized (lock) {
-                        if(null != mServerSocket){
-                            if (mSocket!=null) {
-                                return;
-                            }
-                            mSocket = mServerSocket.accept(); // 会阻塞线程，建议在子线程中进行
-                        } else {
-                            if (mSocket.isConnected()) {
-                                return;
-                            }
-                            mSocket.connect();  // 会阻塞线程，建议在子线程中进行
-                        }
-
-                        in = mSocket.getInputStream();
-                        out = new PrintWriter(mSocket.getOutputStream());
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
-    }
-
 
     public void beginListen() {
         Observable.interval(0, 1, TimeUnit.SECONDS)
@@ -152,7 +123,7 @@ public class BluetoothSocketManager {
                             in.read(bt);
                             String content = new String (bt, "UTF-8" );
                             if (!TextUtils.isEmpty(content)) {
-                                RxBus.getInstance().send(new EventBean<>("", content));
+                                RxBus.getInstance().send(new EventBean<>(BluetoothSocketManager.receiveData, content));
                             }
                         }
                     } catch (IOException e) {
@@ -228,12 +199,7 @@ public class BluetoothSocketManager {
     @SuppressLint("MissingPermission")
     public ArrayList<BluetoothDevice> getBondedDevices() {
         Set<BluetoothDevice> devices = mBluetoothAdapter.getBondedDevices();
-        ArrayList bondedDevices = new ArrayList();
-        Iterator<BluetoothDevice> iterator = devices.iterator();
-        while (iterator.hasNext()) {
-            bondedDevices.add(iterator.next());
-        }
-        return bondedDevices;
+        return new ArrayList<>(devices);
     }
 
     //搜索周围蓝牙设备，并通过广播返回
