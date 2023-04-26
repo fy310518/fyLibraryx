@@ -83,7 +83,7 @@ public class DeviceUtils {
         if (tm != null) {
             return tm.getDeviceId();
         }
-        return null;
+        return "";
     }
 
     /**
