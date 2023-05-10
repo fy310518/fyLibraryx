@@ -5,6 +5,8 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+
+import android.graphics.Typeface;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -12,6 +14,8 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.StrikethroughSpan;
+import android.text.style.StyleSpan;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,6 +63,10 @@ public class SpanUtils {
          */
         @DimenRes
         private int textDpSize;
+        /** 字体样式 */
+        private int textStyle = Typeface.NORMAL;
+        /** 是否添加删除线 */
+        private boolean isStrikethrough = false;
 
         public Builder() {
             init("");
@@ -88,7 +96,15 @@ public class SpanUtils {
             return this;
         }
 
+        public Builder setTextStyle(int textStyle) {
+            this.textStyle = textStyle;
+            return this;
+        }
 
+        public Builder setStrikethrough(boolean strikethrough) {
+            isStrikethrough = strikethrough;
+            return this;
+        }
 
         /**
          * 创建样式字符串
@@ -174,6 +190,14 @@ public class SpanUtils {
                 int size = (int) ResUtils.getDimen(textDpSize);
                 //设置字体大小（绝对值,单位：像素）,第二个参数boolean dip，如果为true，表示前面的字体大小单位为dip，否则为像素
                 spanBuilder.setSpan(new AbsoluteSizeSpan(size, false), start, end, flag);
+            }
+
+            if (textStyle > Typeface.NORMAL){
+                spanBuilder.setSpan(new StyleSpan(textStyle), start, end, flag);
+            }
+
+            if(isStrikethrough){
+                spanBuilder.setSpan(new StrikethroughSpan(), start, end, flag);
             }
 
             if (null != clickableSpan){
