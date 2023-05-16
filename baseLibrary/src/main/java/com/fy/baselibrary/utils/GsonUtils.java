@@ -5,15 +5,10 @@ import android.util.ArrayMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.TypeAdapter;
-import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -24,7 +19,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Gson 工具类
@@ -111,7 +105,7 @@ public class GsonUtils {
      */
     public static<T> T fromJson(String json, Type typeOfT) {
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(new TypeToken<Map<String,Object>>(){}.getType(), new ObjectTypeAdapterRewrite())
+                .registerTypeAdapter(new TypeToken<ArrayMap<String,Object>>(){}.getType(), new ObjectTypeAdapterRewrite())
                 .create();
 
         return gson.fromJson(json, typeOfT);
@@ -177,7 +171,7 @@ public class GsonUtils {
                     return list;
 
                 case BEGIN_OBJECT:
-                    Map<String, Object> map = new LinkedTreeMap<>();
+                    ArrayMap<String, Object> map = new ArrayMap<>();
                     in.beginObject();
                     while (in.hasNext()) {
                         map.put(in.nextName(), read(in));
