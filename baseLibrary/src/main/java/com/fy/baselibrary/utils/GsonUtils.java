@@ -12,9 +12,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.TypeAdapter;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,18 +87,7 @@ public class GsonUtils {
      */
     public static<T> T fromJson(String json, Class<T> type) {
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(ArrayMap.class, new JsonDeserializer<ArrayMap>() {
-                    @Override
-                    public ArrayMap<String, Object> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                        ArrayMap<String, Object> resultMap = new ArrayMap<>();
-                        JsonObject jsonObject = json.getAsJsonObject();
-                        Set<Map.Entry<String, JsonElement>> entrySet = jsonObject.entrySet();
-                        for (Map.Entry<String, JsonElement> entry : entrySet) {
-                            resultMap.put(entry.getKey(), entry.getValue());
-                        }
-                        return resultMap;
-                    }
-                })
+                .registerTypeAdapter(new TypeToken<Map<String,Object>>(){}.getType(), new ObjectTypeAdapterRewrite())
                 .create();
 
         return gson.fromJson(json, type);
@@ -157,6 +151,79 @@ public class GsonUtils {
         }
 
         return lst;
+    }
+
+
+
+
+
+
+    public static class ObjectTypeAdapterRewrite extends TypeAdapter<Object> {
+        private final TypeAdapter<Object> delegate = new Gson().getAdapter(Object.class);
+
+        @Override
+        public Object read(JsonReader in) throws IOException {
+            JsonToken token = in.peek();
+            switch (token) {
+                case BEGIN_ARRAY:
+                    List<Object> list = new ArrayList<>();
+                    in.beginArray();
+                    while (in.hasNext()) {
+                        list.add(read(in));
+                    }
+                    in.endArray();
+                    return list;
+
+                case BEGIN_OBJECT:
+                    Map<String, Object> map = new LinkedTreeMap<>();
+                    in.beginObject();
+                    while (in.hasNext()) {
+                        map.put(in.nextName(), read(in));
+                    }
+                    in.endObject();
+                    return map;
+
+                case STRING:
+                    return in.nextString();
+
+                case NUMBER:
+                    /**
+                     * 改写数字的处理逻辑，将数字值分为整型与浮点型。
+                     */
+                    double dbNum = in.nextDouble();
+
+                    // 数字超过long的最大值，返回浮点类型
+                    if (dbNum > Long.MAX_VALUE) {
+                        return dbNum;
+                    }
+                    // 判断数字是否为整数值
+                    long lngNum = (long) dbNum;
+                    if (dbNum == lngNum) {
+                        try {
+                            return (int) lngNum;
+                        } catch (Exception e) {
+                            return lngNum;
+                        }
+                    } else {
+                        return dbNum;
+                    }
+
+                case BOOLEAN:
+                    return in.nextBoolean();
+
+                case NULL:
+                    in.nextNull();
+                    return null;
+
+                default:
+                    throw new IllegalStateException();
+            }
+        }
+
+        @Override
+        public void write(JsonWriter out, Object value) throws IOException {
+            delegate.write(out,value);
+        }
     }
 
 }
