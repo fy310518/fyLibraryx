@@ -1,10 +1,15 @@
 package com.fy.baselibrary.utils;
 
+import android.util.ArrayMap;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.internal.LinkedTreeMap;
@@ -14,6 +19,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Gson 工具类
@@ -75,7 +81,21 @@ public class GsonUtils {
      * @param type
      */
     public static<T> T fromJson(String json, Class<T> type) {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(ArrayMap.class, new JsonDeserializer<ArrayMap>() {
+                    @Override
+                    public ArrayMap<String, Object> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                        ArrayMap<String, Object> resultMap = new ArrayMap<>();
+                        JsonObject jsonObject = json.getAsJsonObject();
+                        Set<Map.Entry<String, JsonElement>> entrySet = jsonObject.entrySet();
+                        for (Map.Entry<String, JsonElement> entry : entrySet) {
+                            resultMap.put(entry.getKey(), entry.getValue());
+                        }
+                        return resultMap;
+                    }
+                })
+                .create();
+
         return gson.fromJson(json, type);
     }
 
