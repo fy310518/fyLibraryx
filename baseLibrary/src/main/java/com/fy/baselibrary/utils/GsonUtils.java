@@ -87,7 +87,6 @@ public class GsonUtils {
      */
     public static<T> T fromJson(String json, Class<T> type) {
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(new TypeToken<Map<String,Object>>(){}.getType(), new ObjectTypeAdapterRewrite())
                 .create();
 
         return gson.fromJson(json, type);
@@ -111,7 +110,10 @@ public class GsonUtils {
      * @param typeOfT  Type type = new TypeToken<BeanModule<CaseInfoBean>>(){}.getType();
      */
     public static<T> T fromJson(String json, Type typeOfT) {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(new TypeToken<Map<String,Object>>(){}.getType(), new ObjectTypeAdapterRewrite())
+                .create();
+
         return gson.fromJson(json, typeOfT);
     }
 
