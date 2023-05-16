@@ -19,17 +19,20 @@ final public class SpfAgent {
 //	  DDMS->File Explorer /<package name>/shared_prefs/setting.xml
 
     private volatile static SpfAgent instance;
-    SharedPreferences.Editor editor;
+    private String mFileName;
+
+    private SharedPreferences.Editor editor;
 
     @SuppressLint("CommitPrefEdits")
     private SpfAgent(String fileName) {
-        SharedPreferences spf = TextUtils.isEmpty(fileName) ? getSpf() : getSpf(fileName);
+        SharedPreferences spf = getSpf(fileName);
+        this.mFileName = fileName;
         this.editor = spf.edit();
     }
 
 
     public static synchronized SpfAgent init() {
-        return init("");
+        return init("SPFDefaultName");
     }
 
     public static synchronized SpfAgent init(final String fileName) {
@@ -44,6 +47,13 @@ final public class SpfAgent {
         return instance;
     }
 
+
+    public static synchronized SpfAgent EnableNewSpf(final String fileName){
+        instance = null;
+        return init(fileName);
+    }
+
+
     /**
      * 通过 application 获取 指定名称的 SharedPreferences
      * @param fileName 文件名称
@@ -52,10 +62,6 @@ final public class SpfAgent {
     public static SharedPreferences getSpf(String fileName){
         Context ctx = ConfigUtils.getAppCtx();
         return ctx.getSharedPreferences(fileName, Context.MODE_PRIVATE);
-    }
-
-    public static SharedPreferences getSpf(){
-        return getSpf("SPFDefaultName");
     }
 
 
@@ -157,11 +163,11 @@ final public class SpfAgent {
      * @return   没有对应的key  默认返回 ""
      */
     public String getString(String key){
-        return getSpf().getString(key, "");
+        return getSpf(mFileName).getString(key, "");
     }
 
     public String getString(String key, String defValue){
-        return getSpf().getString(key, defValue);
+        return getSpf(mFileName).getString(key, defValue);
     }
 
     /**
@@ -170,10 +176,10 @@ final public class SpfAgent {
      * @return   没有对应的key  默认返回 -1
      */
     public int getInt(String key){
-        return getSpf().getInt(key, -1);
+        return getSpf(mFileName).getInt(key, -1);
     }
     public int getInt(String key, int defValue) {
-        return getSpf().getInt(key, defValue);
+        return getSpf(mFileName).getInt(key, defValue);
     }
 
     /**
@@ -182,10 +188,10 @@ final public class SpfAgent {
      * @return   没有对应的key  默认返回 0
      */
     public long getLong(String key){
-        return getSpf().getLong(key, 0);
+        return getSpf(mFileName).getLong(key, 0);
     }
     public long getLong(String key, long defValue){
-        return getSpf().getLong(key, defValue);
+        return getSpf(mFileName).getLong(key, defValue);
     }
 
     /**
@@ -194,10 +200,10 @@ final public class SpfAgent {
      * @return          没有对应的key 默认返回 0f
      */
     public float getFloat(String key){
-        return getSpf().getFloat(key, 0f);
+        return getSpf(mFileName).getFloat(key, 0f);
     }
     public float getFloat(String key, float defValue){
-        return getSpf().getFloat(key, defValue);
+        return getSpf(mFileName).getFloat(key, defValue);
     }
 
     /**
@@ -206,11 +212,11 @@ final public class SpfAgent {
      * @return      没有对应的key 默认返回false
      */
     public boolean getBoolean(String key){
-        return getSpf().getBoolean(key, false);
+        return getSpf(mFileName).getBoolean(key, false);
     }
 
     public boolean getBoolean(String key, boolean def){
-        return getSpf().getBoolean(key, def);
+        return getSpf(mFileName).getBoolean(key, def);
     }
 
 
@@ -218,8 +224,8 @@ final public class SpfAgent {
      * 获取所有键值对
      * @return
      */
-    public Map<String, ?> getAll(String fileName){
-        return getSpf(fileName).getAll();
+    public Map<String, ?> getAll(){
+        return getSpf(mFileName).getAll();
     }
 
 }
