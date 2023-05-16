@@ -35,7 +35,7 @@ final public class SpfAgent {
         return init("SPFDefaultName");
     }
 
-    public static synchronized SpfAgent init(final String fileName) {
+    public static synchronized SpfAgent init(@NonNull final String fileName) {
         if (null == instance) {
             synchronized (SpfAgent.class) {
                 if (null == instance) {
@@ -48,9 +48,8 @@ final public class SpfAgent {
     }
 
 
-    public static synchronized SpfAgent EnableNewSpf(final String fileName){
-        instance = null;
-        return init(fileName);
+    public static synchronized SpfAgent enableNewSpf(@NonNull final String fileName){
+        return new SpfAgent(fileName);
     }
 
 
