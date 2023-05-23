@@ -2,12 +2,19 @@ package com.fy.baselibrary.utils.hardware;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import androidx.annotation.RequiresApi;
 
+import com.fy.baselibrary.application.ioc.ConfigUtils;
+
+import java.util.ArrayList;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -31,11 +38,9 @@ public class BleUtils {
      * @return bleAdapter
      */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public static BluetoothAdapter getBleAdapter(Context context){
-        final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
-        BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
-
-        return bluetoothAdapter;
+    public static BluetoothAdapter getBleAdapter(){
+        final BluetoothManager bluetoothManager = (BluetoothManager) ConfigUtils.getAppCtx().getSystemService(Context.BLUETOOTH_SERVICE);
+        return bluetoothManager.getAdapter();
     }
 
     /**
@@ -55,7 +60,7 @@ public class BleUtils {
 
         BluetoothAdapter bluetoothAdapter = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            bluetoothAdapter = getBleAdapter(context);
+            bluetoothAdapter = getBleAdapter();
         }
 
         return !(bluetoothAdapter == null || !bluetoothAdapter.isEnabled());
@@ -70,7 +75,7 @@ public class BleUtils {
 
         BluetoothAdapter bluetoothAdapter = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            bluetoothAdapter = getBleAdapter(context);
+            bluetoothAdapter = getBleAdapter();
         }
 
         if (null != bluetoothAdapter) {
@@ -89,7 +94,7 @@ public class BleUtils {
 
         BluetoothAdapter bluetoothAdapter = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            bluetoothAdapter = getBleAdapter(context);
+            bluetoothAdapter = getBleAdapter();
         }
         if (null != bluetoothAdapter) {
             return bluetoothAdapter.disable();
@@ -114,5 +119,38 @@ public class BleUtils {
                         turnOnBluetooth(context);
                     }
                 });
+    }
+
+
+    //获取已绑定设备列表
+    public static ArrayList<BluetoothDevice> getBondedDevices() {
+        Set<BluetoothDevice> devices = getBleAdapter().getBondedDevices();
+        return new ArrayList<>(devices);
+    }
+
+    //搜索周围蓝牙设备，并通过广播返回
+    @SuppressLint("MissingPermission")
+    public static void startDiscovery() {
+        BluetoothAdapter bluetoothAdapter = getBleAdapter();
+
+        if (!bluetoothAdapter.isEnabled()) {
+            bluetoothAdapter.enable(); // 打开蓝牙功能
+            return;
+        }
+        bluetoothAdapter.startDiscovery();
+    }
+
+    /**
+     * 注册 扫描 蓝牙设备，接收广播
+     * @param broadcastReceiver
+     */
+    public static void registerScanBleReceiver(BroadcastReceiver broadcastReceiver){
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BluetoothDevice.ACTION_FOUND);
+        filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+        filter.addAction(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
+        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+
+        ConfigUtils.getAppCtx().registerReceiver(broadcastReceiver, filter);
     }
 }
