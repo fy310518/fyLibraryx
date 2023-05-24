@@ -1,9 +1,9 @@
 package com.fy.baselibrary.utils.hardware.ble;
 
+import android.annotation.SuppressLint;
+
 import com.fy.baselibrary.retrofit.ServerException;
 import com.fy.baselibrary.retrofit.observer.RequestBaseObserver;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -50,6 +50,7 @@ public class BleSocketServerManager extends BleSocketManager {
         return manager;
     }
 
+    @SuppressLint("MissingPermission")
     public void initServer() {
         try {
             mServerSocket = mBluetoothAdapter.listenUsingRfcommWithServiceRecord("server_name", UUID.fromString(UUIDString));
@@ -80,7 +81,7 @@ public class BleSocketServerManager extends BleSocketManager {
                             .subscribeOn(Schedulers.io())
                             .takeUntil(new Predicate<Long>(){
                                 @Override
-                                public boolean test(@NotNull Long aLong) throws Exception {
+                                public boolean test(Long aLong) throws Exception {
                                     return null != mSocket;
                                 }
                             })
