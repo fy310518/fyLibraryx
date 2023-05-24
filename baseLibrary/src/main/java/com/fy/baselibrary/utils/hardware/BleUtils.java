@@ -71,12 +71,9 @@ public class BleUtils {
      * @return true：强制打开 Bluetooth　成功　false：强制打开 Bluetooth 失败
      */
     @SuppressLint("MissingPermission")
-    public static boolean turnOnBluetooth(Context context) {
+    public static boolean turnOnBluetooth() {
 
-        BluetoothAdapter bluetoothAdapter = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            bluetoothAdapter = getBleAdapter();
-        }
+        BluetoothAdapter bluetoothAdapter = getBleAdapter();
 
         if (null != bluetoothAdapter) {
             return bluetoothAdapter.enable();
@@ -90,12 +87,9 @@ public class BleUtils {
      * @return  true：强制关闭 Bluetooth　成功　false：强制关闭 Bluetooth 失败
      */
     @SuppressLint("MissingPermission")
-    public static boolean turnOffBluetooth(Context context) {
+    public static boolean turnOffBluetooth() {
 
-        BluetoothAdapter bluetoothAdapter = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            bluetoothAdapter = getBleAdapter();
-        }
+        BluetoothAdapter bluetoothAdapter = getBleAdapter();
         if (null != bluetoothAdapter) {
             return bluetoothAdapter.disable();
         }
@@ -106,9 +100,9 @@ public class BleUtils {
     /**
      * 判断蓝牙是否打开，如果打开就重启蓝牙
      */
-    public static void reStartBluetooth(final Context context) {
+    public static void reStartBluetooth() {
         //先关闭手机蓝牙
-        turnOffBluetooth(context);
+        turnOffBluetooth();
 
         //延迟1S 打开手机蓝牙
         Observable.timer(1, TimeUnit.SECONDS)
@@ -116,13 +110,24 @@ public class BleUtils {
                 .subscribe(new Consumer<Long>() {
                     @Override
                     public void accept(@NonNull Long aLong) throws Exception {
-                        turnOnBluetooth(context);
+                        turnOnBluetooth();
                     }
                 });
     }
 
+    /**
+     * 当前设备的 蓝牙 名称和mac地址
+     * @return
+     */
+    @SuppressLint({"MissingPermission", "HardwareIds"})
+    public static String getBleAddress(){
+        return getBleAdapter().getName() + "\n" + getBleAdapter().getAddress();
+    }
 
-    //获取已绑定设备列表
+    /**
+     * 获取已绑定蓝牙设备列表
+     */
+    @SuppressLint("MissingPermission")
     public static ArrayList<BluetoothDevice> getBondedDevices() {
         Set<BluetoothDevice> devices = getBleAdapter().getBondedDevices();
         return new ArrayList<>(devices);
