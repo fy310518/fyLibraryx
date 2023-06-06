@@ -251,8 +251,8 @@ public final class RequestUtils {
                     return Observable.just(new File(downParam));
                 }
             }
-        }).subscribeOn(Schedulers.io());
-
+        });
+//                .subscribeOn(Schedulers.io())
 //                .subscribe(new FileCallBack(url, pDialog) {
 //                    @Override
 //                    protected void downSuccess(File file) {
