@@ -539,7 +539,7 @@ public class JumpUtils {
             return;
         }
 
-        PendingIntent pi = PendingIntent.getBroadcast(ConfigUtils.getAppCtx(), 10000, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pi = PendingIntent.getBroadcast(ConfigUtils.getAppCtx(), 10000, intent, PendingIntent.FLAG_IMMUTABLE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             act.startActivity(Intent.createChooser(intent, title, pi.getIntentSender()));
