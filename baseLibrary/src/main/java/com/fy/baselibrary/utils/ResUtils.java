@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -205,6 +206,28 @@ public class ResUtils {
         }
 
         return null;
+    }
+
+    /**
+     * 判断assets文件夹下的文件是否存在
+     * @return false 不存在 true 存在
+     */
+    public static boolean isFileExists(String filename, String path) {
+        AssetManager assetManager = ConfigUtils.getAppCtx().getAssets();
+
+        try {
+            String[] names = assetManager.list(path);
+
+            for(String name : names){
+                if(name.equals(filename)){
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     /*****************************以下为 通过资源名称 获取资源id ***************************************/
