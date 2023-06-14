@@ -312,6 +312,29 @@ public class AppUtils {
         return false;
     }
 
+	/**
+     * 判断指定 服务是否正在运行
+     * @param serviceName 包名+服务的类名（例如：com.example.testbackstage.TestService）
+     * @return true代表正在运行，false代表服务没有正在运行
+     */
+    public static boolean isServiceWork(String serviceName) {
+        ActivityManager myAM = (ActivityManager) ConfigUtils.getAppCtx().getSystemService(Context.ACTIVITY_SERVICE);
+
+        List<ActivityManager.RunningServiceInfo> myList = myAM.getRunningServices(40);
+        if (myList.size() <= 0) {
+            return false;
+        }
+
+        for(ActivityManager.RunningServiceInfo info : myList){
+            String mName = info.service.getClassName();
+            if (mName.equals(serviceName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * 获取当前应用 进程id
      * @return id
