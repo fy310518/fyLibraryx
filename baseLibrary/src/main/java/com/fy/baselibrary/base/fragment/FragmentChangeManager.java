@@ -97,14 +97,9 @@ public class FragmentChangeManager {
      * @param position
      */
     private void setCommitTransaction(FragmentTransaction fragmentTransaction, Fragment showFragment, int position) {
+        if (null == showFragment) return;
         if (null == fragmentTransaction) fragmentTransaction = mFragmentManager.beginTransaction();
 
-        //判断当前的Fragment是否为空，不为空则隐藏
-        if (null != mCurrentFragment) {
-            fragmentTransaction.hide(mCurrentFragment);
-        }
-
-        if (null == showFragment) return;
 
         //判断此Fragment是否已经添加到FragmentTransaction事物中
         if (!showFragment.isAdded()) {
@@ -113,6 +108,11 @@ public class FragmentChangeManager {
             if (isAddToBackStack) fragmentTransaction.addToBackStack(fragmentTag);
         } else {
             fragmentTransaction.show(showFragment);
+        }
+
+        //判断当前的Fragment是否为空，不为空则隐藏
+        if (null != mCurrentFragment) {
+            fragmentTransaction.hide(mCurrentFragment);
         }
 
         //保存当前显示的那个Fragment
