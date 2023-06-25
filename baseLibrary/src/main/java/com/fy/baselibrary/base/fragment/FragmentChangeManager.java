@@ -158,6 +158,8 @@ public class FragmentChangeManager {
     public void popLastFragment(){
         removeFragment(1);
 
+        if(currentIndex < 0) return;
+
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         mCurrentFragment = mFragments.get(currentIndex);//mCurrentFragment 重新赋值
         setFragmentTransition(transaction, currentIndex, currentIndex - 1);
