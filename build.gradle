@@ -4,7 +4,7 @@ buildscript {
     ext {
         var = [
                 compileSdkVersion: 33,
-                buildToolsVersion: "33.0.1",
+                buildToolsVersion: "30.0.3",
 
                 minSdkVersion    : 21,
                 targetSdkVersion : 33,
