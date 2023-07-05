@@ -13,13 +13,18 @@ import androidx.collection.ArrayMap;
 public class Permission {
     private Permission() {}
 
-    //    Android 的权限大致分为三种：
+//    Android 的权限大致分为三种：
 //    普通权限：只需要在清单文件中注册即可
 //    危险权限：需要在代码中动态申请，以弹系统 Dialog 的形式进行请求
 //    特殊权限：需要在代码中动态申请，以跳系统 Activity 的形式进行请求
     /** 收集Android 各版本 特殊权限 */
+    /** 外部存储权限（特殊权限，需要 Android 13 及以上） */
+    public static final String READ_MEDIA_AUDIO = "android.permission.READ_MEDIA_AUDIO";
+    public static final String READ_MEDIA_IMAGES = "android.permission.READ_MEDIA_IMAGES";
+    public static final String READ_MEDIA_VIDEO = "android.permission.READ_MEDIA_VIDEO";
     /** 外部存储权限（特殊权限，需要 Android 11 及以上） */
     public static final String MANAGE_EXTERNAL_STORAGE = "android.permission.MANAGE_EXTERNAL_STORAGE";
+
     /** 应用安装权限（特殊权限，需要 Android 8.0 及以上） */
     public static final String REQUEST_INSTALL_PACKAGES = "android.permission.REQUEST_INSTALL_PACKAGES";
     /** 通知栏权限（特殊权限，需要 Android 7.0 及以上） */

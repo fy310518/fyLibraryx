@@ -61,7 +61,7 @@ public class PermissionFilterAspect {
                 public void hasPermission(List<String> denied, boolean isAll) {
 
                     int permission = isAll ? R.string.permissionSuccess : R.string.permissionAllSuccess;
-                    T.show(permission, -1);
+//                    T.show(permission, -1);
 
                     if (isAll || needPermission.isRun()) {
                         try {

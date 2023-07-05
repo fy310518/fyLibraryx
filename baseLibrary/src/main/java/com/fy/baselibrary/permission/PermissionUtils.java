@@ -55,13 +55,24 @@ public class PermissionUtils {
         // 如果是安卓 6.0 以下版本就默认授予
         if (!OSUtils.isAndroid6()) return true;
 
-        // 检测存储权限
-        if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)
-                || permission.equals(Manifest.permission.READ_MEDIA_IMAGES)
-                || permission.equals(Manifest.permission.READ_MEDIA_VIDEO)
-                || permission.equals(Manifest.permission.READ_MEDIA_AUDIO)) {
-            return hasStoragePermission(context);
+        if(permission.equals(Manifest.permission.READ_MEDIA_IMAGES) || permission.equals(Manifest.permission.READ_MEDIA_VIDEO) || permission.equals(Manifest.permission.READ_MEDIA_AUDIO)){
+            if (OSUtils.isAndroid13()) {
+                return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+            } else if (OSUtils.isAndroid11()) {
+                return context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+            } else {
+                return context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+            }
         }
+
+        if (OSUtils.isAndroid13()) {
+            if(permission.equals(Manifest.permission.POST_NOTIFICATIONS)){ // 通知权限
+                return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+            }
+        }
+
+        // 检测 android 11 存储权限
+        if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)) return hasStoragePermission(context, "");
 
         // 检测安装权限
         if (Permission.REQUEST_INSTALL_PACKAGES.equals(permission)) return hasInstallPermission(context);
@@ -91,14 +102,6 @@ public class PermissionUtils {
                 return context.checkSelfPermission(Permission.PROCESS_OUTGOING_CALLS) == PackageManager.PERMISSION_GRANTED;
             } else if (Permission.READ_PHONE_NUMBERS.equals(permission)) {
                 return context.checkSelfPermission(Permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED;
-            }
-        }
-
-        if (OSUtils.isAndroid13()) { // 通知权限
-            if(permission.equals(Manifest.permission.POST_NOTIFICATIONS)){
-                return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
-            } else {
-                return true;
             }
         }
 
@@ -193,7 +196,7 @@ public class PermissionUtils {
      */
     public static boolean isAppSpecialPermission(Context context, String specialPermission) {
         if (specialPermission.equals(Permission.MANAGE_EXTERNAL_STORAGE)) {
-            return PermissionUtils.hasStoragePermission(context);
+            return PermissionUtils.hasStoragePermission(context, "");
         } else if (specialPermission.equals(Permission.REQUEST_INSTALL_PACKAGES)) {
             return PermissionUtils.hasInstallPermission(context);
         } else if (specialPermission.equals(Permission.SYSTEM_ALERT_WINDOW)) {
@@ -210,12 +213,18 @@ public class PermissionUtils {
     /**
      * 是否有存储权限
      */
-    public static boolean hasStoragePermission(Context context) {
+    public static boolean hasStoragePermission(Context context, String... permissions) {
         if (OSUtils.isAndroid13()) { // READ_MEDIA_IMAGES,READ_MEDIA_AUDIO,READ_MEDIA_VIDEO
-            List<String> requestPermission = PermissionUtils.getRequestPermissionList(context, Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_AUDIO);
+            List<String> requestPermission = PermissionUtils.getRequestPermissionList(context, permissions);
             return requestPermission.size() == 0;
         } else if (OSUtils.isAndroid11()) {
-            return Environment.isExternalStorageManager();
+            List<String> temp = new ArrayList<>(Arrays.asList(permissions));
+            if(temp.contains(Permission.MANAGE_EXTERNAL_STORAGE)){
+                return Environment.isExternalStorageManager();
+            } else {
+                List<String> requestPermission = PermissionUtils.getRequestPermissionList(context, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
+                return requestPermission.size() == 0;
+            }
         } else {
             List<String> requestPermission = PermissionUtils.getRequestPermissionList(context, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
             return requestPermission.size() == 0;
@@ -282,7 +291,10 @@ public class PermissionUtils {
      * 判断某个权限是否是特殊权限
      */
     public static boolean isSpecialPermission(String permission) {
-        return Permission.MANAGE_EXTERNAL_STORAGE.equals(permission) ||
+        return Permission.READ_MEDIA_AUDIO.equals(permission) ||
+                Permission.READ_MEDIA_IMAGES.equals(permission) ||
+                Permission.READ_MEDIA_VIDEO.equals(permission) ||
+                Permission.MANAGE_EXTERNAL_STORAGE.equals(permission) ||
                 Permission.REQUEST_INSTALL_PACKAGES.equals(permission) ||
                 Permission.SYSTEM_ALERT_WINDOW.equals(permission) ||
                 Permission.NOTIFICATION_SERVICE.equals(permission) ||
