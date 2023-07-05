@@ -1,9 +1,8 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion var.compileSdkVersion
-    buildToolsVersion var.buildToolsVersion
+//    buildToolsVersion var.buildToolsVersion
 
     defaultConfig {
         minSdkVersion var.minSdkVersion
