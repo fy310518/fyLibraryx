@@ -3,16 +3,17 @@
 buildscript {
     ext {
         var = [
-                compileSdkVersion: 30,
-                buildToolsVersion: "30.0.3",
+                compileSdkVersion: 33,
+                buildToolsVersion: "33.0.1",
 
                 minSdkVersion    : 21,
-                targetSdkVersion : 30,
+                targetSdkVersion : 33,
 
-                androidx         : "1.2.0",
+                androidx         : "1.6.0",
                 material         : "1.2.1",
+                recycleView      : "1.2.0",
                 constraintLayout : "2.0.1",
-                lifecycle        : "2.2.0",
+                lifecycle        : "2.5.1",
                 work_version     : "2.5.0"
         ]
     }

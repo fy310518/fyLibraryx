@@ -160,9 +160,16 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
             boolean requestSpecialPermission = false;
             // 判断当前是否包含特殊权限
             if (PermissionUtils.containsSpecialPermission(requestPermission)) {
+                // Android 11，12 使用 MANAGE_EXTERNAL_STORAGE进行 存储权限申请， android 13 READ_MEDIA_IMAGES、READ_MEDIA_VIDEO、READ_MEDIA_AUDIO来替代
                 if (requestPermission.contains(Permission.MANAGE_EXTERNAL_STORAGE) && !PermissionUtils.hasStoragePermission(getActivity())) {
-                    // 当前必须是 Android 11 及以上版本，因为 hasStoragePermission 在旧版本上是拿旧权限做的判断，所以这里需要多判断一次版本
-                    if (OSUtils.isAndroid11()) {
+                    if (OSUtils.isAndroid13()) {
+                        requestPermission.remove(Permission.MANAGE_EXTERNAL_STORAGE);
+                        for(String permission : requestPermission) {
+                            if(permission.equals(Manifest.permission.READ_MEDIA_IMAGES) || permission.equals(Manifest.permission.READ_MEDIA_VIDEO) || permission.equals(Manifest.permission.READ_MEDIA_AUDIO)){
+                                requestPermission.add(permission);
+                            }
+                        }
+                    } else if (OSUtils.isAndroid11()) { // 当前必须是 Android 11 及以上版本，因为 hasStoragePermission 在旧版本上是拿旧权限做的判断，所以这里需要多判断一次版本
                         requestSpecialPermission = true;
                         // 存储权限设置界面
                         showSpecialPermissionDialog(Permission.MANAGE_EXTERNAL_STORAGE);

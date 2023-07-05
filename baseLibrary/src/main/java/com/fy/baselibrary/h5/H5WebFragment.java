@@ -72,10 +72,10 @@ public abstract class H5WebFragment<VM extends BaseViewModel, VDB extends ViewDa
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);  //设置与Js交互的权限
         settings.setDomStorageEnabled(true);//开启本地DOM存储
-        settings.setAppCachePath(FileUtils.getCacheDir());
-        settings.setAppCacheEnabled(true);
+//        settings.setAppCachePath(FileUtils.getCacheDir());
+//        settings.setAppCacheEnabled(true);
         settings.setDatabaseEnabled(true);
-        settings.setAppCacheMaxSize(50 * 1024 * 1024);
+//        settings.setAppCacheMaxSize(50 * 1024 * 1024);
         //设置 webView 缓存 模式
         settings.setCacheMode(NetUtils.isConnected() ? WebSettings.LOAD_DEFAULT : WebSettings.LOAD_CACHE_ELSE_NETWORK);
 

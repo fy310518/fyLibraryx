@@ -36,7 +36,7 @@ android {
 
 dependencies {
     implementation "androidx.appcompat:appcompat:$var.androidx"
-    implementation "androidx.recyclerview:recyclerview:$var.androidx"
+    implementation "androidx.recyclerview:recyclerview:$var.recycleView"
     implementation "com.google.android.material:material:$var.material"
     implementation "androidx.constraintlayout:constraintlayout:$var.constraintLayout"
     implementation "androidx.lifecycle:lifecycle-viewmodel:$var.lifecycle"

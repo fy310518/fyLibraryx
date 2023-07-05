@@ -56,7 +56,12 @@ public class PermissionUtils {
         if (!OSUtils.isAndroid6()) return true;
 
         // 检测存储权限
-        if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)) return hasStoragePermission(context);
+        if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)
+                || permission.equals(Manifest.permission.READ_MEDIA_IMAGES)
+                || permission.equals(Manifest.permission.READ_MEDIA_VIDEO)
+                || permission.equals(Manifest.permission.READ_MEDIA_AUDIO)) {
+            return hasStoragePermission(context);
+        }
 
         // 检测安装权限
         if (Permission.REQUEST_INSTALL_PACKAGES.equals(permission)) return hasInstallPermission(context);
@@ -86,6 +91,14 @@ public class PermissionUtils {
                 return context.checkSelfPermission(Permission.PROCESS_OUTGOING_CALLS) == PackageManager.PERMISSION_GRANTED;
             } else if (Permission.READ_PHONE_NUMBERS.equals(permission)) {
                 return context.checkSelfPermission(Permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED;
+            }
+        }
+
+        if (OSUtils.isAndroid13()) { // 通知权限
+            if(permission.equals(Manifest.permission.POST_NOTIFICATIONS)){
+                return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+            } else {
+                return true;
             }
         }
 
@@ -198,7 +211,10 @@ public class PermissionUtils {
      * 是否有存储权限
      */
     public static boolean hasStoragePermission(Context context) {
-        if (OSUtils.isAndroid11()) {
+        if (OSUtils.isAndroid13()) { // READ_MEDIA_IMAGES,READ_MEDIA_AUDIO,READ_MEDIA_VIDEO
+            List<String> requestPermission = PermissionUtils.getRequestPermissionList(context, Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_AUDIO);
+            return requestPermission.size() == 0;
+        } else if (OSUtils.isAndroid11()) {
             return Environment.isExternalStorageManager();
         } else {
             List<String> requestPermission = PermissionUtils.getRequestPermissionList(context, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
