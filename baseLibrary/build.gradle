@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-//apply plugin: 'maven-Publish'
+apply plugin: 'maven-publish'
 //apply plugin: 'com.github.dcendents.android-maven'
 group = 'github.com.fy310518'
 
@@ -36,6 +36,25 @@ android {
         warning 'InvalidPackage'
     }
 }
+
+afterEvaluate {
+    publishing {
+//    配置maven-publishing插件的输出物
+        publications {
+            maven(MavenPublication) {
+                groupId = 'github.com.fy310518'
+                artifactId = 'fyLibraryx'
+                version = '1.3.8'
+            }
+        }
+        repositories {
+            maven {
+                url = uri('../repo')
+            }
+        }
+    }
+}
+
 
 dependencies {
     implementation "androidx.appcompat:appcompat:$var.androidx"
