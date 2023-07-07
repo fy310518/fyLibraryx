@@ -10,11 +10,13 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.NetworkRequest;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.utils.notify.L;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -207,6 +209,52 @@ public class NetUtils {
         }
 
         return resault;
+    }
+
+    /**
+     * 判断端口是否被占用
+     * @param port  端口号
+     * @return 返回 一个可用端口
+     */
+    public static int isPortOccupied(int port){
+        int resultPort = port;
+
+        StringBuffer buffer = new StringBuffer();
+        InputStream input;
+        BufferedReader reader;
+        try {
+            Process p = Runtime.getRuntime().exec("netstat -an");// 获取所有被占用端口
+            input = p.getInputStream();
+            reader = new BufferedReader(new InputStreamReader(input));
+
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line);
+            }
+
+            try {
+                if(null != input){
+                    input.close();
+                    input = null;
+                }
+                if(null != reader){
+                    reader.close();
+                    reader = null;
+                }
+            } catch (IOException e) {
+            }
+
+            for(int i = port; i < 65535; i++){
+                if(!buffer.toString().contains(":" + i)){
+                    resultPort = i;
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return resultPort;
     }
 
     /**
