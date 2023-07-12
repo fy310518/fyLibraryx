@@ -156,7 +156,7 @@ public class S {
         View view = snackbar.getView();
         if (view != null) {
             view.setBackgroundColor(backgroundColor);
-            ((TextView) view.findViewById(R.id.snackbar_text)).setTextColor(messageColor);
+            ((TextView) view.findViewById(com.google.android.material.R.id.snackbar_text)).setTextColor(messageColor);
         }
     }
 

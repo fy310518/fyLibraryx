@@ -291,7 +291,7 @@ public class AnimUtils {
      * @param queryTextListener
      */
     public static void initSearchView(@NonNull SearchView searchView, @DrawableRes int resID, SearchView.OnQueryTextListener queryTextListener) {
-        ImageView mCollapsedIcon = searchView.findViewById(R.id.search_mag_icon);
+        ImageView mCollapsedIcon = searchView.findViewById(androidx.appcompat.R.id.search_mag_icon);
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) mCollapsedIcon.getLayoutParams();
         layoutParams.width = (int) ResUtils.getDimen(R.dimen.spacing_medium_large);
         layoutParams.setMargins(0, 0, 0, 0);
@@ -301,7 +301,7 @@ public class AnimUtils {
         }
 
         //设置输入文本的EditText
-        SearchView.SearchAutoComplete et = searchView.findViewById(R.id.search_src_text);
+        SearchView.SearchAutoComplete et = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
         //设置输入框内提示文字样式
         et.setTextSize(TypedValue.COMPLEX_UNIT_PX, ResUtils.getDimen(R.dimen.txt_small));
         et.setHintTextColor(ResUtils.getColor(R.color.txtLight));//设置提示文字颜色

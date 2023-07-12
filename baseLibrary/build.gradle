@@ -1,24 +1,27 @@
-apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
-group = 'github.com.fy310518'
-
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'maven-publish'
+}
+task generateSourcesJar(type: Jar){
+    from android.sourceSets.main.java.srcDirs
+    classifier 'sources'
+}
 android {
-    compileSdkVersion var.compileSdkVersion
-    buildToolsVersion var.buildToolsVersion
+    compileSdk 33
 
     defaultConfig {
-        minSdkVersion var.minSdkVersion
-        targetSdkVersion var.targetSdkVersion
-        versionCode 3
-        versionName "0.0.3"
+        minSdk 21
+        targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
     }
 
-    dataBinding {
+	dataBinding {
         enabled = true
     }
-
+	
     buildTypes {
         release {
             minifyEnabled false
@@ -26,11 +29,10 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
-
-    lintOptions {
+	lintOptions {
         abortOnError false
         warning 'InvalidPackage'
     }
@@ -43,14 +45,39 @@ android {
         exclude 'META-INF/NOTICE.txt'
         exclude 'publicsuffixes.gz'
     }
+    kotlinOptions {
+        useIR = true
+        jvmTarget = '1.8'
+        freeCompilerArgs += ["-Xskip-prerelease-check"]
+    }
+
+    publishing {
+        singleVariant("release")
+    }
+
 }
 
+afterEvaluate {
+    publishing {
+        //发布的版本信息
+        publications{
+            release(MavenPublication) {
+                from components.release         // 表示发布 release（jitpack 都不会使用到）
+                groupId = 'github.com.fy310518' // 这个是依赖库的组 id
+                artifactId = 'fyLibraryx'       // 依赖库的名称（jitpack 都不会使用到）
+                version ="1.0.0"                //当前版本依赖库版本号，这个jitpack不会使用到，只是我们开发者自己查看
+            }
+        }
+    }
+}
+
+
 dependencies {
-    implementation "androidx.appcompat:appcompat:$var.androidx"
-    implementation "androidx.recyclerview:recyclerview:$var.recycleView"
-    implementation "com.google.android.material:material:$var.material"
-    implementation "androidx.constraintlayout:constraintlayout:$var.constraintLayout"
-    implementation "androidx.lifecycle:lifecycle-viewmodel:$var.lifecycle"
+    implementation "androidx.appcompat:appcompat:1.2.0"
+    implementation "androidx.recyclerview:recyclerview:1.2.0"
+    implementation "com.google.android.material:material:1.2.1"
+    implementation "androidx.constraintlayout:constraintlayout:2.0.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:2.2.0"
 
 
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
@@ -83,22 +110,4 @@ dependencies {
 
     //aop
     implementation 'org.aspectj:aspectjrt:1.9.5'
-}
-
-afterEvaluate {
-    publishing {
-//    配置maven-publishing插件的输出物
-        publications {
-            maven(MavenPublication) {
-                groupId = 'github.com.fy310518'
-                artifactId = 'fyLibraryx'
-                version = '1.3.8'
-            }
-        }
-        repositories {
-            maven {
-                url = uri('../repo')
-            }
-        }
-    }
 }
