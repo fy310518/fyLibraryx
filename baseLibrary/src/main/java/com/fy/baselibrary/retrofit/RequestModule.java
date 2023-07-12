@@ -82,8 +82,8 @@ public final class RequestModule {
                 .addInterceptor(new RequestHeaderInterceptor())
                 .addInterceptor(new TimeoutInterceptor())
                 .addInterceptor(new FileDownInterceptor())
-                .addInterceptor(new CacheCookiesInterceptor())
-                .addNetworkInterceptor(new AddCookiesInterceptor())
+//                .addInterceptor(new CacheCookiesInterceptor())
+//                .addNetworkInterceptor(new AddCookiesInterceptor())
                 .hostnameVerifier((hostname, session) -> {
                     return true;//强行返回true 即验证成功
                 })
