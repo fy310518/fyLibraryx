@@ -84,3 +84,21 @@ dependencies {
     //aop
     implementation 'org.aspectj:aspectjrt:1.9.5'
 }
+
+afterEvaluate {
+    publishing {
+//    配置maven-publishing插件的输出物
+        publications {
+            maven(MavenPublication) {
+                groupId = 'github.com.fy310518'
+                artifactId = 'fyLibraryx'
+                version = '1.3.8'
+            }
+        }
+        repositories {
+            maven {
+                url = uri('../repo')
+            }
+        }
+    }
+}
