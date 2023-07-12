@@ -46,7 +46,7 @@ public class Permission {
 
     /**
      * 处理拨出电话
-     * @deprecated  在 Android 10 已经废弃，请直接使用 {link ANSWER_PHONE_CALLS}
+     * 在 Android 10 已经废弃，请直接使用 {link ANSWER_PHONE_CALLS}
      */
     public static final String PROCESS_OUTGOING_CALLS = "android.permission.PROCESS_OUTGOING_CALLS";
     /** 接听电话（需要 Android 8.0 及以上） */
