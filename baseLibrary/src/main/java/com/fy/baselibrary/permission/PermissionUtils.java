@@ -222,11 +222,11 @@ public class PermissionUtils {
             if(temp.contains(Permission.MANAGE_EXTERNAL_STORAGE)){
                 return Environment.isExternalStorageManager();
             } else {
-                List<String> requestPermission = PermissionUtils.getRequestPermissionList(context, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
+                List<String> requestPermission = PermissionUtils.getRequestPermissionList(context, Manifest.permission.READ_EXTERNAL_STORAGE);
                 return requestPermission.size() == 0;
             }
         } else {
-            List<String> requestPermission = PermissionUtils.getRequestPermissionList(context, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
+            List<String> requestPermission = PermissionUtils.getRequestPermissionList(context, Manifest.permission.READ_EXTERNAL_STORAGE);
             return requestPermission.size() == 0;
         }
     }
