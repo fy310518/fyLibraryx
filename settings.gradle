@@ -1,8 +1,8 @@
 pluginManagement {
     repositories {
+        gradlePluginPortal()
         google()
         mavenCentral()
-        gradlePluginPortal()
     }
 }
 dependencyResolutionManagement {
@@ -10,9 +10,28 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://jitpack.io" }
+        maven { url 'https://jitpack.io' }
     }
 }
+//buildscript {
+//    ext {
+//        var = [
+//                compileSdkVersion: 33,
+//                buildToolsVersion: "33.0.1",
+//
+//                minSdkVersion    : 21,
+//                targetSdkVersion : 33,
+//
+//                androidx         : "1.2.0",
+//                recycleView      : "1.2.0",
+//                material         : "1.2.1",
+//                constraintLayout : "2.0.1",
+//                lifecycle        : "2.2.0",
+//                work_version     : "2.5.0"
+//        ]
+//    }
+//
+//}
 
 rootProject.name = "fyLibraryx"
 include ':app'
