@@ -179,41 +179,20 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                     if (OSUtils.isAndroid13()) {
 
                     } else if (OSUtils.isAndroid11()) {
-                        if (requestPermission.contains(Permission.MANAGE_EXTERNAL_STORAGE)){
-                            requestSpecialPermission = true;
-                            // 存储权限设置界面
-                            showSpecialPermissionDialog(Permission.MANAGE_EXTERNAL_STORAGE);
-                        } else {
-                            requestPermission.remove(Permission.READ_MEDIA_AUDIO);
-                            requestPermission.remove(Permission.READ_MEDIA_IMAGES);
-                            requestPermission.remove(Permission.READ_MEDIA_VIDEO);
-                            requestPermission.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);//写权限包含了 读权限
-                        }
+                        requestPermission.remove(Permission.READ_MEDIA_AUDIO);
+                        requestPermission.remove(Permission.READ_MEDIA_IMAGES);
+                        requestPermission.remove(Permission.READ_MEDIA_VIDEO);
+                        // 存储权限设置界面
+                        requestSpecialPermission = true;
+                        showSpecialPermissionDialog(Permission.MANAGE_EXTERNAL_STORAGE);
                     } else {
                         requestPermission.remove(Permission.READ_MEDIA_AUDIO);
                         requestPermission.remove(Permission.READ_MEDIA_IMAGES);
                         requestPermission.remove(Permission.READ_MEDIA_VIDEO);
-                        requestPermission.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);//写权限包含了 读权限
+                        requestPermission.add(Manifest.permission.READ_EXTERNAL_STORAGE); // 读权限
                     }
                 }
-//                if (requestPermission.contains(Permission.MANAGE_EXTERNAL_STORAGE) && !PermissionUtils.hasStoragePermission(getActivity())) {
-//                    if (OSUtils.isAndroid13()) {
-//                        requestPermission.remove(Permission.MANAGE_EXTERNAL_STORAGE);
-//                        for(String permission : requestPermission) {
-//                            if(permission.equals(Manifest.permission.READ_MEDIA_IMAGES) || permission.equals(Manifest.permission.READ_MEDIA_VIDEO) || permission.equals(Manifest.permission.READ_MEDIA_AUDIO)){
-//                                requestPermission.add(permission);
-//                            }
-//                        }
-//                    } else if (OSUtils.isAndroid11()) { // 当前必须是 Android 11 及以上版本，因为 hasStoragePermission 在旧版本上是拿旧权限做的判断，所以这里需要多判断一次版本
-//                        requestSpecialPermission = true;
-//                        // 存储权限设置界面
-//                        showSpecialPermissionDialog(Permission.MANAGE_EXTERNAL_STORAGE);
-//                    } else {
-//                        requestPermission.remove(Permission.MANAGE_EXTERNAL_STORAGE);
-//                        requestPermission.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);//写权限包含了 读权限
-//                    }
-//
-//                }
+
                 else if (requestPermission.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.hasInstallPermission(getActivity())) {
                     requestSpecialPermission = true;
                     // 跳转到安装权限设置界面
