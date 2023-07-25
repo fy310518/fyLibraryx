@@ -51,7 +51,7 @@ public class PhotoUtils {
 //        if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
             Uri uri;
 
-            File takeImageFile = FileUtils.createFile("Pictures/" + ConfigUtils.getFilePath(), "IMG_", ".jpg", 2);
+            File takeImageFile = FileUtils.createFile(FileUtils.getSDCardDirectoryTpye(Environment.DIRECTORY_DCIM), "IMG_", ".jpg", 2);
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
                 uri = Uri.fromFile(takeImageFile);
             } else {
