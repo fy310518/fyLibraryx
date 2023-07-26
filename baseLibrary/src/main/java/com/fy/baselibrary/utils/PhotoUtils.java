@@ -17,6 +17,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 //import android.support.v4.content.FileProvider;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 
 import com.fy.baselibrary.application.ioc.ConfigUtils;
@@ -49,34 +50,46 @@ public class PhotoUtils {
         takePictureIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 //        if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
-            Uri uri;
 
-            File takeImageFile = FileUtils.createFile(FileUtils.getSDCardDirectoryTpye(Environment.DIRECTORY_DCIM), "IMG_", ".jpg", 2);
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-                uri = Uri.fromFile(takeImageFile);
-            } else {
-                /**
-                 * 7.0 调用系统相机拍照不再允许使用Uri方式，应该替换为 FileProvider
-                 * 并且这样可以解决MIUI系统上拍照返回size为0的情况
-                 */
-                uri = FileProvider.getUriForFile(activity, AppUtils.getFileProviderName(), takeImageFile);
-                //加入uri权限 要不三星手机不能拍照
-                List<ResolveInfo> resInfoList = activity.getPackageManager()
-                        .queryIntentActivities(takePictureIntent, PackageManager.MATCH_DEFAULT_ONLY);
-                for (ResolveInfo resolveInfo : resInfoList) {
-                    String packageName = resolveInfo.activityInfo.packageName;
-                    activity.grantUriPermission(packageName, uri,
-                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                }
+        String folder = FileUtils.getSDCardDirectoryTpye(Environment.DIRECTORY_DCIM) + ConfigUtils.getFilePath();
+        String fileName = FileUtils.getFileName("IMG_", ".jpg");
+
+        ContentValues contentValues = new ContentValues();
+        // 设置插入 external.db 数据库中的 files 数据表的各个字段的值
+        // 设置存储路径 , files 数据表中的对应 relative_path 字段在 MediaStore 中以常量形式定义
+        contentValues.put(MediaStore.Downloads.RELATIVE_PATH, folder);
+        // 设置文件名称
+        contentValues.put(MediaStore.Downloads.DISPLAY_NAME, fileName);
+        // 设置文件标题, 一般是删除后缀, 可以不设置
+        contentValues.put(MediaStore.Downloads.TITLE, "image");
+        // 设置 MIME_TYPE
+        contentValues.put(MediaStore.Downloads.MIME_TYPE, "image/jpg");
+
+        Uri uri = createImageUri(contentValues);
+
+//            File takeImageFile = FileUtils.createFile(FileUtils.getSDCardDirectoryTpye(Environment.DIRECTORY_DCIM) + ConfigUtils.getFilePath(), "IMG_", ".jpg", 2);、
+        File takeImageFile = new File(folder + "/" + fileName);
+
+        // 7.0 调用系统相机拍照不再允许使用Uri方式，应该替换为 FileProvider，并且这样可以解决MIUI系统上拍照返回size为0的情况
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.M){
+            uri = FileProvider.getUriForFile(activity, AppUtils.getFileProviderName(), takeImageFile);
+            //加入uri权限 要不三星手机不能拍照
+            List<ResolveInfo> resInfoList = activity.getPackageManager()
+                    .queryIntentActivities(takePictureIntent, PackageManager.MATCH_DEFAULT_ONLY);
+            for (ResolveInfo resolveInfo : resInfoList) {
+                String packageName = resolveInfo.activityInfo.packageName;
+                activity.grantUriPermission(packageName, uri,
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
             }
+        }
 
-            // 默认情况下，即不需要指定intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-            // 照相机有自己默认的存储路径，拍摄的照片将返回一个缩略图。如果想访问原始图片，
-            // 可以通过dat extra能够得到原始图片位置。即，如果指定了目标uri，data就没有数据，
-            // 如果没有指定uri，则data就返回有数据！
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-            takePictureIntent.putExtra("newFilePath", takeImageFile.getPath());
-            takePictureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        // 默认情况下，即不需要指定intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        // 照相机有自己默认的存储路径，拍摄的照片将返回一个缩略图。如果想访问原始图片，
+        // 可以通过dat extra能够得到原始图片位置。即，如果指定了目标uri，data就没有数据，
+        // 如果没有指定uri，则data就返回有数据！
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        takePictureIntent.putExtra("newFilePath", takeImageFile.getPath());
+        takePictureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 //        }
 
         return takePictureIntent;
@@ -85,13 +98,13 @@ public class PhotoUtils {
     /**
      * 创建图片地址uri,用于保存拍照后的照片 Android 10以后使用这种方法
      */
-    public static Uri createImageUri() {
+    public static Uri createImageUri(ContentValues contentValues) {
         String status = Environment.getExternalStorageState();
         // 判断是否有SD卡,优先使用SD卡存储,当没有SD卡时使用手机存储
         if (status.equals(Environment.MEDIA_MOUNTED)) {
-            return ConfigUtils.getAppCtx().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
+            return ConfigUtils.getAppCtx().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
         } else {
-            return ConfigUtils.getAppCtx().getContentResolver().insert(MediaStore.Images.Media.INTERNAL_CONTENT_URI, new ContentValues());
+            return ConfigUtils.getAppCtx().getContentResolver().insert(MediaStore.Images.Media.INTERNAL_CONTENT_URI, contentValues);
         }
     }
 

@@ -343,10 +343,21 @@ public class FileUtils {
     public static File createFile(String folderPath, String prefix, String suffix, int type) {
         File folder = folderIsExists(folderPath, type);
 
-        String name = TimeUtils.Long2DataString(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS");
-        String filename = prefix + name + suffix;
+
+        String filename = getFileName(prefix, suffix);
 
         return fileIsExists(new File(folder, filename).getPath());
+    }
+
+    /**
+     * 根据系统时间、前缀、后缀 得到一个文件名
+     * @param prefix 目标文件的 前缀 (如：IMG_)
+     * @param suffix 目标文件的 后缀名（如：.jpg）
+     * @return
+     */
+    public static String getFileName(String prefix, String suffix){
+        String name = TimeUtils.Long2DataString(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS");
+        return prefix + name + suffix;
     }
 
     /**
