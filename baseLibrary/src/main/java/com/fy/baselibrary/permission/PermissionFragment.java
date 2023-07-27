@@ -178,7 +178,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
 
                     if (OSUtils.isAndroid13()) {
 
-                    } else if (OSUtils.isAndroid11()) {
+                    } else if (OSUtils.isAndroid10()) {
                         if (requestPermission.contains(Permission.MANAGE_EXTERNAL_STORAGE)){
                             requestSpecialPermission = true;
                             // 存储权限设置界面
@@ -193,7 +193,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                         requestPermission.remove(Permission.READ_MEDIA_AUDIO);
                         requestPermission.remove(Permission.READ_MEDIA_IMAGES);
                         requestPermission.remove(Permission.READ_MEDIA_VIDEO);
-                        requestPermission.add(Manifest.permission.READ_EXTERNAL_STORAGE); // 读权限
+                        requestPermission.add(Manifest.permission.WRITE_EXTERNAL_STORAGE); // 写包含读权限
                     }
                 }
 

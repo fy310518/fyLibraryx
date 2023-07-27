@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
     <external-path name="external_files" path="."/>
+
+<!--    <root-path name="xxx" path="xxxx" /> &lt;!&ndash; 对应/跟目录 &ndash;&gt;-->
+<!--    <files-path name="xxx" path="xxxx" /> &lt;!&ndash; 对应context.getFilesDir()获取到的目录&ndash;&gt;-->
+<!--    <cache-path name="xxx" path="xxxx" /> &lt;!&ndash; 对应context.getCacheDir()获取到的目录 &ndash;&gt;-->
+<!--    <external-path name="xxx" path="xxxx" /> &lt;!&ndash; 对应Environment.getExternalStorageDirectory()获取到的目录 &ndash;&gt;-->
+<!--    <external-files-path name="xxx" path="xxxx" /> &lt;!&ndash; 对应context.getExternalFilesDir(type)获取到的目录，这个type其实就是拼接在当前这个方法获取到的路径的下一级。比如：/storage/emulated/0/Android/data/com.example.myapp/files/type &ndash;&gt;-->
+<!--    <external-cache-path name="xxx" path="xxxx" /> &lt;!&ndash; 对应context.getExternalCacheDir(type)获取到的目录 &ndash;&gt;-->
+<!--    <external-media-path name="xxx" path="xxxx" /> &lt;!&ndash; 对应context.getExternalMediaDirs()[0]获取到的目录 &ndash;&gt;-->
 </paths>
