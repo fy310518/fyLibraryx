@@ -6,15 +6,11 @@ import android.text.TextUtils;
 import android.util.ArrayMap;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.retrofit.converter.file.FileResponseBodyConverter;
 import com.fy.baselibrary.retrofit.load.LoadOnSubscribe;
 import com.fy.baselibrary.retrofit.load.LoadService;
-import com.fy.baselibrary.retrofit.load.down.DownLoadListener;
-import com.fy.baselibrary.retrofit.observer.FileCallBack;
-import com.fy.baselibrary.retrofit.observer.IProgressDialog;
 import com.fy.baselibrary.utils.Constant;
 import com.fy.baselibrary.utils.FileUtils;
 import com.fy.baselibrary.utils.cache.ACache;
@@ -28,11 +24,9 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Function3;
@@ -211,7 +205,7 @@ public final class RequestUtils {
                 }
 
                 String reNameFile = "";
-                if(arrayMap.containsKey("targetFilePath")){
+                if(arrayMap.containsKey("reNameFile")){
                     reNameFile = arrayMap.get("reNameFile");
                 }
 
@@ -222,7 +216,6 @@ public final class RequestUtils {
 
                 String downParam;
                 if (targetFile.exists()) {
-                    SpfAgent.init("").saveInt(tempFile.getName() + Constant.FileDownStatus, 4).commit(false);//下载完成
                     downParam = targetFile.getPath();
                 } else {
                     downParam = "bytes=" + tempFile.length() + "-";
@@ -244,7 +237,6 @@ public final class RequestUtils {
                                         return Observable.just(file);
                                     }
                                 });
-//                        return Observable.just(RequestUtils.create(LoadService.class).download(downParam, url));
                     }
                 } else {
                     SpfAgent.init("").saveInt(tempFile.getName() + Constant.FileDownStatus, 4).commit(false);

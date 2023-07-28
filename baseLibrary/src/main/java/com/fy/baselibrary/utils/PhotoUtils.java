@@ -16,10 +16,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 
-import androidx.core.content.FileProvider;
-
 import com.fy.baselibrary.application.ioc.ConfigUtils;
-import com.fy.baselibrary.utils.os.OSUtils;
+import com.fy.baselibrary.utils.media.UriUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -52,16 +50,11 @@ public class PhotoUtils {
         String fileName = FileUtils.getFileName("IMG_", ".jpg");
 
         ContentValues contentValues = new ContentValues();
-        // 设置存储路径 , files 数据表中的对应 relative_path 字段在 MediaStore 中以常量形式定义
         contentValues.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DCIM + "/" + ConfigUtils.getFilePath());
-        // 设置文件名称
         contentValues.put(MediaStore.Downloads.DISPLAY_NAME, fileName);
-        // 设置文件标题, 一般是删除后缀, 可以不设置
         contentValues.put(MediaStore.Downloads.TITLE, "image");
-        // 设置 MIME_TYPE
         contentValues.put(MediaStore.Downloads.MIME_TYPE, "image/jpg");
-
-        Uri uri = createFileUri(contentValues, folder, fileName);
+        Uri uri = UriUtils.createFileUri(contentValues, "Images");
 
         // 7.0 调用系统相机拍照不再允许使用Uri方式，应该替换为 FileProvider，并且这样可以解决MIUI系统上拍照返回size为0的情况
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.M){
@@ -84,31 +77,6 @@ public class PhotoUtils {
         takePictureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
         return takePictureIntent;
-    }
-
-    /**
-     * android 向sdcard 写文件 兼容方案
-     * 返回文件 uri
-     * @param contentValues Android 10以后使用 ContentValues 在sdcard 实现 文件相关操作
-     * @param filePath 文件路径
-     * @param fileName 文件名 带后缀【如 xxx.png】
-     */
-    public static Uri createFileUri(ContentValues contentValues, String filePath, String fileName) {
-        if(OSUtils.isAndroid10()) { // Android 10以后使用这种方法
-            if (FileUtils.isSDCardEnable()) {
-                return ConfigUtils.getAppCtx().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
-            } else {
-                return ConfigUtils.getAppCtx().getContentResolver().insert(MediaStore.Images.Media.INTERNAL_CONTENT_URI, contentValues);
-            }
-        } else {
-            FileUtils.folderIsExists(filePath);
-            File file = FileUtils.fileIsExists(filePath + "/" + fileName);
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                return Uri.fromFile(file);
-            } else {
-                return FileProvider.getUriForFile(ConfigUtils.getAppCtx(), AppUtils.getFileProviderName(), file);
-            }
-        }
     }
 
     /**

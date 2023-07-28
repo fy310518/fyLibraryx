@@ -34,7 +34,9 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
 
     //添加 进度发射器
     public static void addListener(String url, String targetFilePath, String reName, LoadOnSubscribe loadOnSubscribe) {
-        LISTENER_MAP.put(url, loadOnSubscribe);
+        if (null != loadOnSubscribe) {
+            LISTENER_MAP.put(url, loadOnSubscribe);
+        }
         if (!TextUtils.isEmpty(targetFilePath)){
             targetPath_MAP.put(url, targetFilePath);
         }

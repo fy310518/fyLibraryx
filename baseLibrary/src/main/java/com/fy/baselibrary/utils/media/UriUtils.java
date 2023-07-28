@@ -3,6 +3,7 @@ package com.fy.baselibrary.utils.media;
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -10,11 +11,15 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 
 import androidx.core.content.FileProvider;
 
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.utils.AppUtils;
+import com.fy.baselibrary.utils.FileUtils;
+import com.fy.baselibrary.utils.notify.L;
+import com.fy.baselibrary.utils.os.OSUtils;
 
 import java.io.File;
 
@@ -53,7 +58,85 @@ public class UriUtils {
     }
 
     /**
-     * 适配api19以上,根据uri获取图片的绝对路径
+     * android 向 sdcard 创建文件或文件夹 兼容方案，返回文件 uri
+     *
+     * @param contentValues Android 10以后使用 ContentValues 在sdcard 实现 文件相关操作
+     *                      ContentValues contentValues = new ContentValues();
+     *                      //    设置存储路径 , files 数据表中的对应 relative_path 字段在 MediaStore 中以常量形式定义
+     *                      contentValues.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DCIM + "/" + ConfigUtils.getFilePath());
+     *                      //     设置文件名称 带后缀【如 xxx.png】
+     *                      contentValues.put(MediaStore.Downloads.DISPLAY_NAME, fileName);
+     *                      //     设置文件标题, 一般是删除后缀, 可以不设置
+     *                      contentValues.put(MediaStore.Downloads.TITLE, "image");
+     *                      //    设置 MIME_TYPE
+     *                      contentValues.put(MediaStore.Downloads.MIME_TYPE, "image/jpg");
+     *
+     * @param uriType       【Audio，Images，Video，Downloads】
+     *                      MediaStore.Audio.Media.EXTERNAL_CONTENT_URI：存储在手机外部存储器上的音频文件Uri路径。
+     *                      MediaStore.Audio.Media.INTERNAL_CONTENT_URI：存储在手机内部存储器上的音频文件Uri路径。
+     *                      MediaStore.Images.Media.EXTERNAL_CONTENT_URI：存储在手机外部存储器上的图片文件Uri路径。
+     *                      MediaStore.Images.Media.INTERNAL_CONTENT_URI：存储在手机内部存储器上的图片文件Uri路径。
+     *                      MediaStore.Video.Media.EXTERNAL_CONTENT_URI：存储在手机外部存储器上的视频文件Uri路径。
+     *                      MediaStore.Video.Media.INTERNAL_CONTENT_URI：存储在手机内部存储器上的视频文件Uri路径。
+     *                      MediaStore.Downloads.EXTERNAL_CONTENT_URI： 是Android10版本新增API，用于创建、访问非媒体文件。
+     *                      MediaStore.Downloads.INTERNAL_CONTENT_URI： 是Android10版本新增API，用于创建、访问非媒体文件。
+     */
+    public static Uri createFileUri(ContentValues contentValues, String uriType) {
+        // 文件路径
+        String path = contentValues.getAsString(MediaStore.Downloads.RELATIVE_PATH);
+        if (TextUtils.isEmpty(path)) return null;
+
+        if (OSUtils.isAndroid10()) {
+            Uri insertUri;
+            if (FileUtils.isSDCardEnable()) {
+                if (uriType.equals("Audio")) {
+                    insertUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                } else if (uriType.equals("Images")) {
+                    insertUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                } else if (uriType.equals("Video")) {
+                    insertUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                } else {
+                    insertUri = MediaStore.Downloads.EXTERNAL_CONTENT_URI;
+                }
+            } else {
+                if (uriType.equals("Audio")) {
+                    insertUri = MediaStore.Audio.Media.INTERNAL_CONTENT_URI;
+                } else if (uriType.equals("Images")) {
+                    insertUri = MediaStore.Images.Media.INTERNAL_CONTENT_URI;
+                } else if (uriType.equals("Video")) {
+                    insertUri = MediaStore.Video.Media.INTERNAL_CONTENT_URI;
+                } else {
+                    insertUri = MediaStore.Downloads.INTERNAL_CONTENT_URI;
+                }
+            }
+
+            Uri insert = ConfigUtils.getAppCtx()
+                    .getContentResolver()
+                    .insert(insertUri, contentValues);
+
+            if (insert != null) {
+                L.e("SuperFileUtils", "文件创建失败");
+            }
+
+            return insert;
+        } else {
+            File file = FileUtils.folderIsExists(path);
+
+            String fileName = contentValues.getAsString(MediaStore.Downloads.DISPLAY_NAME);
+            if (!TextUtils.isEmpty(fileName)) {
+                file = FileUtils.fileIsExists(path + "/" + fileName);
+            }
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                return Uri.fromFile(file);
+            } else {
+                return FileProvider.getUriForFile(ConfigUtils.getAppCtx(), AppUtils.getFileProviderName(), file);
+            }
+        }
+    }
+
+    /**
+     * 适配api19以上,根据uri获取文件的绝对路径
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public static String getRealPathFromUri_AboveApi19(Context context, Uri uri) {
