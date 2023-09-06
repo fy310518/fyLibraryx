@@ -15,7 +15,7 @@ import com.fy.baselibrary.utils.notify.L;
 public class BaseViewModel extends AndroidViewModel {
 
     public BaseViewModel() {
-        super((Application) ConfigUtils.getInstance().getAppCtx());
+        super((Application) ConfigUtils.getAppCtx());
     }
 
     public BaseViewModel(@NonNull Application application) {

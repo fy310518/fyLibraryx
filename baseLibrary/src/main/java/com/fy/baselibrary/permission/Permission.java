@@ -94,11 +94,11 @@ public class Permission {
         put(Manifest.permission.ACCESS_MEDIA_LOCATION, Manifest.permission_group.STORAGE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            put(Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_IMAGES);
-            put(Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_VIDEO);
-            put(Manifest.permission.READ_MEDIA_AUDIO, Manifest.permission.READ_MEDIA_AUDIO);
+            put(Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission_group.STORAGE);
+            put(Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission_group.STORAGE);
+            put(Manifest.permission.READ_MEDIA_AUDIO, Manifest.permission_group.STORAGE);
 
-            put(Manifest.permission.POST_NOTIFICATIONS, Manifest.permission.POST_NOTIFICATIONS);
+            put(Manifest.permission.POST_NOTIFICATIONS, Manifest.permission_group.NOTIFICATIONS);
         }
     }};
 
