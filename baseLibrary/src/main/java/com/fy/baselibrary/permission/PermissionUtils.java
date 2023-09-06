@@ -6,12 +6,14 @@ import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.fy.baselibrary.BuildConfig;
@@ -291,11 +293,18 @@ public class PermissionUtils {
      * 判断某个权限是否是特殊权限
      */
     public static boolean isSpecialPermission(String permission) {
-        return Permission.MANAGE_EXTERNAL_STORAGE.equals(permission) ||
-                Permission.REQUEST_INSTALL_PACKAGES.equals(permission) ||
-                Permission.SYSTEM_ALERT_WINDOW.equals(permission) ||
-                Permission.NOTIFICATION_SERVICE.equals(permission) ||
-                Permission.WRITE_SETTINGS.equals(permission);
+        if (OSUtils.isAndroid13()) { // 不是特殊权限
+            return Permission.READ_MEDIA_AUDIO.equals(permission) ||
+                    Permission.READ_MEDIA_IMAGES.equals(permission) ||
+                    Permission.READ_MEDIA_VIDEO.equals(permission);
+        } else if (OSUtils.isAndroid11()) {
+            return Permission.MANAGE_EXTERNAL_STORAGE.equals(permission);
+        } else {
+            return Permission.REQUEST_INSTALL_PACKAGES.equals(permission) ||
+                    Permission.SYSTEM_ALERT_WINDOW.equals(permission) ||
+                    Permission.NOTIFICATION_SERVICE.equals(permission) ||
+                    Permission.WRITE_SETTINGS.equals(permission);
+        }
     }
 
     /**
@@ -334,8 +343,16 @@ public class PermissionUtils {
             return jumpPermiSettting(context);
         }
 
+        if(deniedPermissions.contains(Manifest.permission.POST_NOTIFICATIONS)) { // 通知权限 进入通知设置页面
+            return notificationSetting(context);
+        }
+
         // 如果失败的权限里面包含了特殊权限
         if (PermissionUtils.containsSpecialPermission(deniedPermissions)) {
+            if (OSUtils.isAndroid13()) {
+                return jumpPermiSettting(context);
+            }
+
             // 如果当前只有一个权限被拒绝了
             if (deniedPermissions.size() == 1) {
                 String permission = deniedPermissions.get(0);
@@ -363,12 +380,6 @@ public class PermissionUtils {
     }
 
 
-    /**
-     * 判断传入意图 的 Activity 是否存在
-     */
-    public static boolean hasActivityIntent(Context context, Intent intent) {
-        return !context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isEmpty();
-    }
 
     /**
      * 获取悬浮窗权限设置界面意图
@@ -446,6 +457,22 @@ public class PermissionUtils {
         return intent;
     }
 
+
+    /**
+     * 跳转到 本应用的 指定 通知 设置界面
+     * @param context
+     */
+    public static Intent notificationSetting(Context context){
+        ApplicationInfo appInfo = context.getApplicationInfo();
+
+        Intent localIntent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+        //这种方案适用于 API 26, 即8.0（含8.0）以上可以用
+        localIntent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+        localIntent.putExtra(Settings.EXTRA_CHANNEL_ID, appInfo.uid);
+
+        return localIntent;
+    }
+
     /**     以下为适配不同厂商手机 进入权限管理界面   */
     private static final String MARK = Build.MANUFACTURER.toLowerCase();
     /**
@@ -466,17 +493,30 @@ public class PermissionUtils {
             intent = sony(context);
         } else if (MARK.contains("lg")) {
             intent = lg(context);
+        } else if (MARK.contains("google")) {
+            intent = google(context);
         }
 
-        if (null == intent || PermissionUtils.hasActivityIntent(context, intent)){
-            intent = google(context);
+        if (null == intent || hasActivityIntent(context, intent)){
+            intent = appInfo(context);
         }
         return intent;
     }
 
-    private static Intent google(Context context) {
+    //  默认打开应用 详情页
+    private static Intent appInfo(Context context) {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(Uri.fromParts("package", context.getPackageName(), null));
+        return intent;
+    }
+
+
+    private static Intent google(Context context) {
+//        com.google.android.permissioncontroller/com.android.permissioncontroller.permission.ui.ManagePermissionsActivity
+        Intent intent = new Intent();
+        intent.putExtra("packageName", context.getPackageName());
+        ComponentName comp = new ComponentName("com.google.android.permissioncontroller", "com.android.permissioncontroller.permission.ui.ManagePermissionsActivity");
+        intent.setComponent(comp);
         return intent;
     }
 
@@ -500,10 +540,10 @@ public class PermissionUtils {
         Intent intent = new Intent();
 
         intent.setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.permissionmanager.ui.MainActivity"));
-        if (hasIntent(context, intent)) return intent;
+        if (hasActivityIntent(context, intent)) return intent;
 
         intent.setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.addviewmonitor.AddViewMonitorActivity"));
-        if (hasIntent(context, intent)) return intent;
+        if (hasActivityIntent(context, intent)) return intent;
 
         intent.setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.notificationmanager.ui.NotificationManagmentActivity"));
 
@@ -513,15 +553,13 @@ public class PermissionUtils {
     private static Intent xiaomi(Context context) {
         Intent intent = new Intent("miui.intent.action.APP_PERM_EDITOR");
         intent.putExtra("extra_pkgname", context.getPackageName());
-        if (hasIntent(context, intent)) return intent;
-
-        intent.setPackage("com.miui.securitycenter");
-        if (hasIntent(context, intent)) return intent;
+        if (hasActivityIntent(context, intent)) return intent;
 
         intent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.AppPermissionsEditorActivity");
-        if (hasIntent(context, intent)) return intent;
+        if (hasActivityIntent(context, intent) && PermissionUtils.hasActivityIntent(context, intent)) return intent;
 
         intent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
+
         return intent;
     }
 
@@ -529,9 +567,9 @@ public class PermissionUtils {
         Intent intent = new Intent();
         intent.putExtra("packageName", context.getPackageName());
         intent.setClassName("com.color.safecenter", "com.color.safecenter.permission.floatwindow.FloatWindowListActivity");
-        if (hasIntent(context, intent)) return intent;
+        if (hasActivityIntent(context, intent)) return intent;
         intent.setClassName("com.coloros.safecenter", "com.coloros.safecenter.sysfloatwindow.FloatWindowListActivity");
-        if (hasIntent(context, intent)) return intent;
+        if (hasActivityIntent(context, intent)) return intent;
         intent.setClassName("com.oppo.safe", "com.oppo.safe.permission.PermissionAppListActivity");
         return intent;
     }
@@ -540,7 +578,7 @@ public class PermissionUtils {
         Intent intent = new Intent();
         intent.setClassName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.FloatWindowManager");
         intent.putExtra("packagename", context.getPackageName());
-        if (hasIntent(context, intent)) return intent;
+        if (hasActivityIntent(context, intent)) return intent;
 
         intent.setComponent(new ComponentName("com.iqoo.secure", "com.iqoo.secure.safeguard.SoftPermissionDetailActivity"));
         return intent;
@@ -553,7 +591,10 @@ public class PermissionUtils {
         return intent;
     }
 
-    private static boolean hasIntent(Context context, Intent intent) {
-        return context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
+    /**
+     * 判断传入意图 的 Activity 是否存在
+     */
+    public static boolean hasActivityIntent(Context context, Intent intent) {
+        return !context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isEmpty();
     }
 }

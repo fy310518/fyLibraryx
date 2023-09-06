@@ -447,17 +447,6 @@ public class JumpUtils {
     }
 
     /**
-     * 跳转到 对应 action的设置界面
-     * @param act
-     * @param action 如：Settings.ACTION_APPLICATION_DETAILS_SETTINGS(权限设置)
-     */
-    public static void jumpSetting(Activity act, String action){
-        Intent localIntent = new Intent(action);
-        localIntent.setData(Uri.fromParts("package", act.getPackageName(), null));
-        act.startActivity(localIntent);
-    }
-
-    /**
      * 跳转到 本应用的 指定action 的设置界面
      * @param act
      * @param action  如： Settings.ACTION_APP_NOTIFICATION_SETTINGS （通知设置）
