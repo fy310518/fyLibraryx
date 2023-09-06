@@ -232,16 +232,15 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
 
     /**
      * 调用系统弹窗请求权限
-     * @param isRefuse     是否勾选了（“不在提示”多选框）
      */
-    public void onSurePermission(boolean isRefuse) {
-        if (isRefuse) {
+    public void onSurePermission() {
+//        if (isRefuse) {
             isToSettingPermission = true;
             List<String> rationaleList = PermissionUtils.getShouldRationaleList(getActivity(), mPermissions);
             PermissionUtils.startPermissionActivity(this, rationaleList);
-        } else {
-            checkPermission(mPermissions);
-        }
+//        } else {
+//            checkPermission(mPermissions);
+//        }
     }
 
     /**
@@ -294,7 +293,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
 
                         holder.setText(R.id.tvpermissionConfirm, isAlwaysRefuse ? R.string.set : R.string.ok);
                         holder.setOnClickListener(R.id.tvpermissionConfirm, v -> {
-                            onSurePermission(isAlwaysRefuse);
+                            onSurePermission();
                             dialog.dismiss(false);
                         });
 
