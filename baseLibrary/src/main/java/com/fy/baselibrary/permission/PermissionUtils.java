@@ -291,10 +291,7 @@ public class PermissionUtils {
      * 判断某个权限是否是特殊权限
      */
     public static boolean isSpecialPermission(String permission) {
-        return Permission.READ_MEDIA_AUDIO.equals(permission) ||
-                Permission.READ_MEDIA_IMAGES.equals(permission) ||
-                Permission.READ_MEDIA_VIDEO.equals(permission) ||
-                Permission.MANAGE_EXTERNAL_STORAGE.equals(permission) ||
+        return Permission.MANAGE_EXTERNAL_STORAGE.equals(permission) ||
                 Permission.REQUEST_INSTALL_PACKAGES.equals(permission) ||
                 Permission.SYSTEM_ALERT_WINDOW.equals(permission) ||
                 Permission.NOTIFICATION_SERVICE.equals(permission) ||
