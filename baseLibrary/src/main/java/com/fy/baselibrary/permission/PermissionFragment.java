@@ -294,7 +294,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
 
                         holder.setText(R.id.tvpermissionConfirm, isAlwaysRefuse ? R.string.set : R.string.ok);
                         holder.setOnClickListener(R.id.tvpermissionConfirm, v -> {
-                            onSurePermission(isAlwaysRefuse);
+                            onSurePermission(isAlwaysRefuse);// todo 需要验证
                             dialog.dismiss(false);
                         });
 
