@@ -316,21 +316,19 @@ public class PermissionUtils {
      * @param sunPermission
      */
     public static String getPermissionGroup(String sunPermission) {
-        if(Permission.READ_MEDIA_AUDIO.equals(sunPermission) ||
-                Permission.READ_MEDIA_IMAGES.equals(sunPermission) ||
-                Permission.READ_MEDIA_VIDEO.equals(sunPermission)){
-            if (OSUtils.isAndroid13()) {
-
-            } else {
-                sunPermission = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        if (OSUtils.isAndroid13()) {
+            return Permission.permissionMap.get(sunPermission);
+        } else if (OSUtils.isAndroid11()) {
+            return Permission.permissionMap.get(sunPermission);
+        } else if (OSUtils.isAndroid10()){
+            return Permission.permissionMap.get(sunPermission);
+        } else {
+            try {
+                return ConfigUtils.getAppCtx().getPackageManager().getPermissionInfo(sunPermission, 0).group;
+            } catch (PackageManager.NameNotFoundException e) {
             }
+            return "";
         }
-
-        try {
-            return ConfigUtils.getAppCtx().getPackageManager().getPermissionInfo(sunPermission, 0).group;
-        } catch (PackageManager.NameNotFoundException e) {
-        }
-        return "";
 
     }
 
