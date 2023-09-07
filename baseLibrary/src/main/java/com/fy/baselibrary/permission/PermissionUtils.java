@@ -314,7 +314,7 @@ public class PermissionUtils {
     }
 
     /**
-     * 根据权限 获取 权限组
+     * 根据权限 获取 权限组 
      * @param sunPermission
      */
     public static String getPermissionGroup(String sunPermission){
