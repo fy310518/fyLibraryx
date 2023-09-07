@@ -346,7 +346,7 @@ public class PermissionUtils {
     public static void startPermissionActivity(Fragment fragment, List<String> deniedPermissions) {
         try {
             fragment.startActivityForResult(getSmartPermissionIntent(fragment.getContext(), deniedPermissions), PermissionFragment.PERMISSION_REQUEST_CODE);
-        } catch (Exception ignored) { 
+        } catch (Exception ignored) {
             fragment.startActivityForResult(appInfo(fragment.getContext()), PermissionFragment.PERMISSION_REQUEST_CODE);
         }
     }
