@@ -135,7 +135,13 @@ public class PermissionUtils {
         if (!OSUtils.isAndroid6()) return false;
 
         // 特殊权限不算，本身申请方式和危险权限申请方式不同，因为没有永久拒绝的选项，所以这里返回 false
-        if (isSpecialPermission(permission)) return false;
+        if (isSpecialPermission(permission)){
+            if (OSUtils.isAndroid13()){ // 从特殊权限里面 移除 android13的 三个媒体权限【因为 判断特殊权限里面，把这三个权限列为了 特殊权限，】
+
+            } else {
+                return false;
+            }
+        }
 
         if (!OSUtils.isAndroid10()) {
             // 检测 10.0 的三个新权限，如果当前版本不符合最低要求，那么就用旧权限进行检测
@@ -293,7 +299,7 @@ public class PermissionUtils {
      * 判断某个权限是否是特殊权限
      */
     public static boolean isSpecialPermission(String permission) {
-        if (OSUtils.isAndroid13()) { // 不是特殊权限
+        if (OSUtils.isAndroid13()) { // 其实不是特殊权限
             return Permission.READ_MEDIA_AUDIO.equals(permission) ||
                     Permission.READ_MEDIA_IMAGES.equals(permission) ||
                     Permission.READ_MEDIA_VIDEO.equals(permission);
@@ -497,7 +503,7 @@ public class PermissionUtils {
             intent = google(context);
         }
 
-        if (null == intent || hasActivityIntent(context, intent)){
+        if (null == intent || !hasActivityIntent(context, intent)){
             intent = appInfo(context);
         }
         return intent;
@@ -515,8 +521,9 @@ public class PermissionUtils {
 //        com.google.android.permissioncontroller/com.android.permissioncontroller.permission.ui.ManagePermissionsActivity
         Intent intent = new Intent();
         intent.putExtra("packageName", context.getPackageName());
-        ComponentName comp = new ComponentName("com.google.android.permissioncontroller", "com.android.permissioncontroller.permission.ui.ManagePermissionsActivity");
-        intent.setComponent(comp);
+        intent.setClassName("com.google.android.permissioncontroller", "com.android.permissioncontroller.permission.ui.ManagePermissionsActivity");
+//        ComponentName comp = new ComponentName("com.google.android.permissioncontroller", "com.android.permissioncontroller.permission.ui.ManagePermissionsActivity");
+//        intent.setComponent(comp);
         return intent;
     }
 
@@ -556,7 +563,7 @@ public class PermissionUtils {
         if (hasActivityIntent(context, intent)) return intent;
 
         intent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.AppPermissionsEditorActivity");
-        if (hasActivityIntent(context, intent) && PermissionUtils.hasActivityIntent(context, intent)) return intent;
+        if (hasActivityIntent(context, intent)) return intent;
 
         intent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
 
