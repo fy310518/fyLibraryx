@@ -347,7 +347,7 @@ public class PermissionUtils {
         try {
             fragment.startActivityForResult(getSmartPermissionIntent(fragment.getContext(), deniedPermissions), PermissionFragment.PERMISSION_REQUEST_CODE);
         } catch (Exception ignored) {
-            fragment.startActivityForResult(jumpPermiSettting(fragment.getContext()), PermissionFragment.PERMISSION_REQUEST_CODE);
+            fragment.startActivityForResult(appInfo(fragment.getContext()), PermissionFragment.PERMISSION_REQUEST_CODE);
         }
     }
 
@@ -497,7 +497,9 @@ public class PermissionUtils {
      */
     public static Intent jumpPermiSettting(Context context) {
         Intent intent = null;
-        if (MARK.contains("xiaomi")) {
+        if (MARK.contains("HUAWEI")) {
+            intent = huawei(context);
+        } else if (MARK.contains("xiaomi")) {
             intent = xiaomi(context);
         } else if (MARK.contains("oppo")) {
             intent = oppo(context);
@@ -509,8 +511,6 @@ public class PermissionUtils {
             intent = sony(context);
         } else if (MARK.contains("lg")) {
             intent = lg(context);
-        } else if (MARK.contains("google")) {
-            intent = google(context);
         }
 
         if (null == intent || !hasActivityIntent(context, intent)){
@@ -527,19 +527,9 @@ public class PermissionUtils {
     }
 
 
-    private static Intent google(Context context) {
-//        com.google.android.permissioncontroller/com.android.permissioncontroller.permission.ui.ManagePermissionsActivity
-        Intent intent = new Intent();
-        intent.putExtra("packageName", context.getPackageName());
-        intent.setClassName("com.google.android.permissioncontroller", "com.android.permissioncontroller.permission.ui.ManagePermissionsActivity");
-//        ComponentName comp = new ComponentName("com.google.android.permissioncontroller", "com.android.permissioncontroller.permission.ui.ManagePermissionsActivity");
-//        intent.setComponent(comp);
-        return intent;
-    }
-
     private static Intent lg(Context context) {
         Intent intent = new Intent("android.intent.action.MAIN");
-        intent.putExtra("packageName", BuildConfig.LIBRARY_PACKAGE_NAME);
+        intent.putExtra("packageName", context.getPackageName());
         ComponentName comp = new ComponentName("com.android.settings", "com.android.settings.Settings$AccessLockSummaryActivity");
         intent.setComponent(comp);
         return intent;
@@ -547,7 +537,7 @@ public class PermissionUtils {
 
     private static Intent sony(Context context) {
         Intent intent = new Intent();
-        intent.putExtra("packageName", BuildConfig.LIBRARY_PACKAGE_NAME);
+        intent.putExtra("packageName", context.getPackageName());
         ComponentName comp = new ComponentName("com.sonymobile.cta", "com.sonymobile.cta.SomcCTAMainActivity");
         intent.setComponent(comp);
         return intent;

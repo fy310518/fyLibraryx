@@ -308,7 +308,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                 .setGravity(Gravity.BOTTOM)
                 .setAnim(R.style.AnimUp)
                 .setKeyBack(true)
-                .show(getFragmentManager(), "PermissionFragment");
+                .show(getChildFragmentManager(), "PermissionFragment");
     }
 
     /**
@@ -370,7 +370,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                 .setGravity(Gravity.BOTTOM)
                 .setAnim(R.style.AnimUp)
                 .setKeyBack(true)
-                .show(getFragmentManager(), "PermissionFragment");
+                .show(getChildFragmentManager(), "PermissionFragment");
     }
 
     //从全局 mPermissions 中移除 特殊权限
