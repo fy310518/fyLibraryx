@@ -316,6 +316,15 @@ public class PermissionUtils {
      * @param sunPermission
      */
     public static String getPermissionGroup(String sunPermission) {
+        if(Permission.READ_MEDIA_AUDIO.equals(sunPermission) ||
+                Permission.READ_MEDIA_IMAGES.equals(sunPermission) ||
+                Permission.READ_MEDIA_VIDEO.equals(sunPermission)){
+            if (OSUtils.isAndroid13()) {
+            } else {
+                sunPermission = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+            }
+        }
+
         if (OSUtils.isAndroid13()) {
             return Permission.permissionMap.get(sunPermission);
         } else if (OSUtils.isAndroid11()) {
