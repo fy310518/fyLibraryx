@@ -172,10 +172,9 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                         storagePermission.add(permission);
                     }
                 }
-                String[] array = (String[])storagePermission.toArray(new String[storagePermission.size()]);
+                String[] array = storagePermission.toArray(new String[storagePermission.size()]);
 
                 if(!PermissionUtils.hasStoragePermission(getActivity(), array) && storagePermission.size() > 0){ // 是否需要申请 存储权限
-
                     if (OSUtils.isAndroid13()) {
 
                     } else if (OSUtils.isAndroid10()) {

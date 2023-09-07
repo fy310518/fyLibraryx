@@ -1,10 +1,13 @@
 package com.fy.baselibrary.permission;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.os.Build;
 
 import androidx.collection.ArrayMap;
+
+import com.fy.baselibrary.utils.os.OSUtils;
 
 /**
  * description  单独列出 不同版本 变更的权限
@@ -60,7 +63,7 @@ public class Permission {
 
 
 
-    @TargetApi(Build.VERSION_CODES.Q)
+    @SuppressLint("InlinedApi")
     public static final ArrayMap<String, String> permissionMap = new ArrayMap<String, String>(){{
         put(Manifest.permission.READ_CALENDAR, Manifest.permission_group.CALENDAR);
         put(Manifest.permission.WRITE_CALENDAR, Manifest.permission_group.CALENDAR);
@@ -93,13 +96,12 @@ public class Permission {
         put(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission_group.STORAGE);
         put(Manifest.permission.ACCESS_MEDIA_LOCATION, Manifest.permission_group.STORAGE);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//        if (OSUtils.isAndroid13()) {
             put(Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission_group.READ_MEDIA_VISUAL);
             put(Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission_group.READ_MEDIA_VISUAL);
             put(Manifest.permission.READ_MEDIA_AUDIO, Manifest.permission_group.READ_MEDIA_AURAL);
 
             put(Manifest.permission.POST_NOTIFICATIONS, Manifest.permission_group.NOTIFICATIONS);
-        }
     }};
 
     /**

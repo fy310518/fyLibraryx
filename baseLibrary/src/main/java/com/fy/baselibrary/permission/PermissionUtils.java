@@ -136,7 +136,7 @@ public class PermissionUtils {
 
         // 特殊权限不算，本身申请方式和危险权限申请方式不同，因为没有永久拒绝的选项，所以这里返回 false
         if (isSpecialPermission(permission)){
-            if (OSUtils.isAndroid13()){ // 从特殊权限里面 移除 android13的 三个媒体权限【因为 判断特殊权限里面，把这三个权限列为了 特殊权限，】
+            if (OSUtils.isAndroid13()){ // 从特殊权限里面 移除 android13的 三个媒体权限【因为 判断特殊权限里面，把这三个权限列为了 特殊权限】
 
             } else {
                 return false;
@@ -299,36 +299,39 @@ public class PermissionUtils {
      * 判断某个权限是否是特殊权限
      */
     public static boolean isSpecialPermission(String permission) {
-        if (OSUtils.isAndroid13()) { // 其实不是特殊权限
-            return Permission.READ_MEDIA_AUDIO.equals(permission) ||
-                    Permission.READ_MEDIA_IMAGES.equals(permission) ||
-                    Permission.READ_MEDIA_VIDEO.equals(permission);
-        } else if (OSUtils.isAndroid11()) {
-            return Permission.MANAGE_EXTERNAL_STORAGE.equals(permission);
-        } else {
-            return Permission.REQUEST_INSTALL_PACKAGES.equals(permission) ||
-                    Permission.SYSTEM_ALERT_WINDOW.equals(permission) ||
-                    Permission.NOTIFICATION_SERVICE.equals(permission) ||
-                    Permission.WRITE_SETTINGS.equals(permission);
-        }
+        return Permission.READ_MEDIA_AUDIO.equals(permission) ||
+                Permission.READ_MEDIA_IMAGES.equals(permission) ||
+                Permission.READ_MEDIA_VIDEO.equals(permission) ||   // Android13 其实不是特殊权限
+
+                Permission.MANAGE_EXTERNAL_STORAGE.equals(permission) || // Android11
+
+                Permission.REQUEST_INSTALL_PACKAGES.equals(permission) ||
+                Permission.SYSTEM_ALERT_WINDOW.equals(permission) ||
+                Permission.NOTIFICATION_SERVICE.equals(permission) ||
+                Permission.WRITE_SETTINGS.equals(permission);
     }
 
     /**
-     * 根据权限 获取 权限组 
+     * 根据权限 获取 权限组
      * @param sunPermission
      */
-    public static String getPermissionGroup(String sunPermission){
-        if (OSUtils.isAndroid11()) {
-            return Permission.permissionMap.get(sunPermission);
-        } else if (OSUtils.isAndroid10()){
-            return Permission.permissionMap.get(sunPermission);
-        } else {
-            try {
-                return ConfigUtils.getAppCtx().getPackageManager().getPermissionInfo(sunPermission, 0).group;
-            } catch (PackageManager.NameNotFoundException e) {
+    public static String getPermissionGroup(String sunPermission) {
+        if(Permission.READ_MEDIA_AUDIO.equals(sunPermission) ||
+                Permission.READ_MEDIA_IMAGES.equals(sunPermission) ||
+                Permission.READ_MEDIA_VIDEO.equals(sunPermission)){
+            if (OSUtils.isAndroid13()) {
+
+            } else {
+                sunPermission = Manifest.permission.WRITE_EXTERNAL_STORAGE;
             }
-            return "";
         }
+
+        try {
+            return ConfigUtils.getAppCtx().getPackageManager().getPermissionInfo(sunPermission, 0).group;
+        } catch (PackageManager.NameNotFoundException e) {
+        }
+        return "";
+
     }
 
 
