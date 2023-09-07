@@ -30,12 +30,12 @@
             android:id="@+id/lvRefusePermission"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:enabled="false"
-            android:dividerHeight="@dimen/spacing_small_much"
             android:layout_marginLeft="@dimen/spacing_medium_large"
             android:layout_marginRight="@dimen/spacing_medium_large"
             android:layout_marginBottom="@dimen/spacing_medium_large"
             android:divider="@android:color/transparent"
+            android:dividerHeight="@dimen/spacing_small_much"
+            android:enabled="false"
             tools:layout_height="100dp" />
 
         <!--   特殊权限申请说明     -->
@@ -47,10 +47,10 @@
             android:layout_marginRight="@dimen/spacing_medium_large"
             android:layout_marginBottom="@dimen/spacing_medium_large"
             android:gravity="center"
-            android:text="@string/cancel"
             android:textColor="@color/txtSuperColor"
             android:textSize="@dimen/txt_medium_small"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:text="特殊权限申请说明" />
 
         <TextView
             android:id="@+id/tvPermissionCancel"

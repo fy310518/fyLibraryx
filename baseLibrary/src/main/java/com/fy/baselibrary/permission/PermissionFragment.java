@@ -30,7 +30,6 @@ import com.fy.baselibrary.utils.ResUtils;
 import com.fy.baselibrary.utils.drawable.ShapeBuilder;
 import com.fy.baselibrary.utils.os.OSUtils;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -73,9 +72,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
 
     @Override
     public void initData(@Nullable BaseViewModel viewModel, @Nullable ViewDataBinding dataBinding, @Nullable Bundle savedInstanceState) {
-
         appName = AppUtils.getAppName(getContext(), AppUtils.getLocalPackageName());
-        mFirstRefuseMessage = getString(R.string.default_always_message);
 
         Bundle bundle = getArguments();
         if (null != bundle) {
@@ -85,16 +82,11 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
         }
 
         if (TextUtils.isEmpty(mFirstRefuseMessage)) {
-            mFirstRefuseMessage = appName + getString(R.string.default_first_message);
-        } else {
-            mFirstRefuseMessage = appName + mFirstRefuseMessage;
+            mFirstRefuseMessage = ResUtils.getReplaceStr(R.string.default_always_message, appName);
         }
 
-
         if (TextUtils.isEmpty(mAlwaysRefuseMessage)) {
-            mAlwaysRefuseMessage = appName + getString(R.string.default_always_message);
-        } else {
-            mAlwaysRefuseMessage = appName + mAlwaysRefuseMessage;
+            mAlwaysRefuseMessage = ResUtils.getReplaceStr(R.string.default_always_message, appName);
         }
 
         checkPermission(mPermissions);
@@ -273,11 +265,6 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                 .setDialogConvertListener(new DialogConvertListener() {
                     @Override
                     protected void convertView(ViewHolder holder, CommonDialog dialog) {
-                        ShapeBuilder.create()
-                                .solid(R.color.white)
-                                .radius(36)
-                                .setBackBg(holder.getView(R.id.permissionLayout));
-
                         //生成 权限组 列表，然后传给 listView 适配器
                         List<String> listData = new ArrayList<>();
                         for (String permission : rationaleList){
@@ -291,7 +278,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
 
                         holder.setText(R.id.tvPermissionDescribe, isAlwaysRefuse ? mAlwaysRefuseMessage : mFirstRefuseMessage);
 
-                        holder.setText(R.id.tvpermissionConfirm, isAlwaysRefuse ? R.string.set : R.string.ok);
+                        holder.setText(R.id.tvpermissionConfirm, isAlwaysRefuse ? R.string.deauthorization : R.string.ok);
                         holder.setOnClickListener(R.id.tvpermissionConfirm, v -> {
                             onSurePermission(isAlwaysRefuse);// todo 需要验证
                             dialog.dismiss(false);
@@ -331,11 +318,6 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                 .setDialogConvertListener(new DialogConvertListener() {
                     @Override
                     protected void convertView(ViewHolder holder, CommonDialog dialog) {
-                        ShapeBuilder.create()
-                                .solid(R.color.white)
-                                .radius(36)
-                                .setBackBg(holder.getView(R.id.permissionLayout));
-
                         holder.setVisibility(R.id.lvRefusePermission, false);
                         holder.setVisibility(R.id.txtSpecialPermission, true);
 
@@ -390,8 +372,8 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
     public static void newInstant(Object object, NeedPermission needPermission, OnPermission callListener) {
         Bundle bundle = new Bundle();
         bundle.putStringArray(KEY_PERMISSIONS_ARRAY, needPermission.value());
-        if (needPermission.firstRefuseMsg() != 0)bundle.putString(KEY_FIRST_MESSAGE, ResUtils.getStr(needPermission.firstRefuseMsg()));
-        if (needPermission.alwaysRefuseMsg() != 0)bundle.putString(KEY_ALWAYS_MESSAGE, ResUtils.getStr(needPermission.alwaysRefuseMsg()));
+        if (!TextUtils.isEmpty(needPermission.firstRefuseMsg())) bundle.putString(KEY_FIRST_MESSAGE, needPermission.firstRefuseMsg());
+        if (!TextUtils.isEmpty(needPermission.alwaysRefuseMsg())) bundle.putString(KEY_ALWAYS_MESSAGE, needPermission.alwaysRefuseMsg());
 
         PermissionFragment fragment = new PermissionFragment();
         fragment.call = callListener;

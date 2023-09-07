@@ -27,9 +27,9 @@
     <string name="set">设置</string>
     <string name="search">搜索</string>
 
+    <string name="deauthorization">去授权</string>
     <string name="permission">权限管理</string>
-    <string name="default_first_message">需要您授予以下权限才可以正常使用</string>
-    <string name="default_always_message">缺少以下权限，您需要设置对应的权限才可以正常使用</string>
+    <string name="default_always_message">使用该功能%1$s需要以下权限</string>
     <!--  允许 "APP" 启用 通讯录 权限吗？  -->
     <string name="default_special_permission">允许 "%1$s" 启用 %2$s 权限吗？</string>
     <!--  开启通讯录权限，使app 访问通讯录，从而更好为您服务  -->

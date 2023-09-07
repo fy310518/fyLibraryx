@@ -23,12 +23,12 @@ public @interface NeedPermission {
     /**
      * 第一次拒绝必要权限的提示信息
      */
-    int firstRefuseMsg() default 0;
+    String firstRefuseMsg() default "";
 
     /**
      * 永久拒绝必要权限的提示信息
      */
-    int alwaysRefuseMsg() default 0;
+    String alwaysRefuseMsg() default "";
 
     /**
      * 存在被拒绝的权限时，是否继续执行
