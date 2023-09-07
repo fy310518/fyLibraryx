@@ -1,5 +1,7 @@
 package com.fy.baselibrary.aop.annotation;
 
+import android.view.Gravity;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -35,5 +37,10 @@ public @interface NeedPermission {
      * @return 默认 false，不继续执行
      */
     boolean isRun() default false;
+
+    /**
+     * 危险权限请求失败，显示弹窗位置
+     */
+    int gravity() default Gravity.BOTTOM;
 
 }

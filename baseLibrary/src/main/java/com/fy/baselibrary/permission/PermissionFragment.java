@@ -41,6 +41,7 @@ import java.util.List;
 public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBinding> {
 
     public final static String KEY_PERMISSIONS_ARRAY = "key_permission_array";
+    public final static String TipsDialogGravity = "TipsDialogGravity";
     public final static String KEY_FIRST_MESSAGE = "key_first_message";
     public final static String KEY_ALWAYS_MESSAGE = "key_always_message";
 
@@ -60,6 +61,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
     private boolean mIsSpecialPermissionStatus = true;//特殊权限是否请求成功
     private String mSpecialPermission;//特殊权限
     private String[] mPermissions;
+    private int gravity = Gravity.BOTTOM; // 权限请求失败，提示弹窗位置
 
     private boolean isToSettingPermission;
 
@@ -77,6 +79,8 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
         Bundle bundle = getArguments();
         if (null != bundle) {
             mPermissions = bundle.getStringArray(KEY_PERMISSIONS_ARRAY);
+            gravity = bundle.getInt(TipsDialogGravity, Gravity.BOTTOM);
+
             mFirstRefuseMessage = bundle.getString(KEY_FIRST_MESSAGE);
             mAlwaysRefuseMessage = bundle.getString(KEY_ALWAYS_MESSAGE);
         }
@@ -291,9 +295,9 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                         });
                     }
                 })
-                .setWidthPixels(-1)
-                .setGravity(Gravity.BOTTOM)
-                .setAnim(R.style.AnimUp)
+                .setWidthPixels(-2)
+                .setGravity(gravity)
+                .setAnim(android.R.style.Animation_Dialog)
                 .setKeyBack(true)
                 .show(getChildFragmentManager(), "PermissionFragment");
     }
@@ -348,9 +352,9 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                         });
                     }
                 })
-                .setWidthPixels(-1)
-                .setGravity(Gravity.BOTTOM)
-                .setAnim(R.style.AnimUp)
+                .setWidthPixels(-2)
+                .setGravity(gravity)
+                .setAnim(android.R.style.Animation_Dialog)
                 .setKeyBack(true)
                 .show(getChildFragmentManager(), "PermissionFragment");
     }
@@ -372,6 +376,8 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
     public static void newInstant(Object object, NeedPermission needPermission, OnPermission callListener) {
         Bundle bundle = new Bundle();
         bundle.putStringArray(KEY_PERMISSIONS_ARRAY, needPermission.value());
+        bundle.putInt(TipsDialogGravity, needPermission.gravity());
+
         if (!TextUtils.isEmpty(needPermission.firstRefuseMsg())) bundle.putString(KEY_FIRST_MESSAGE, needPermission.firstRefuseMsg());
         if (!TextUtils.isEmpty(needPermission.alwaysRefuseMsg())) bundle.putString(KEY_ALWAYS_MESSAGE, needPermission.alwaysRefuseMsg());
 
