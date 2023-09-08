@@ -38,6 +38,13 @@
     <string name="permissionSuccess">权限请求成功</string>
     <string name="permissionAllSuccess">权限没有全部授予</string>
 
+    <string name="fyFloatDialog">悬浮窗</string>
+    <string name="fySysSet">系统设置</string>
+    <string name="fyNotify">通知</string>
+    <string name="installApp">安装应用</string>
+    <string name="fySdCard">外部存储</string>
+
+
     <string name="dataNull">没有数据</string>
     <string name="accessError">访问出错</string>
     <string name="clickRetry">点击空白区域重试</string>

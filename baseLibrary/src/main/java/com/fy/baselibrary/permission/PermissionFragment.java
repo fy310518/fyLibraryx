@@ -325,11 +325,11 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                         holder.setVisibility(R.id.lvRefusePermission, false);
                         holder.setVisibility(R.id.txtSpecialPermission, true);
 
-                        String title = ResUtils.getReplaceStr(R.string.default_special_permission, appName, info[0]);
-                        holder.setText(R.id.tvPermissionDescribe, title);//标题
+//                        String title = ResUtils.getReplaceStr(R.string.default_special_permission, appName, info[0]);
+                        holder.setText(R.id.tvPermissionDescribe, mFirstRefuseMessage);//标题
 
-                        String content = ResUtils.getReplaceStr(R.string.default_special_permission_content, info[0], appName, info[1]);
-                        holder.setText(R.id.txtSpecialPermission, content);//特殊权限用途 说明
+//                        String content = ResUtils.getReplaceStr(R.string.default_special_permission_content, info[0], appName, info[0]);
+                        holder.setText(R.id.txtSpecialPermission, info[0]);//特殊权限用途 说明
 
                         holder.setText(R.id.tvpermissionConfirm, R.string.set);
                         holder.setOnClickListener(R.id.tvpermissionConfirm, v -> {
