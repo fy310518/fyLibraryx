@@ -67,9 +67,11 @@ public class PermissionUtils {
             }
         }
 
-        if (OSUtils.isAndroid13()) {
-            if(permission.equals(Manifest.permission.POST_NOTIFICATIONS)){ // 通知权限
+        if(permission.equals(Manifest.permission.POST_NOTIFICATIONS)){ // 通知权限
+            if (OSUtils.isAndroid13()) {
                 return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+            } else {
+                return true;
             }
         }
 
