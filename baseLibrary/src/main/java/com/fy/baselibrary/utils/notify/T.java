@@ -145,7 +145,7 @@ public class T {
         private @DrawableRes int bgDrawable;
         private @ColorRes int bgTintColor;
 
-        private boolean isCancelPrevious = false; // 是否 直接关闭 前面的 toast
+        private boolean isCancelPrevious = true; // 是否 直接关闭 前面的 toast
         private int duration = Toast.LENGTH_LONG;
 
         private Builder(@NonNull CharSequence message) {
