@@ -91,10 +91,20 @@ public class ZipUtils {
                 //获取部件的文件夹名
                 szName = szName.substring(0, szName.length() - 1);
                 File folder = new File(outPathString + File.separator + szName);
-                folder.mkdirs();
+                String canonicalPath = folder.getCanonicalPath();
+                if (!canonicalPath.startsWith(outPathString)) {
+                    // SecurityException
+                } else {
+                    folder.mkdirs();
+                }
             } else {
                 L.e(TAG, outPathString + File.separator + szName);
                 File file = new File(outPathString + File.separator + szName);
+                String canonicalPath = file.getCanonicalPath();
+                if (!canonicalPath.startsWith(outPathString)) {
+                    // SecurityException
+                    continue;
+                }
                 if (!file.exists()) {
                     L.e(TAG, "Create the file:" + outPathString + File.separator + szName);
                     file.getParentFile().mkdirs();

@@ -2,8 +2,6 @@ package com.fy.baselibrary.utils.notify;
 
 import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
-import android.os.CountDownTimer;
-import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +20,6 @@ import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.utils.DensityUtils;
 import com.fy.baselibrary.utils.ResUtils;
 import com.fy.baselibrary.utils.drawable.TintUtils;
-import com.fy.baselibrary.utils.notify.L;
 
 /**
  * Toast统一管理类 (解决多次弹出toast)
@@ -99,7 +96,9 @@ public class T {
      */
     @SuppressLint("ResourceType")
     private static void showToastWithImg(Builder builder) {
-        if (null != toast) toast.cancel();
+        if(builder.isCancelPrevious) {
+            cancel();
+        }
         toast = Toast.makeText(ConfigUtils.getAppCtx(), "", Toast.LENGTH_LONG);
         View llToast = LayoutInflater.from(ConfigUtils.getAppCtx()).inflate(R.layout.toast_view, null);
 
@@ -146,7 +145,8 @@ public class T {
         private @DrawableRes int bgDrawable;
         private @ColorRes int bgTintColor;
 
-        private int duration = Toast.LENGTH_LONG; //
+        private boolean isCancelPrevious = false; // 是否 直接关闭 前面的 toast
+        private int duration = Toast.LENGTH_LONG;
 
         private Builder(@NonNull CharSequence message) {
             this.message = message;
@@ -169,6 +169,11 @@ public class T {
 
         public Builder setDuration(int duration) {
             this.duration = duration;
+            return this;
+        }
+
+        public Builder setCancelPrevious(boolean cancelPrevious) {
+            isCancelPrevious = cancelPrevious;
             return this;
         }
 
