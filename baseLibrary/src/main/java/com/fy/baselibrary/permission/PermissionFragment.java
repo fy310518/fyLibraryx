@@ -127,8 +127,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
 
             if (failurePermissionCount.size() == 0) {//权限请求失败数为0，则全部成功
                 permissionEnd(CALL_BACK_RESULT_CODE_SUCCESS, mIsSpecialPermissionStatus);
-            } else {
-                //失败
+            } else { //失败
                 List<String> rationaleList = PermissionUtils.getShouldRationaleList(getActivity(), permissions);
                 if (null != rationaleList && rationaleList.size() > 0) {
                     if (rationaleList.size() < permissions.length){
@@ -138,7 +137,12 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                     }
                 } else {
                     List<String> requestPermission = PermissionUtils.getRequestPermissionList(getContext(), permissions);
-                    showPermissionDialog(requestPermission, false, true);
+                    for(String permiss : requestPermission){ // 特殊权限 给与用户说明
+                        if(Permission.specialPermission.containsKey(permiss)){
+                            showSpecialPermissionDialog(permiss);
+                            break;
+                        }
+                    }
                 }
             }
         }

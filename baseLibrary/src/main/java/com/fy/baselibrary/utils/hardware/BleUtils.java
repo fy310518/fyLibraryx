@@ -143,6 +143,8 @@ public class BleUtils {
             return;
         }
         bluetoothAdapter.startDiscovery();
+
+//        bluetoothAdapter.getBluetoothLeScanner();
     }
 
     /**
