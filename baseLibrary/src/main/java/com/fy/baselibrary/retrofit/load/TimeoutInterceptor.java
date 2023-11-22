@@ -47,9 +47,9 @@ public class TimeoutInterceptor implements Interceptor {
         }
 
         return chain
-                .withConnectTimeout(connectTimeout, TimeUnit.SECONDS)
-                .withReadTimeout(readTimeout, TimeUnit.SECONDS)
-                .withWriteTimeout(writeTimeout, TimeUnit.SECONDS)
+                .withConnectTimeout(connectTimeout, TimeUnit.MILLISECONDS)
+                .withReadTimeout(readTimeout, TimeUnit.MILLISECONDS)
+                .withWriteTimeout(writeTimeout, TimeUnit.MILLISECONDS)
                 .proceed(request);
     }
 
