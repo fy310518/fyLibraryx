@@ -73,9 +73,9 @@ public class OkHttpLibraryGlideModule extends AppGlideModule {
 
     protected static OkHttpClient.Builder getClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .connectTimeout(Constant.DEFAULT_MILLISECONDS, TimeUnit.SECONDS)
-                .readTimeout(Constant.DEFAULT_MILLISECONDS, TimeUnit.SECONDS)
-                .writeTimeout(Constant.DEFAULT_MILLISECONDS, TimeUnit.SECONDS)
+                .connectTimeout(60 * 1000, TimeUnit.MILLISECONDS)
+                .readTimeout(60 * 1000, TimeUnit.MILLISECONDS)
+                .writeTimeout(60 * 1000, TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(true)//错误重连
                 .addInterceptor(new RequestHeaderInterceptor())
                 .addInterceptor(new FileDownInterceptor())
