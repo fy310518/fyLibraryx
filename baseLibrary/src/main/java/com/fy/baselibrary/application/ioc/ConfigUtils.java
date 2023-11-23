@@ -232,7 +232,7 @@ public class ConfigUtils {
             return this;
         }
 
-        public ConfigBuilder setToken(long timeout) {
+        public ConfigBuilder setTimeout(long timeout) {
             this.timeout = timeout;
             return this;
         }
