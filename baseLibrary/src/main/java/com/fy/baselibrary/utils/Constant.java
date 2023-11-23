@@ -7,10 +7,6 @@ package com.fy.baselibrary.utils;
 public class Constant {
 
     /**
-     * 默认的超时时间 单位毫秒
-     */
-    public static int DEFAULT_MILLISECONDS = 60 * 1000;
-    /**
      * 操作令牌 key
      */
     public static String token = "user_token";

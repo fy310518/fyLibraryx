@@ -75,9 +75,9 @@ public final class RequestModule {
 //    @Provides
     protected static OkHttpClient.Builder getClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .connectTimeout(Constant.DEFAULT_MILLISECONDS, TimeUnit.MILLISECONDS)
-                .readTimeout(Constant.DEFAULT_MILLISECONDS, TimeUnit.MILLISECONDS)
-                .writeTimeout(Constant.DEFAULT_MILLISECONDS, TimeUnit.MILLISECONDS)
+                .connectTimeout(ConfigUtils.getTimeout(), TimeUnit.MILLISECONDS)
+                .readTimeout(ConfigUtils.getTimeout(), TimeUnit.MILLISECONDS)
+                .writeTimeout(ConfigUtils.getTimeout(), TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(true)//错误重连
                 .addInterceptor(new RequestHeaderInterceptor())
                 .addInterceptor(new TimeoutInterceptor())

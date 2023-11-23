@@ -74,6 +74,9 @@ public class ConfigUtils {
     public static String getBaseUrl() {
         return ConfigUtils.getInstance().builder.BASE_URL;
     }
+    public static long getTimeout() {
+        return ConfigUtils.getInstance().builder.timeout;
+    }
 
     public static String getAddCookieKey(){return ConfigUtils.getInstance().builder.addCookieKey;}
     public static String getCookieDataKey(){return ConfigUtils.getInstance().builder.cookieData;}
@@ -134,6 +137,8 @@ public class ConfigUtils {
 
         /** 网络请求 服务器地址 url */
         String BASE_URL = "";
+        /** 默认的超时时间 单位毫秒 */
+        public long timeout = 60 * 1000;
         /** https 公钥证书字符串 */
         String cer = "";
         /** https 公钥证书 文件名字符串【带后缀名】集合（放在 assets 目录下） */
@@ -224,6 +229,11 @@ public class ConfigUtils {
 
         public ConfigBuilder setToken(String token) {
             this.token = token == null ? "" : token;
+            return this;
+        }
+
+        public ConfigBuilder setToken(long timeout) {
+            this.timeout = timeout;
             return this;
         }
 
