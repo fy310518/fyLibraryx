@@ -121,6 +121,15 @@ final public class SpfAgent {
         return this;
     }
 
+    /**
+     * 删除 指定 key 的内容
+     * @param key
+     * @return
+     */
+    public SpfAgent remove(@NonNull final String key) {
+        this.editor.remove(key);
+        return this;
+    }
 
     /**
      * 删除 指定 key 的内容
