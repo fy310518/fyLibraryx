@@ -149,7 +149,24 @@ public class GsonUtils {
         return lst;
     }
 
+    public static <T> List<T> jsonToList(String jsonStr, Type typeOfT) {
+        List<T> lst = new ArrayList<>();
 
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(new TypeToken<ArrayMap<String,Object>>(){}.getType(), new ObjectTypeAdapterRewrite())
+                .create();
+
+        try {
+            JsonArray array = new JsonParser().parse(jsonStr).getAsJsonArray();
+            for (final JsonElement elem : array) {
+                lst.add(gson.fromJson(elem, typeOfT));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return lst;
+    }
 
 
 
