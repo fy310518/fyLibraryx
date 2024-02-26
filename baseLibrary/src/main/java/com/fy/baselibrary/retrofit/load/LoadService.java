@@ -111,6 +111,7 @@ public interface LoadService {
     @DownLoadFileType
     @Streaming
     @GET
+    @Headers({"NoReplaceIp:---"})
     Observable<File> download(@Header("IF-RANGE") String downParam, @Url String url);
 
     /**
