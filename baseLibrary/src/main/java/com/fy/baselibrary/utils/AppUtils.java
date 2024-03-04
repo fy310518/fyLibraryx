@@ -1,5 +1,7 @@
 package com.fy.baselibrary.utils;
 
+import static android.content.Context.ACTIVITY_SERVICE;
+
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.ComponentName;
@@ -10,7 +12,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.pm.Signature;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -34,8 +35,6 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-
-import static android.content.Context.ACTIVITY_SERVICE;
 
 /**
  * App相关的辅助类
@@ -250,36 +249,6 @@ public class AppUtils {
 
         List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(intent, 0);
         return resolveInfoList.isEmpty() ? "" : resolveInfoList.get(0).activityInfo.name;
-    }
-
-    /**
-     * 返回应用程序的签名
-     * @param packageName The name of the package.
-     * @return the application's signature
-     */
-    public static Signature[] getAppSignature(final String packageName) {
-        Context context = ConfigUtils.getAppCtx();
-
-        if (isSpace(packageName)) return null;
-        try {
-            PackageManager pm = context.getPackageManager();
-            @SuppressLint("PackageManagerGetSignatures")
-            PackageInfo pi = pm.getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
-            return pi == null ? null : pi.signatures;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private static boolean isSpace(final String s) {
-        if (s == null) return true;
-        for (int i = 0, len = s.length(); i < len; ++i) {
-            if (!Character.isWhitespace(s.charAt(i))) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
