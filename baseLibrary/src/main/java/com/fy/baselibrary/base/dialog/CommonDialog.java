@@ -122,7 +122,7 @@ public abstract class CommonDialog extends DialogFragment {
         super.onStart();
         initParams();
 
-        if (!isKeyBack)setOnKeyListener();
+        setOnKeyListener();
     }
 
     /**
@@ -308,7 +308,7 @@ public abstract class CommonDialog extends DialogFragment {
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
                 L.v("dialog onkey", "按下返回键");
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    dismiss(false);
+                    dismiss(isKeyBack);
                     return true;
                 }
                 return false;
