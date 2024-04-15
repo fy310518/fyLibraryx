@@ -24,15 +24,7 @@ public @interface StatusBar {
     String statusStrColor() default "";
 
     /**
-     * 状态栏透明度
-     * @return
-     */
-    int statusAlpha() default 0;
-
-
-    /**
      * 导航栏颜色
-     * @return
      */
     int navColor() default 0;
 
@@ -40,22 +32,8 @@ public @interface StatusBar {
     String navStrColor() default "";
 
     /**
-     * 导航栏 透明度
-     * @return
-     */
-    int navAlpha() default 0;
-
-
-    /**
-     * 设置状态栏、导航栏 模式 值为0、1、2
-     * @return
+     * 设置状态栏、导航栏 模式（0 背景颜色; 1 沉浸式）
      */
     int statusOrNavModel() default 0;
-
-    /**
-     * 导航栏【是否】悬浮在界面之上
-     * @return
-     */
-    boolean applyNav() default true;
 
 }

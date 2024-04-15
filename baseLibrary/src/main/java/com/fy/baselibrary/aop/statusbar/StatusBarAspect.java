@@ -1,12 +1,13 @@
 package com.fy.baselibrary.aop.statusbar;
 
 import android.app.Activity;
+import android.text.TextUtils;
 
 import com.fy.baselibrary.aop.annotation.StatusBar;
-import com.fy.baselibrary.statusbar.MdStatusBar;
+import com.fy.baselibrary.utils.ResUtils;
+import com.fy.baselibrary.utils.config.StatusBarUtils;
 
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -19,7 +20,6 @@ public class StatusBarAspect {
 
     @Before("statusBar(param)")
     public void clickFilterHook(JoinPoint joinPoint, StatusBar param) throws Throwable {
-
         Activity activity = null;
         final Object object = joinPoint.getThis();
         if (null == object) return;
@@ -29,20 +29,24 @@ public class StatusBarAspect {
         }
         if (null == activity) return;
 
-        MdStatusBar.StatusBuilder builder = MdStatusBar.StatusBuilder.init()
-                .setStatusColor(param.statusColor(), param.statusAlpha(), param.statusStrColor())
-                .setNavColor(param.navColor(), param.navAlpha(), param.navStrColor())
-                .setApplyNav(param.applyNav());
+        int statusColor, navColor;
+        if (!TextUtils.isEmpty(param.statusStrColor())){
+            statusColor = ResUtils.getColorId(param.statusStrColor());
+        } else {
+            statusColor = ResUtils.getColor(param.statusColor());
+        }
 
         switch (param.statusOrNavModel()){
             case 0:
-                builder.setColorBar(activity);
+                if (!TextUtils.isEmpty(param.navStrColor())){
+                    navColor = ResUtils.getColorId(param.navStrColor());
+                } else {
+                    navColor = ResUtils.getColor(param.navColor());
+                }
+                StatusBarUtils.Companion.setStatusBarColor(activity, statusColor, navColor);
                 break;
             case 1:
-                builder.setTransparentBar(activity);
-                break;
-            case 2:
-                builder.setColorBarForDrawer(activity);
+                StatusBarUtils.Companion.immersiveStatusBar(activity, statusColor);
                 break;
         }
 
