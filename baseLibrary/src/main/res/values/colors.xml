@@ -21,8 +21,6 @@
     <color name="black">#000000</color>
     <!-- 透明 -->
     <color name="transparent">#00000000</color>
-    <!-- 黑色半透明 -->
-    <color name="alphaBlack">#80000000</color>
 
     <!-- 状态栏颜色 -->
 <!--    <color name="statusBar">#177ee6</color>-->

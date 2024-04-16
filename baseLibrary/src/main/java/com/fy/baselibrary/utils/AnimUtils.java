@@ -196,7 +196,9 @@ public class AnimUtils {
             toolbar.setTitle("");
             TextView toolbarTitle = toolbar.findViewById(R.id.toolbarTitle);
             toolbarTitle.setText(activity.getTitle());
-            toolbarTitle.setTextColor(ResUtils.getColor(ConfigUtils.getTitleColor()));
+            if (ConfigUtils.getTitleColor() > 0) {
+                toolbarTitle.setTextColor(ResUtils.getColor(ConfigUtils.getTitleColor()));
+            }
             toolbarTitle.setVisibility(View.VISIBLE);
         } else {
             toolbar.setTitle(activity.getTitle());
@@ -235,7 +237,9 @@ public class AnimUtils {
             ((AppCompatActivity) fragment.getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);//隐藏 toolbar 自带的标题view
             TextView toolbarTitle = toolbar.findViewById(R.id.toolbarTitle);
             toolbarTitle.setText(title);
-            toolbarTitle.setTextColor(ResUtils.getColor(ConfigUtils.getTitleColor()));
+            if (ConfigUtils.getTitleColor() > 0) {
+                toolbarTitle.setTextColor(ResUtils.getColor(ConfigUtils.getTitleColor()));
+            }
             toolbarTitle.setVisibility(View.VISIBLE);
         } else {
             toolbar.setTitle(title);
