@@ -54,6 +54,7 @@ public class ImgLoadUtils {
     public static File getImgCachePath(Context context, String url) throws ExecutionException, InterruptedException {
         FutureTarget<File> target = Glide.with(context)
                 .asFile()
+                .onlyRetrieveFromCache(true)
                 .load(url)
                 .submit();//必须要用在子线程当中
 

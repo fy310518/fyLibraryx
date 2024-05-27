@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
  * 状态栏内容着色 工具类（使用此工具类 需 配合使用 MdStatusBar工具类设置状态栏和导航栏）
  * Created by fangs on 18/3/14.
  */
+@Deprecated
 public class StatusBarContentColor {
 //      1、View.SYSTEM_UI_FLAG_VISIBLE ：状态栏和Activity共存，Activity不全屏显示。也就是应用平常的显示画面
 //      2、View.SYSTEM_UI_FLAG_FULLSCREEN ：Activity全屏显示，且状态栏被覆盖掉

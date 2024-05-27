@@ -119,7 +119,7 @@ public class GsonUtils {
     public static JsonObject jsonStrToJsonObj(String jsonStr){
         JsonObject returnData = null;
         try {
-            returnData = new JsonParser().parse(jsonStr).getAsJsonObject();
+            returnData = JsonParser.parseString(jsonStr).getAsJsonObject();
         } catch (Exception e) {
             e.printStackTrace();
             returnData = new JsonObject();
@@ -138,28 +138,9 @@ public class GsonUtils {
         List<T> lst = new ArrayList<>();
 
         try {
-            JsonArray array = new JsonParser().parse(jsonStr).getAsJsonArray();
+            JsonArray array = JsonParser.parseString(jsonStr).getAsJsonArray();
             for (final JsonElement elem : array) {
                 lst.add(new Gson().fromJson(elem, clazz));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return lst;
-    }
-
-    public static <T> List<T> jsonToList(String jsonStr, Type typeOfT) {
-        List<T> lst = new ArrayList<>();
-
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(new TypeToken<ArrayMap<String,Object>>(){}.getType(), new ObjectTypeAdapterRewrite())
-                .create();
-
-        try {
-            JsonArray array = new JsonParser().parse(jsonStr).getAsJsonArray();
-            for (final JsonElement elem : array) {
-                lst.add(gson.fromJson(elem, typeOfT));
             }
         } catch (Exception e) {
             e.printStackTrace();
