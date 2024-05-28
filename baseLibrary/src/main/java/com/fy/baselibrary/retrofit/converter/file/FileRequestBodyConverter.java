@@ -88,7 +88,9 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
 
             sumLeng += file.length();
             String contentType = URLConnection.guessContentTypeFromName(file.getName());
-//            FileProgressRequestBody requestBody = new FileProgressRequestBody(file, "multipart/form-data", loadOnSubscribe);
+            if(TextUtils.isEmpty(contentType)){
+                contentType = "multipart/form-data";
+            }
             FileProgressRequestBody requestBody = new FileProgressRequestBody(file, contentType, loadOnSubscribe);
             if (files.size() > 1) {
                 builder.addFormDataPart(isFileKeyAES ? fileKey + (i + 1) : fileKey, file.getName(), requestBody);

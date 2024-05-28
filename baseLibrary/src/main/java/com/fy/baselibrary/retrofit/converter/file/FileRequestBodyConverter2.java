@@ -8,6 +8,7 @@ import com.fy.baselibrary.retrofit.load.up.FileProgressRequestBody;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,7 +76,12 @@ public class FileRequestBodyConverter2 extends FileRequestBodyConverter {
             else if (t instanceof String) file = new File((String) t);//访问手机端的文件资源，保证手机端sdcdrd中必须有这个文件
             else break;
 
-            FileProgressRequestBody requestBody = new FileProgressRequestBody(file, "multipart/form-data", loadOnSubscribe);
+            String contentType = URLConnection.guessContentTypeFromName(file.getName());
+            if(TextUtils.isEmpty(contentType)){
+                contentType = "multipart/form-data";
+            }
+
+            FileProgressRequestBody requestBody = new FileProgressRequestBody(file, contentType, loadOnSubscribe);
             if (files.size() > 1){
                 builder.addFormDataPart(isFileKeyAES ? fileKey + (i + 1) : fileKey, file.getName(), requestBody);
             } else {
