@@ -8,6 +8,7 @@ import com.fy.baselibrary.retrofit.load.up.FileProgressRequestBody;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,7 +87,9 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
             else break;
 
             sumLeng += file.length();
-            FileProgressRequestBody requestBody = new FileProgressRequestBody(file, "multipart/form-data", loadOnSubscribe);
+            String contentType = URLConnection.guessContentTypeFromName(file.getName());
+//            FileProgressRequestBody requestBody = new FileProgressRequestBody(file, "multipart/form-data", loadOnSubscribe);
+            FileProgressRequestBody requestBody = new FileProgressRequestBody(file, contentType, loadOnSubscribe);
             if (files.size() > 1) {
                 builder.addFormDataPart(isFileKeyAES ? fileKey + (i + 1) : fileKey, file.getName(), requestBody);
             } else {
