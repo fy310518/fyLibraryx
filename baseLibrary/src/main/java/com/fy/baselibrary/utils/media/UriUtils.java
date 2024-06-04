@@ -115,7 +115,7 @@ public class UriUtils {
                     .insert(insertUri, contentValues);
 
             if (insert != null) {
-                L.e("SuperFileUtils", "文件创建失败");
+                L.e("SuperFileUtils", "文件创建从成功");
             }
 
             return insert;

@@ -1,63 +1,44 @@
 package com.fy.baselibrary.utils.imgload.imgprogress;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
 import com.bumptech.glide.Registry;
-import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.module.AppGlideModule;
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.retrofit.RequestModule;
-import com.fy.baselibrary.retrofit.RequestUtils;
 import com.fy.baselibrary.retrofit.interceptor.FileDownInterceptor;
 import com.fy.baselibrary.retrofit.interceptor.RequestHeaderInterceptor;
-import com.fy.baselibrary.retrofit.interceptor.cache.CacheNetworkInterceptor;
-import com.fy.baselibrary.retrofit.interceptor.cache.IsUseCacheInterceptor;
-import com.fy.baselibrary.retrofit.interceptor.cookie.AddCookiesInterceptor;
-import com.fy.baselibrary.retrofit.interceptor.cookie.CacheCookiesInterceptor;
-import com.fy.baselibrary.utils.Constant;
-import com.fy.baselibrary.utils.FileUtils;
 import com.fy.baselibrary.utils.security.SSLUtil;
 
 import java.io.InputStream;
 import java.net.Proxy;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.X509TrustManager;
-
-import okhttp3.Cache;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 
 /**
- * 更改Glide配置，替换Glide 默认http通讯组件
+ * 1、更改Glide配置，替换 Glide 默认http通讯组件
+ * 2、需要下载进度时候 继承 此类 并 添加 {@GlideModule} 注解
+ * 3、添加 glide 更多支持类型 继承 此类 并 添加 {@GlideModule} 注解
  */
-@GlideModule
+//@GlideModule
 public class OkHttpLibraryGlideModule extends AppGlideModule {
 
     @Override
     public void registerComponents(Context context, Glide glide, Registry registry) {
         super.registerComponents(context, glide, registry);
 
-        //添加拦截器到Glide
-        OkHttpClient.Builder builder = getClient();
-
-        //加载图片 信任所有证书
-        builder.sslSocketFactory(SSLUtil.createSSLSocketFactory());
-        builder.hostnameVerifier(SSLUtil.DO_NOT_VERIFY);
-        OkHttpClient okHttpClient = builder.build();
-
         //原来的是  new OkHttpUrlLoader.Factory()；
         registry.replace(GlideUrl.class, InputStream.class,
-                new OkHttpUrlLoader.Factory(okHttpClient));
+                new OkHttpUrlLoader.Factory(getClient()));
     }
 
     @Override
@@ -71,7 +52,7 @@ public class OkHttpLibraryGlideModule extends AppGlideModule {
     }
 
 
-    protected static OkHttpClient.Builder getClient() {
+    public static OkHttpClient getClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .connectTimeout(60 * 1000, TimeUnit.MILLISECONDS)
                 .readTimeout(60 * 1000, TimeUnit.MILLISECONDS)
@@ -89,16 +70,11 @@ public class OkHttpLibraryGlideModule extends AppGlideModule {
             builder.addInterceptor(RequestModule.getResponseIntercept());
         }
 
-        List<String> cerFileNames = ConfigUtils.getCerFileName();
-        if (!cerFileNames.isEmpty()){
-            Object[] sslData = SSLUtil.getSSLSocketFactory(cerFileNames.toArray(new String[]{}));
-            if (null != sslData) builder.sslSocketFactory((SSLSocketFactory)sslData[0], (X509TrustManager)sslData[1]);
-        } else {
-            builder.sslSocketFactory(SSLUtil.createSSLSocketFactory());
-            builder.hostnameVerifier(SSLUtil.DO_NOT_VERIFY);
-        }
+        //加载图片 信任所有证书
+        builder.sslSocketFactory(SSLUtil.createSSLSocketFactory());
+        builder.hostnameVerifier(SSLUtil.DO_NOT_VERIFY);
 
-        return builder;
+        return builder.build();
     }
 
 }

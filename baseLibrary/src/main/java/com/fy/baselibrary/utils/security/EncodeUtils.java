@@ -1,10 +1,15 @@
 package com.fy.baselibrary.utils.security;
 
+import android.content.ContentResolver;
+import android.net.Uri;
 import android.os.Build;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Base64;
 
+import com.fy.baselibrary.application.ioc.ConfigUtils;
+
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -110,6 +115,45 @@ public final class EncodeUtils {
         try {
             out = new FileOutputStream(savePath);
             out.write(buffer);
+
+            out.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (null != out) out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Base64 转码并保存成文件
+     * @param base64Code
+     * @param uri
+     */
+    public static void decoderBase64File(String base64Code, Uri uri)  {
+        if (TextUtils.isEmpty(base64Code)) return;
+        byte[] buffer = Base64.decode(base64Code.split(",")[1], Base64.DEFAULT);
+
+        for (int i = 0; i < buffer.length; ++i) {
+            if (buffer[i] < 0) {// 调整异常数据
+                buffer[i] += 256;
+            }
+        }
+        ContentResolver resolver = ConfigUtils.getAppCtx().getContentResolver();
+
+        OutputStream out = null;
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer);
+        try {
+            out = resolver.openOutputStream(uri);
+
+            byte data[] = new byte[1024];
+            int len;
+            while ((len = byteArrayInputStream.read(data, 0, 1024)) != -1) {
+                out.write(data, 0, len);
+            }
 
             out.flush();
         } catch (Exception e) {

@@ -396,7 +396,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
 
         } else if (object instanceof Fragment) {
             Fragment fm = ((Fragment)object);
-            manager = fm.getFragmentManager();
+            manager = fm.getChildFragmentManager();
         }
 
         assert manager != null;

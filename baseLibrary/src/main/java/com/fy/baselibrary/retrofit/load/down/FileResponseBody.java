@@ -78,7 +78,7 @@ public class FileResponseBody extends ResponseBody {
             }
 
             int progress = (int) (100f * totalBytesRead / fullLength);
-            L.e(TAG, "download progress is " + progress);
+//            L.e(TAG, "download progress is " + progress);
 
             if (listener != null && progress != currentProgress) {
                 listener.onProgress(progress);
