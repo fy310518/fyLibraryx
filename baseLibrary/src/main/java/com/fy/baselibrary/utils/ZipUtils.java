@@ -91,24 +91,24 @@ public class ZipUtils {
                 //获取部件的文件夹名
                 szName = szName.substring(0, szName.length() - 1);
                 File folder = new File(outPathString + File.separator + szName);
-                String canonicalPath = folder.getCanonicalPath();
-                if (!canonicalPath.startsWith(outPathString)) {
-                    // SecurityException
-                } else {
-                    folder.mkdirs();
-                }
+//                String canonicalPath = folder.getCanonicalPath();
+//                if (!canonicalPath.startsWith(outPathString)) {
+//                    // SecurityException
+//                } else {
+//                }
+                FileUtils.folderIsExists(folder.getParent());
             } else {
                 L.e(TAG, outPathString + File.separator + szName);
                 File file = new File(outPathString + File.separator + szName);
-                String canonicalPath = file.getCanonicalPath();
-                if (!canonicalPath.startsWith(outPathString)) {
-                    // SecurityException
-                    continue;
-                }
+//                String canonicalPath = file.getCanonicalPath();
+//                if (!canonicalPath.startsWith(outPathString)) {
+//                    // SecurityException
+//                    continue;
+//                }
                 if (!file.exists()) {
                     L.e(TAG, "Create the file:" + outPathString + File.separator + szName);
-                    file.getParentFile().mkdirs();
-                    file.createNewFile();
+                    FileUtils.folderIsExists(file.getParent());
+                    FileUtils.fileIsExists(file.getPath());
                 }
 
                 // 获取文件的输出流
