@@ -228,6 +228,7 @@ public final class RequestUtils {
                         FileResponseBodyConverter.addListener(downUrl, filePath, reNameFile, loadOnSubscribe);
                         return Observable.merge(Observable.create(loadOnSubscribe), RequestUtils.create(LoadService.class).download(downParam, url));
                     } else {
+                        FileResponseBodyConverter.addListener(downUrl, filePath, reNameFile, null);
                         return RequestUtils.create(LoadService.class)
                                 .download(downParam, url)
                                 .flatMap(new Function<File, ObservableSource<File>>() {
