@@ -423,7 +423,7 @@ public class FileUtils {
      * 根据 url 生成 文件名
      * @param url
      */
-    private static String getFileName(String url){
+    public static String getFileName(String url){
         String fileName;
 
         String md5Name = EncryptUtils.getMD5(url);

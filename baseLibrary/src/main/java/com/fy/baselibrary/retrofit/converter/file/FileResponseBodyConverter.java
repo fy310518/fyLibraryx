@@ -1,22 +1,36 @@
 package com.fy.baselibrary.retrofit.converter.file;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.net.Uri;
+import android.os.Environment;
+import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.retrofit.load.LoadOnSubscribe;
 import com.fy.baselibrary.retrofit.load.down.FileResponseBody;
+import com.fy.baselibrary.utils.AppUtils;
 import com.fy.baselibrary.utils.Constant;
 import com.fy.baselibrary.utils.FileUtils;
 import com.fy.baselibrary.utils.cache.SpfAgent;
+import com.fy.baselibrary.utils.media.UriUtils;
 import com.fy.baselibrary.utils.notify.L;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
@@ -71,12 +85,11 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
             e.printStackTrace();
         }
 
-        String filePath = "";
-        if(targetPath_MAP.containsKey(requestUrl)){
-            filePath = FileUtils.folderIsExists(targetPath_MAP.get(requestUrl)).getPath();
-        } else {
-            filePath = FileUtils.folderIsExists(FileUtils.DOWN, ConfigUtils.getType()).getPath();
+        String filePath = targetPath_MAP.get(requestUrl);
+        if(TextUtils.isEmpty(filePath)){
+            filePath = FileUtils.folderIsExists(FileUtils.DOWN, 0).getPath();
         }
+
         return saveFile(LISTENER_MAP.get(requestUrl), responseBody, requestUrl, filePath);
     }
 
@@ -90,20 +103,47 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
      * @return
      */
     public static File saveFile(LoadOnSubscribe loadOnSubscribe, final ResponseBody responseBody, String url, final String filePath) {
-        final File tempFile = FileUtils.createTempFile(url, filePath);
+        File tempFile = FileUtils.getTempFile(url, filePath);
+
+        Uri uri = null;
+        if(!filePath.contains(AppUtils.getLocalPackageName())) { // 下载到 sd卡 Environment.DIRECTORY_DOWNLOADS 目录
+//            UriUtils.deleteFileUri("Downloads", Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath(), reName_MAP.get(url));
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath());
+            contentValues.put(MediaStore.Downloads.DISPLAY_NAME, tempFile.getName());
+            uri = UriUtils.createFileUri(contentValues, "Downloads");
+        } else {
+            tempFile = FileUtils.fileIsExists(tempFile.getPath());
+        }
+
 
         File file = null;
         try {
-            file = writeFileToDisk(loadOnSubscribe, responseBody, tempFile.getAbsolutePath());
+            file = writeFileToDisk(loadOnSubscribe, responseBody, tempFile.getAbsolutePath(), uri);
 
             int FileDownStatus = SpfAgent.init("").getInt(file.getName() + Constant.FileDownStatus);
 
             boolean renameSuccess;
             if (FileDownStatus == 4) {
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath());
+
                 if(reName_MAP.containsKey(url)){
-                    renameSuccess = tempFile.renameTo(new File(tempFile.getParent(), reName_MAP.get(url)));
+                    if(null != uri){
+                        contentValues.put(MediaStore.Downloads.DISPLAY_NAME, reName_MAP.containsKey(url));
+                        renameSuccess = UriUtils.updateFileUri(uri, contentValues);
+                    } else {
+                        renameSuccess = tempFile.renameTo(new File(tempFile.getParent(), reName_MAP.get(url)));
+                    }
                 } else {
-                    renameSuccess = FileUtils.reNameFile(url, tempFile.getPath());
+                    if(null != uri){
+                        String fileName = FileUtils.getFileName(url);
+                        contentValues.put(MediaStore.Downloads.DISPLAY_NAME, fileName);
+                        renameSuccess = UriUtils.updateFileUri(uri, contentValues);
+                    } else {
+                        renameSuccess = FileUtils.reNameFile(url, tempFile.getPath());
+                    }
                 }
 
                 if(renameSuccess){
@@ -132,55 +172,73 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
      * @throws IOException
      */
     @SuppressLint("DefaultLocale")
-    public static File writeFileToDisk(LoadOnSubscribe loadOnSubscribe, ResponseBody responseBody, String filePath) throws Exception {
+    public static File writeFileToDisk(LoadOnSubscribe loadOnSubscribe, ResponseBody responseBody, String filePath, Uri uri) {
         long totalByte = responseBody.contentLength();
         L.e("fy_file_FileDownInterceptor", "文件下载 写数据" + "---" + Thread.currentThread().getName());
 
         File file = new File(filePath);
-        if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
-        } else {
-            if (null != loadOnSubscribe) {
-                loadOnSubscribe.setmSumLength(file.length() + totalByte);
-                loadOnSubscribe.onRead(file.length());
-            }
+        if (null != loadOnSubscribe) {
+            loadOnSubscribe.setmSumLength(file.length() + totalByte);
+            loadOnSubscribe.onRead(file.length());
         }
 
 
         SpfAgent.init("").saveInt(file.getName() + Constant.FileDownStatus, 1).commit(false);//正在下载
-
-        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rwd");
-        long tempFileLen = file.length();
-        randomAccessFile.seek(tempFileLen);
-
         byte[] buffer = new byte[1024 * 4];
-        InputStream is = responseBody.byteStream();
 
-        long downloadByte = 0;
-        while (true) {
-            int len = is.read(buffer);
-            if (len == -1) {//下载完成
-                if (null != loadOnSubscribe) loadOnSubscribe.clean();
+        InputStream is = null;
+        RandomAccessFile randomAccessFile = null;
+        ParcelFileDescriptor parcelFileDescriptor = null;
+        FileOutputStream out = null;
+        FileChannel channelOut = null;
 
-                SpfAgent.init("").saveInt(file.getName() + Constant.FileDownStatus, 4).commit(false);//下载完成
-                break;
+        try {
+            if(null != uri){
+                ContentResolver resolver = ConfigUtils.getAppCtx().getContentResolver();
+
+                parcelFileDescriptor = resolver.openFileDescriptor(uri, "rw");
+                out = new FileOutputStream(parcelFileDescriptor.getFileDescriptor());
+
+            } else {
+                out = new FileOutputStream(file, false);
             }
 
-            int FileDownStatus = SpfAgent.init("").getInt(file.getName() + Constant.FileDownStatus);
-            if (FileDownStatus == 2 || FileDownStatus == 3) break;//暂停或者取消 停止下载
+            long tempFileLen = file.length();
+            is = responseBody.byteStream();
+//            randomAccessFile = new RandomAccessFile(file, "rwd");
+    //        randomAccessFile.seek(tempFileLen);
+//            channelOut = randomAccessFile.getChannel();
+            channelOut = out.getChannel();
+            // 内存映射，直接使用RandomAccessFile，是用其seek方法指定下载的起始位置，使用缓存下载，在这里指定下载位置。
+            MappedByteBuffer mappedBuffer = channelOut.map(FileChannel.MapMode.READ_WRITE, tempFileLen, totalByte);
 
-            randomAccessFile.write(buffer, 0, len);
-            downloadByte += len;
+            long downloadByte = 0;
+            while (true) {
+                int len = is.read(buffer);
+                if (len == -1) {//下载完成
+                    if (null != loadOnSubscribe) loadOnSubscribe.clean();
 
-            if (null != loadOnSubscribe && downloadByte >= CALL_BACK_LENGTH) {//避免每写4096字节，就回调一次，那未免太奢侈了，所以设定一个常量每1mb回调一次
-                loadOnSubscribe.onRead(len);
-                downloadByte = 0;
+                    SpfAgent.init("").saveInt(file.getName() + Constant.FileDownStatus, 4).commit(false);//下载完成
+                    break;
+                }
+
+                int FileDownStatus = SpfAgent.init("").getInt(file.getName() + Constant.FileDownStatus);
+                if (FileDownStatus == 2 || FileDownStatus == 3) break;//暂停或者取消 停止下载
+
+//              randomAccessFile.write(buffer, 0, len);
+                mappedBuffer.put(buffer, 0, len);
+                downloadByte += len;
+
+                if (null != loadOnSubscribe && downloadByte >= CALL_BACK_LENGTH) {//避免每写4096字节，就回调一次，那未免太奢侈了，所以设定一个常量每1mb回调一次
+                    loadOnSubscribe.onRead(len);
+                    downloadByte = 0;
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        is.close();
-        randomAccessFile.close();
-        responseBody.close();
+        FileUtils.closeIO(channelOut, out, parcelFileDescriptor, is, responseBody);
 
         return file;
     }

@@ -87,7 +87,6 @@ public class UriUtils {
         if (TextUtils.isEmpty(path)) return null;
 
         if (OSUtils.isAndroid10()) {
-
             Uri insert = ConfigUtils.getAppCtx()
                     .getContentResolver()
                     .insert(getUriType(uriType), contentValues);
@@ -113,17 +112,24 @@ public class UriUtils {
         }
     }
 
-    public static void deleteFileUri(String uriType, String path, String name){
-        if (OSUtils.isAndroid10()) {
-            int count = ConfigUtils.getAppCtx()
-                    .getContentResolver()
-                    .delete(getUriType(uriType),
-                            MediaStore.Downloads.RELATIVE_PATH + " = ? AND " + MediaStore.Downloads.DISPLAY_NAME + " = ?",
-                            new String[] {path, name});
+    public static boolean updateFileUri(Uri uri, ContentValues contentValues) {
+        int count = ConfigUtils.getAppCtx()
+                .getContentResolver()
+                .update(uri, contentValues, null, null);
+        if (count > 0) {
+            L.e("SuperFileUtils", "更新成功");
+        }
 
-            if (count > 0) {
-                L.e("SuperFileUtils", "删除成功");
-            }
+        return count > 0;
+    }
+
+    public static void deleteFileUri(Uri uri) {
+        int count = ConfigUtils.getAppCtx()
+                .getContentResolver()
+                .delete(uri, null, null);
+
+        if (count > 0) {
+            L.e("SuperFileUtils", "删除成功");
         }
     }
 

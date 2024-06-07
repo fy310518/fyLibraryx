@@ -1,11 +1,7 @@
 package com.fy.baselibrary.retrofit;
 
-import android.content.ContentValues;
-import android.net.Uri;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 
@@ -20,11 +16,9 @@ import com.fy.baselibrary.utils.Constant;
 import com.fy.baselibrary.utils.FileUtils;
 import com.fy.baselibrary.utils.cache.ACache;
 import com.fy.baselibrary.utils.cache.SpfAgent;
-import com.fy.baselibrary.utils.media.UriUtils;
 import com.fy.baselibrary.utils.notify.L;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.Serializable;
 
 import io.reactivex.Observable;
@@ -36,7 +30,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
-import io.reactivex.functions.Function3;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -183,7 +176,7 @@ public final class RequestUtils {
     /**
      * 文件下载
      * @param url
-     * @param targetPath  下载文件到 此目录（1：app 私有目录；2：android 10 公共【UriUtils：Audio，Images，Video，Downloads】）
+     * @param targetPath  下载文件到 此目录（1：app 私有目录；2：android 10 SD卡公共 Environment.DIRECTORY_DOWNLOADS）
      * @param reNameFile
      */
     public static Observable<Object> downLoadFile(@NonNull final String url, @NonNull String targetPath, @NonNull String reNameFile, boolean isReturnProcess){
@@ -199,19 +192,26 @@ public final class RequestUtils {
         return Observable.just(data).flatMap(new Function<ArrayMap<String, String>, ObservableSource<Object>>() {
             @Override
             public ObservableSource<Object> apply(@NonNull ArrayMap<String, String> arrayMap) throws Exception {
-                String filePath;
-                if(arrayMap.containsKey("targetFilePath")){
-                    filePath = FileUtils.folderIsExists(arrayMap.get("targetFilePath")).getPath();
-                } else {
-                    filePath = FileUtils.folderIsExists(FileUtils.DOWN, ConfigUtils.getType()).getPath();
-                }
-
+                String downUrl = arrayMap.get("requestUrl");
                 String reNameFile = "";
                 if(arrayMap.containsKey("reNameFile")){
                     reNameFile = arrayMap.get("reNameFile");
                 }
 
-                String downUrl = arrayMap.get("requestUrl");
+                String filePath = arrayMap.get("targetFilePath");
+                if(!TextUtils.isEmpty(filePath)){
+                    if(filePath.contains(AppUtils.getLocalPackageName())){ // 下载到 指定的私有目录
+                        filePath = FileUtils.folderIsExists(filePath).getPath();
+                    } else {
+                        filePath = FileUtils.getSDCardDirectoryTpye(filePath) + ConfigUtils.getFilePath();
+                    }
+                } else {
+                    filePath = FileUtils.folderIsExists(FileUtils.DOWN, 0).getPath();
+                }
+
+                LoadOnSubscribe loadOnSubscribe = new LoadOnSubscribe();
+                FileResponseBodyConverter.addListener(downUrl, filePath, reNameFile, loadOnSubscribe);
+
                 final File tempFile = FileUtils.getTempFile(downUrl, filePath);
 
                 File targetFile = FileUtils.getFile(downUrl, filePath);
@@ -226,11 +226,8 @@ public final class RequestUtils {
                 if (downParam.startsWith("bytes=")) {
                     L.e("fy_file_FileDownInterceptor", "文件下载开始---" + Thread.currentThread().getName());
                     if(isReturnProcess){
-                        LoadOnSubscribe loadOnSubscribe = new LoadOnSubscribe();
-                        FileResponseBodyConverter.addListener(downUrl, filePath, reNameFile, loadOnSubscribe);
                         return Observable.merge(Observable.create(loadOnSubscribe), RequestUtils.create(LoadService.class).download(downParam, url));
                     } else {
-                        FileResponseBodyConverter.addListener(downUrl, filePath, reNameFile, null);
                         return RequestUtils.create(LoadService.class)
                                 .download(downParam, url)
                                 .flatMap(new Function<File, ObservableSource<File>>() {
@@ -246,27 +243,28 @@ public final class RequestUtils {
                     return Observable.just(new File(downParam));
                 }
             }
-        }).flatMap(new Function<Object, ObservableSource<Object>>() {
-            @Override
-            public ObservableSource<Object> apply(Object data) throws Exception {
-                if(data instanceof File){
-                    if(!targetPath.contains(AppUtils.getLocalPackageName())){
-                        UriUtils.deleteFileUri(targetPath, Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath(), reNameFile);
-
-                        ContentValues contentValues = new ContentValues();
-                        contentValues.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath());
-                        contentValues.put(MediaStore.Downloads.DISPLAY_NAME, reNameFile);
-                        Uri uri = UriUtils.createFileUri(contentValues, targetPath);
-
-                        FileUtils.copyFile(new FileInputStream(((File) data).getPath()), uri);
-
-                        return Observable.just(uri);
-                    }
-                }
-
-                return Observable.just(data);
-            }
         });
+//        .flatMap(new Function<Object, ObservableSource<Object>>() {
+//            @Override
+//            public ObservableSource<Object> apply(Object data) throws Exception {
+//                if(data instanceof File){
+//                    if(!TextUtils.isEmpty(targetPath) && !targetPath.contains(AppUtils.getLocalPackageName())){
+//                        UriUtils.deleteFileUri(targetPath, Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath(), reNameFile);
+//
+//                        ContentValues contentValues = new ContentValues();
+//                        contentValues.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath());
+//                        contentValues.put(MediaStore.Downloads.DISPLAY_NAME, reNameFile);
+//                        Uri uri = UriUtils.createFileUri(contentValues, targetPath);
+//
+//                        FileUtils.copyFile(new FileInputStream(((File) data).getPath()), uri);
+//
+//                        return Observable.just(uri);
+//                    }
+//                }
+//
+//                return Observable.just(data);
+//            }
+//        });
 //                .subscribeOn(Schedulers.io())
 //                .subscribe(new FileCallBack(url, pDialog) {
 //                    @Override
