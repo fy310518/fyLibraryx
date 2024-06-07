@@ -1,7 +1,11 @@
 package com.fy.baselibrary.retrofit;
 
+import android.content.ContentValues;
+import android.net.Uri;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 
@@ -11,13 +15,16 @@ import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.retrofit.converter.file.FileResponseBodyConverter;
 import com.fy.baselibrary.retrofit.load.LoadOnSubscribe;
 import com.fy.baselibrary.retrofit.load.LoadService;
+import com.fy.baselibrary.utils.AppUtils;
 import com.fy.baselibrary.utils.Constant;
 import com.fy.baselibrary.utils.FileUtils;
 import com.fy.baselibrary.utils.cache.ACache;
 import com.fy.baselibrary.utils.cache.SpfAgent;
+import com.fy.baselibrary.utils.media.UriUtils;
 import com.fy.baselibrary.utils.notify.L;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.Serializable;
 
 import io.reactivex.Observable;
@@ -176,25 +183,20 @@ public final class RequestUtils {
     /**
      * 文件下载
      * @param url
-     * @param targetPath  下载文件到 此目录
+     * @param targetPath  下载文件到 此目录（1：app 私有目录；2：android 10 公共【UriUtils：Audio，Images，Video，Downloads】）
      * @param reNameFile
      */
     public static Observable<Object> downLoadFile(@NonNull final String url, @NonNull String targetPath, @NonNull String reNameFile, boolean isReturnProcess){
+        ArrayMap<String, String> data = new ArrayMap<>();
+        data.put("requestUrl", url);
+        if(!TextUtils.isEmpty(targetPath)){
+            data.put("targetFilePath", targetPath);
+        }
+        if(!TextUtils.isEmpty(reNameFile)){
+            data.put("reNameFile", reNameFile);
+        }
 
-        return Observable.zip(Observable.just(url), Observable.just(targetPath), Observable.just(reNameFile), new Function3<String, String, String, ArrayMap<String, String>>(){
-            @Override
-            public ArrayMap<String, String> apply(@NonNull String url, @NonNull String targetFilePath, @NonNull String reNameFile) throws Exception {
-                ArrayMap<String, String> data = new ArrayMap<>();
-                data.put("requestUrl", url);
-                if(!TextUtils.isEmpty(targetFilePath)){
-                    data.put("targetFilePath", targetFilePath);
-                }
-                if(!TextUtils.isEmpty(reNameFile)){
-                    data.put("reNameFile", reNameFile);
-                }
-                return data;
-            }
-        }).flatMap(new Function<ArrayMap<String, String>, ObservableSource<Object>>() {
+        return Observable.just(data).flatMap(new Function<ArrayMap<String, String>, ObservableSource<Object>>() {
             @Override
             public ObservableSource<Object> apply(@NonNull ArrayMap<String, String> arrayMap) throws Exception {
                 String filePath;
@@ -243,6 +245,26 @@ public final class RequestUtils {
                     SpfAgent.init("").saveInt(tempFile.getName() + Constant.FileDownStatus, 4).commit(false);
                     return Observable.just(new File(downParam));
                 }
+            }
+        }).flatMap(new Function<Object, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Object data) throws Exception {
+                if(data instanceof File){
+                    if(!targetPath.contains(AppUtils.getLocalPackageName())){
+                        UriUtils.deleteFileUri(targetPath, Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath(), reNameFile);
+
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath());
+                        contentValues.put(MediaStore.Downloads.DISPLAY_NAME, reNameFile);
+                        Uri uri = UriUtils.createFileUri(contentValues, targetPath);
+
+                        FileUtils.copyFile(new FileInputStream(((File) data).getPath()), uri);
+
+                        return Observable.just(uri);
+                    }
+                }
+
+                return Observable.just(data);
             }
         });
 //                .subscribeOn(Schedulers.io())

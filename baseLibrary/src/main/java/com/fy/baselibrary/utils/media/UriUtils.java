@@ -87,7 +87,49 @@ public class UriUtils {
         if (TextUtils.isEmpty(path)) return null;
 
         if (OSUtils.isAndroid10()) {
-            Uri insertUri;
+
+            Uri insert = ConfigUtils.getAppCtx()
+                    .getContentResolver()
+                    .insert(getUriType(uriType), contentValues);
+
+            if (insert != null) {
+                L.e("SuperFileUtils", "文件创建从成功");
+            }
+
+            return insert;
+        } else {
+            File file = FileUtils.folderIsExists(path);
+
+            String fileName = contentValues.getAsString(MediaStore.Downloads.DISPLAY_NAME);
+            if (!TextUtils.isEmpty(fileName)) {
+                file = FileUtils.fileIsExists(path + "/" + fileName);
+            }
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                return Uri.fromFile(file);
+            } else {
+                return FileProvider.getUriForFile(ConfigUtils.getAppCtx(), AppUtils.getFileProviderName(), file);
+            }
+        }
+    }
+
+    public static void deleteFileUri(String uriType, String path, String name){
+        if (OSUtils.isAndroid10()) {
+            int count = ConfigUtils.getAppCtx()
+                    .getContentResolver()
+                    .delete(getUriType(uriType),
+                            MediaStore.Downloads.RELATIVE_PATH + " = ? AND " + MediaStore.Downloads.DISPLAY_NAME + " = ?",
+                            new String[] {path, name});
+
+            if (count > 0) {
+                L.e("SuperFileUtils", "删除成功");
+            }
+        }
+    }
+
+    public static Uri getUriType(String uriType) {
+        Uri insertUri = null;
+        if (OSUtils.isAndroid10()) {
             if (FileUtils.isSDCardEnable()) {
                 if (uriType.equals("Audio")) {
                     insertUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
@@ -109,30 +151,9 @@ public class UriUtils {
                     insertUri = MediaStore.Downloads.INTERNAL_CONTENT_URI;
                 }
             }
-
-            Uri insert = ConfigUtils.getAppCtx()
-                    .getContentResolver()
-                    .insert(insertUri, contentValues);
-
-            if (insert != null) {
-                L.e("SuperFileUtils", "文件创建从成功");
-            }
-
-            return insert;
-        } else {
-            File file = FileUtils.folderIsExists(path);
-
-            String fileName = contentValues.getAsString(MediaStore.Downloads.DISPLAY_NAME);
-            if (!TextUtils.isEmpty(fileName)) {
-                file = FileUtils.fileIsExists(path + "/" + fileName);
-            }
-
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                return Uri.fromFile(file);
-            } else {
-                return FileProvider.getUriForFile(ConfigUtils.getAppCtx(), AppUtils.getFileProviderName(), file);
-            }
         }
+
+        return insertUri;
     }
 
     /**

@@ -2,7 +2,7 @@ package com.fy.baselibrary.retrofit.interceptor;
 
 import com.fy.baselibrary.retrofit.load.down.FileResponseBody;
 import com.fy.baselibrary.utils.imgload.imgprogress.ProgressListener;
-import com.fy.baselibrary.utils.notify.L;
+import com.fy.baselibrary.utils.security.EncodeUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -39,7 +39,7 @@ public class FileDownInterceptor implements Interceptor {
 
         assert response.body() != null;
         return response.newBuilder()
-                .body(new FileResponseBody(response.body(), url))
+                .body(new FileResponseBody(response.body(), EncodeUtils.urlDecode(url)))
                 .build();
     }
 }

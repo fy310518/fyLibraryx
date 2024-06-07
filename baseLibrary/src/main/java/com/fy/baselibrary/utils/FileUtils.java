@@ -1,12 +1,15 @@
 package com.fy.baselibrary.utils;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.StatFs;
 import androidx.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.fy.baselibrary.application.ioc.ConfigUtils;
+import com.fy.baselibrary.utils.media.UriUtils;
 import com.fy.baselibrary.utils.notify.L;
 import com.fy.baselibrary.utils.security.EncryptUtils;
 
@@ -548,6 +551,25 @@ public class FileUtils {
         OutputStream os = null;
         try {
             os = new BufferedOutputStream(new FileOutputStream(target, append));
+            byte data[] = new byte[1024];
+            int len;
+            while ((len = is.read(data, 0, 1024)) != -1) {
+                os.write(data, 0, len);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            closeIO(is, os);
+        }
+    }
+
+    public static void copyFile(@NonNull InputStream is, @NonNull Uri target) {
+        ContentResolver resolver = ConfigUtils.getAppCtx().getContentResolver();
+
+        OutputStream os = null;
+        try {
+            os = resolver.openOutputStream(target);
+
             byte data[] = new byte[1024];
             int len;
             while ((len = is.read(data, 0, 1024)) != -1) {
