@@ -215,6 +215,9 @@ public final class RequestUtils {
                 final File tempFile = FileUtils.getTempFile(downUrl, filePath);
 
                 File targetFile = FileUtils.getFile(downUrl, filePath);
+                if(!TextUtils.isEmpty(reNameFile)){ // 找最终下载完成的 文件
+                    targetFile = new File(filePath, reNameFile);
+                }
 
                 String downParam;
                 if (targetFile.exists()) {
