@@ -22,6 +22,7 @@ import com.fy.baselibrary.utils.notify.L;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,7 +32,9 @@ import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
+import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
@@ -201,13 +204,12 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
                 out = new FileOutputStream(parcelFileDescriptor.getFileDescriptor());
 
             } else {
-                out = new FileOutputStream(file, false);
+                out = new FileOutputStream(file, true);
             }
 
             is = responseBody.byteStream();
 //            randomAccessFile = new RandomAccessFile(file, "rwd");
 //            randomAccessFile.seek(tempFileLen);
-//            channelOut = randomAccessFile.getChannel();
             channelOut = out.getChannel();
             long tempFileLen = channelOut.size();
 //             设置写入的起始位置
