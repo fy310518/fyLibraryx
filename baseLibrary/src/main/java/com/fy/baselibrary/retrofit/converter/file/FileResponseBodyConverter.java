@@ -125,7 +125,7 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
 
                 if(reName_MAP.containsKey(url)){
                     if(null != uri){
-                        contentValues.put(MediaStore.Downloads.DISPLAY_NAME, reName_MAP.containsKey(url));
+                        contentValues.put(MediaStore.Downloads.DISPLAY_NAME, reName_MAP.get(url));
                         renameSuccess = UriUtils.updateFileUri(uri, contentValues);
                     } else {
                         renameSuccess = tempFile.renameTo(new File(tempFile.getParent(), reName_MAP.get(url)));
