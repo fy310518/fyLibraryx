@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
+import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
@@ -209,8 +210,8 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
     //        randomAccessFile.seek(tempFileLen);
 //            channelOut = randomAccessFile.getChannel();
             channelOut = out.getChannel();
-            // 内存映射，直接使用RandomAccessFile，是用其seek方法指定下载的起始位置，使用缓存下载，在这里指定下载位置。
-            MappedByteBuffer mappedBuffer = channelOut.map(FileChannel.MapMode.READ_WRITE, tempFileLen, totalByte);
+//             设置写入的起始位置
+//            channelOut.position(tempFileLen);
 
             long downloadByte = 0;
             while (true) {
@@ -226,7 +227,7 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
                 if (FileDownStatus == 2 || FileDownStatus == 3) break;//暂停或者取消 停止下载
 
 //              randomAccessFile.write(buffer, 0, len);
-                mappedBuffer.put(buffer, 0, len);
+                channelOut.write(ByteBuffer.wrap(buffer), len);
                 downloadByte += len;
 
                 if (null != loadOnSubscribe && downloadByte >= CALL_BACK_LENGTH) {//避免每写4096字节，就回调一次，那未免太奢侈了，所以设定一个常量每1mb回调一次
