@@ -210,7 +210,7 @@ public final class RequestUtils {
                 }
 
                 LoadOnSubscribe loadOnSubscribe = new LoadOnSubscribe();
-                FileResponseBodyConverter.addListener(downUrl, filePath, reNameFile, loadOnSubscribe);
+                FileResponseBodyConverter.addListener(downUrl, filePath, reNameFile, isReturnProcess ? loadOnSubscribe : null);
 
                 final File tempFile = FileUtils.getTempFile(downUrl, filePath);
 

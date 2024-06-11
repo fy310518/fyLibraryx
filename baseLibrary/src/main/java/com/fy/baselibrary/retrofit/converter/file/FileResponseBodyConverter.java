@@ -219,7 +219,7 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
                 downloadByte += len;
 
                 if (null != loadOnSubscribe && downloadByte >= CALL_BACK_LENGTH) {//避免每写4096字节，就回调一次，那未免太奢侈了，所以设定一个常量每1mb回调一次
-                    loadOnSubscribe.onRead(len);
+                    loadOnSubscribe.onRead(downloadByte);
                     downloadByte = 0;
                 }
             }
