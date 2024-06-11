@@ -204,14 +204,14 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
                 out = new FileOutputStream(file, false);
             }
 
-            long tempFileLen = file.length();
             is = responseBody.byteStream();
 //            randomAccessFile = new RandomAccessFile(file, "rwd");
-    //        randomAccessFile.seek(tempFileLen);
+//            randomAccessFile.seek(tempFileLen);
 //            channelOut = randomAccessFile.getChannel();
             channelOut = out.getChannel();
+            long tempFileLen = channelOut.size();
 //             设置写入的起始位置
-//            channelOut.position(tempFileLen);
+            channelOut.position(tempFileLen);
 
             long downloadByte = 0;
             while (true) {
