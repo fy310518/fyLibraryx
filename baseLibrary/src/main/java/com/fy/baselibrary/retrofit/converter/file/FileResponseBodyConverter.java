@@ -5,7 +5,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.ArrayMap;
@@ -20,21 +19,12 @@ import com.fy.baselibrary.utils.cache.SpfAgent;
 import com.fy.baselibrary.utils.media.UriUtils;
 import com.fy.baselibrary.utils.notify.L;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
-import java.nio.ByteBuffer;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
 
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
@@ -192,28 +182,20 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
 
         InputStream is = null;
         RandomAccessFile randomAccessFile = null;
-        ParcelFileDescriptor parcelFileDescriptor = null;
-        FileOutputStream out = null;
-        FileChannel channelOut = null;
+        OutputStream out = null;
 
         try {
+            is = responseBody.byteStream();
+
             if(null != uri){
                 ContentResolver resolver = ConfigUtils.getAppCtx().getContentResolver();
-
-                parcelFileDescriptor = resolver.openFileDescriptor(uri, "rw");
-                out = new FileOutputStream(parcelFileDescriptor.getFileDescriptor());
+                out = resolver.openOutputStream(uri);
 
             } else {
-                out = new FileOutputStream(file, true);
+                long tempFileLen = file.length();
+                randomAccessFile = new RandomAccessFile(file, "rwd");
+                randomAccessFile.seek(tempFileLen);
             }
-
-            is = responseBody.byteStream();
-//            randomAccessFile = new RandomAccessFile(file, "rwd");
-//            randomAccessFile.seek(tempFileLen);
-            channelOut = out.getChannel();
-            long tempFileLen = channelOut.size();
-//             设置写入的起始位置
-            channelOut.position(tempFileLen);
 
             long downloadByte = 0;
             while (true) {
@@ -228,8 +210,12 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
                 int FileDownStatus = SpfAgent.init("").getInt(file.getName() + Constant.FileDownStatus);
                 if (FileDownStatus == 2 || FileDownStatus == 3) break;//暂停或者取消 停止下载
 
-//              randomAccessFile.write(buffer, 0, len);
-                channelOut.write(ByteBuffer.wrap(buffer), len);
+                if(null != randomAccessFile){
+                    randomAccessFile.write(buffer, 0, len);
+                } else {
+                    out.write(buffer, 0, len);
+                }
+
                 downloadByte += len;
 
                 if (null != loadOnSubscribe && downloadByte >= CALL_BACK_LENGTH) {//避免每写4096字节，就回调一次，那未免太奢侈了，所以设定一个常量每1mb回调一次
@@ -241,7 +227,7 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
             e.printStackTrace();
         }
 
-        FileUtils.closeIO(channelOut, out, parcelFileDescriptor, is, responseBody);
+        FileUtils.closeIO(out, is, responseBody);
 
         return file;
     }
