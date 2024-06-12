@@ -180,6 +180,10 @@ public final class RequestUtils {
      * @param reNameFile
      */
     public static Observable<Object> downLoadFile(@NonNull final String url, @NonNull String targetPath, @NonNull String reNameFile, boolean isReturnProcess){
+        if(SpfAgent.init("").getInt(url + Constant.FileDownStatus) == 1) {
+            return Observable.error(new ServerException("Downloading", -120));
+        }
+
         ArrayMap<String, String> data = new ArrayMap<>();
         data.put("requestUrl", url);
         if(!TextUtils.isEmpty(targetPath)){
@@ -226,9 +230,7 @@ public final class RequestUtils {
                     downParam = "bytes=" + tempFile.length() + "-";
                 }
 
-                if(SpfAgent.init("").getInt(url + Constant.FileDownStatus) == 1) {
-                    return Observable.just("Downloading");
-                } else if (downParam.startsWith("bytes=")) {
+                if (downParam.startsWith("bytes=")) {
                     L.e("fy_file_FileDownInterceptor", "文件下载开始---" + Thread.currentThread().getName());
                     if(isReturnProcess){
                         return Observable.merge(Observable.create(loadOnSubscribe), RequestUtils.create(LoadService.class).download(downParam, url));

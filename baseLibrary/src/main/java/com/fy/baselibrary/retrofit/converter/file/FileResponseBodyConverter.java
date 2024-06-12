@@ -128,6 +128,7 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
                 if(reName_MAP.containsKey(url)){
                     if(null != uri){
                         contentValues.put(MediaStore.Downloads.DISPLAY_NAME, reName_MAP.get(url));
+                        contentValues.put(MediaStore.Downloads.DATA, filePath + File.separator + reName_MAP.get(url));
                         renameSuccess = UriUtils.updateFileUri(uri, contentValues);
                         resultFile = new File(filePath, reName_MAP.get(url));
                     } else {
@@ -137,6 +138,7 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
                 } else {
                     if(null != uri){
                         contentValues.put(MediaStore.Downloads.DISPLAY_NAME, fileName);
+                        contentValues.put(MediaStore.Downloads.DATA, filePath + File.separator + fileName);
                         renameSuccess = UriUtils.updateFileUri(uri, contentValues);
                     } else {
                         renameSuccess = FileUtils.reNameFile(url, tempFile.getPath());
