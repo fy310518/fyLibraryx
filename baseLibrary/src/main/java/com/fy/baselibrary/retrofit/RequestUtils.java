@@ -149,10 +149,10 @@ public final class RequestUtils {
      * @param url 文件下载地址
      */
     public static void pauseDownLoad(String url){
-        final String filePath = FileUtils.folderIsExists(FileUtils.DOWN, ConfigUtils.getType()).getPath();
-        final File tempFile = FileUtils.getTempFile(url, filePath);
+//        final String filePath = FileUtils.folderIsExists(FileUtils.DOWN, ConfigUtils.getType()).getPath();
+//        final File tempFile = FileUtils.getTempFile(url, filePath);
 
-        SpfAgent.init("").saveInt(tempFile.getName() + Constant.FileDownStatus, 2).commit(false);//暂停下载
+        SpfAgent.init("").saveInt(url + Constant.FileDownStatus, 2).commit(false);//暂停下载
     }
 
     /**
@@ -160,10 +160,10 @@ public final class RequestUtils {
      * @param url 文件下载地址
      */
     public static void cancelDownLoad(String url){
-        final String filePath = FileUtils.folderIsExists(FileUtils.DOWN, ConfigUtils.getType()).getPath();
-        final File tempFile = FileUtils.getTempFile(url, filePath);
+//        final String filePath = FileUtils.folderIsExists(FileUtils.DOWN, ConfigUtils.getType()).getPath();
+//        final File tempFile = FileUtils.getTempFile(url, filePath);
 
-        SpfAgent.init("").saveInt(tempFile.getName() + Constant.FileDownStatus, 3).commit(false);//取消下载
+        SpfAgent.init("").saveInt(url + Constant.FileDownStatus, 3).commit(false);//取消下载
     }
 
     /**
@@ -226,7 +226,9 @@ public final class RequestUtils {
                     downParam = "bytes=" + tempFile.length() + "-";
                 }
 
-                if (downParam.startsWith("bytes=")) {
+                if(SpfAgent.init("").getInt(url + Constant.FileDownStatus) == 1) {
+                    return Observable.just("Downloading");
+                } else if (downParam.startsWith("bytes=")) {
                     L.e("fy_file_FileDownInterceptor", "文件下载开始---" + Thread.currentThread().getName());
                     if(isReturnProcess){
                         return Observable.merge(Observable.create(loadOnSubscribe), RequestUtils.create(LoadService.class).download(downParam, url));
@@ -242,32 +244,11 @@ public final class RequestUtils {
                                 });
                     }
                 } else {
-                    SpfAgent.init("").saveInt(tempFile.getName() + Constant.FileDownStatus, 4).commit(false);
+                    SpfAgent.init("").saveInt(url + Constant.FileDownStatus, 4).commit(false);
                     return Observable.just(new File(downParam));
                 }
             }
         });
-//        .flatMap(new Function<Object, ObservableSource<Object>>() {
-//            @Override
-//            public ObservableSource<Object> apply(Object data) throws Exception {
-//                if(data instanceof File){
-//                    if(!TextUtils.isEmpty(targetPath) && !targetPath.contains(AppUtils.getLocalPackageName())){
-//                        UriUtils.deleteFileUri(targetPath, Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath(), reNameFile);
-//
-//                        ContentValues contentValues = new ContentValues();
-//                        contentValues.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath());
-//                        contentValues.put(MediaStore.Downloads.DISPLAY_NAME, reNameFile);
-//                        Uri uri = UriUtils.createFileUri(contentValues, targetPath);
-//
-//                        FileUtils.copyFile(new FileInputStream(((File) data).getPath()), uri);
-//
-//                        return Observable.just(uri);
-//                    }
-//                }
-//
-//                return Observable.just(data);
-//            }
-//        });
 //                .subscribeOn(Schedulers.io())
 //                .subscribe(new FileCallBack(url, pDialog) {
 //                    @Override

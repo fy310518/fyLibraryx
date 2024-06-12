@@ -4,10 +4,13 @@ import com.fy.baselibrary.utils.notify.L;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -25,6 +28,46 @@ public class ZipUtils {
     private ZipUtils() {
         /* cannot be instantiated */
         throw new UnsupportedOperationException("cannot be instantiated");
+    }
+
+    /**
+     * 判断 输入流 是否为一个压缩文件
+     * @param source
+     * @return
+     */
+    public static boolean isArchiveFile(File source) {
+        try {
+            return isArchiveFile(new FileInputStream(source));
+        } catch (FileNotFoundException e) {
+            return false;
+        }
+    }
+
+    public static boolean isArchiveFile(InputStream input) {
+        byte[] ZIP_HEADER_1 = new byte[]{80, 75, 3, 4};
+        byte[] ZIP_HEADER_2 = new byte[]{80, 75, 5, 6};
+
+        boolean isArchive = false;
+//        InputStream input = null;
+        try {
+//            input = new InputStream(source);
+            byte[] buffer = new byte[4];
+            int length = input.read(buffer, 0, 4);
+            if (length == 4) {
+                isArchive = (Arrays.equals(ZIP_HEADER_1, buffer)) || (Arrays.equals(ZIP_HEADER_2, buffer));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+
+        return isArchive;
     }
 
     /**

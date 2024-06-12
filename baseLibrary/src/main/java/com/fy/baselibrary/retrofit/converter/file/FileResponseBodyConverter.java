@@ -114,25 +114,28 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
 
         File file = null;
         try {
-            file = writeFileToDisk(loadOnSubscribe, responseBody, tempFile.getAbsolutePath(), uri);
+            file = writeFileToDisk(loadOnSubscribe, responseBody, url, tempFile.getAbsolutePath(), uri);
 
-            int FileDownStatus = SpfAgent.init("").getInt(file.getName() + Constant.FileDownStatus);
+            int FileDownStatus = SpfAgent.init("").getInt(url + Constant.FileDownStatus);
 
             boolean renameSuccess;
             if (FileDownStatus == 4) {
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath());
 
+                String fileName = FileUtils.getFileName(url);
+                File resultFile = new File(filePath, fileName);
                 if(reName_MAP.containsKey(url)){
                     if(null != uri){
                         contentValues.put(MediaStore.Downloads.DISPLAY_NAME, reName_MAP.get(url));
                         renameSuccess = UriUtils.updateFileUri(uri, contentValues);
+                        resultFile = new File(filePath, reName_MAP.get(url));
                     } else {
-                        renameSuccess = tempFile.renameTo(new File(tempFile.getParent(), reName_MAP.get(url)));
+                        resultFile = new File(tempFile.getParent(), reName_MAP.get(url));
+                        renameSuccess = tempFile.renameTo(resultFile);
                     }
                 } else {
                     if(null != uri){
-                        String fileName = FileUtils.getFileName(url);
                         contentValues.put(MediaStore.Downloads.DISPLAY_NAME, fileName);
                         renameSuccess = UriUtils.updateFileUri(uri, contentValues);
                     } else {
@@ -141,7 +144,7 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
                 }
 
                 if(renameSuccess){
-                    return FileUtils.getFile(url, filePath);
+                    return resultFile;
                 } else {
                     return tempFile;
                 }
@@ -166,7 +169,7 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
      * @throws IOException
      */
     @SuppressLint("DefaultLocale")
-    public static File writeFileToDisk(LoadOnSubscribe loadOnSubscribe, ResponseBody responseBody, String filePath, Uri uri) {
+    public static File writeFileToDisk(LoadOnSubscribe loadOnSubscribe, ResponseBody responseBody, String url, String filePath, Uri uri) {
         long totalByte = responseBody.contentLength();
         L.e("fy_file_FileDownInterceptor", "文件下载 写数据" + "---" + Thread.currentThread().getName());
 
@@ -177,7 +180,7 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
         }
 
 
-        SpfAgent.init("").saveInt(file.getName() + Constant.FileDownStatus, 1).commit(false);//正在下载
+        SpfAgent.init("").saveInt(url + Constant.FileDownStatus, 1).commit(false);//正在下载
         byte[] buffer = new byte[1024 * 4];
 
         InputStream is = null;
@@ -203,11 +206,11 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
                 if (len == -1) {//下载完成
                     if (null != loadOnSubscribe) loadOnSubscribe.clean();
 
-                    SpfAgent.init("").saveInt(file.getName() + Constant.FileDownStatus, 4).commit(false);//下载完成
+                    SpfAgent.init("").saveInt(url + Constant.FileDownStatus, 4).commit(false);//下载完成
                     break;
                 }
 
-                int FileDownStatus = SpfAgent.init("").getInt(file.getName() + Constant.FileDownStatus);
+                int FileDownStatus = SpfAgent.init("").getInt(url + Constant.FileDownStatus);
                 if (FileDownStatus == 2 || FileDownStatus == 3) break;//暂停或者取消 停止下载
 
                 if(null != randomAccessFile){

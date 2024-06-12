@@ -19,7 +19,6 @@ import java.io.File;
  */
 public abstract class FileCallBack extends RequestBaseObserver<Object> {
     final String filePath = FileUtils.folderIsExists(FileUtils.DOWN, ConfigUtils.getType()).getPath();
-    File tempFile;
     String fileDownUrl;
 
     public FileCallBack() {}
@@ -49,7 +48,6 @@ public abstract class FileCallBack extends RequestBaseObserver<Object> {
     //下载文件 初始化参数
     private void init(@NonNull String url){
         this.fileDownUrl = url;
-        tempFile = FileUtils.getTempFile(url, filePath);
     }
 
     @Override
@@ -66,13 +64,13 @@ public abstract class FileCallBack extends RequestBaseObserver<Object> {
     public void onError(Throwable e) {
         if (!TextUtils.isEmpty(fileDownUrl)) {
             dismissProgress();
-            int FileDownStatus = SpfAgent.init("").getInt(tempFile.getName() + Constant.FileDownStatus);
+            int FileDownStatus = SpfAgent.init("").getInt(fileDownUrl + Constant.FileDownStatus);
             if (FileDownStatus == 4) {
                 File targetFile = FileUtils.getFile(fileDownUrl, filePath);
                 downProgress("100");
                 downSuccess(targetFile);
             } else {
-                SpfAgent.init("").saveInt(tempFile.getName() + Constant.FileDownStatus, 3).commit(false);
+                SpfAgent.init("").saveInt(fileDownUrl + Constant.FileDownStatus, 3).commit(false);
                 onFail();
             }
         } else {
