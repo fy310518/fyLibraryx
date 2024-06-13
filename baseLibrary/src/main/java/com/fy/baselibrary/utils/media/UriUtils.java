@@ -1,5 +1,6 @@
 package com.fy.baselibrary.utils.media;
 
+import android.annotation.Nullable;
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -112,10 +113,40 @@ public class UriUtils {
         }
     }
 
+//    @SuppressLint("Range")
+//    public static Uri queryFileUri(String uriType, ContentValues contentValues) {
+//        Uri uri = null;
+//        if (OSUtils.isAndroid10()) {
+//            Cursor cursor = ConfigUtils.getAppCtx()
+//                    .getContentResolver()
+//                    .query(getUriType(uriType),
+//                            null,
+//                            MediaStore.Downloads.RELATIVE_PATH + "=? AND" + MediaStore.Downloads.DISPLAY_NAME + "=?",
+//                            new String[]{contentValues.getAsString(MediaStore.Downloads.RELATIVE_PATH), contentValues.getAsString(MediaStore.Downloads.DISPLAY_NAME)},
+//                            null);
+//
+//            while(cursor.moveToNext()) {
+//                uri = Uri.parse(cursor.getString(cursor.getColumnIndex(android.provider.ContactsContract.Contacts._ID)));
+//                break;
+//            }
+//
+//            cursor.close();
+//
+//            return uri;
+//        }
+//
+//        return null;
+//    }
+
     public static boolean updateFileUri(Uri uri, ContentValues contentValues) {
-        int count = ConfigUtils.getAppCtx()
-                .getContentResolver()
-                .update(uri, contentValues, null, null);
+        int count = 0;
+        try {
+            count = ConfigUtils.getAppCtx()
+                    .getContentResolver()
+                    .update(uri, contentValues, null, null);
+        } catch (Exception e) {
+//            e.printStackTrace();
+        }
         if (count > 0) {
             L.e("SuperFileUtils", "更新成功");
         }
@@ -123,10 +154,10 @@ public class UriUtils {
         return count > 0;
     }
 
-    public static void deleteFileUri(Uri uri) {
+    public static void deleteFileUri(String uriType, String where, String[] selectionArgs) {
         int count = ConfigUtils.getAppCtx()
                 .getContentResolver()
-                .delete(uri, null, null);
+                .delete(getUriType(uriType), where, selectionArgs);
 
         if (count > 0) {
             L.e("SuperFileUtils", "删除成功");
