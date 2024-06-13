@@ -53,7 +53,7 @@ public class PermissionUtils {
     /**
      * 判断某个权限是否授予
      */
-    private static boolean isPermissionGranted(Context context, String permission) {
+    public static boolean isPermissionGranted(Context context, String permission) {
         // 如果是安卓 6.0 以下版本就默认授予
         if (!OSUtils.isAndroid6()) return true;
 
