@@ -120,7 +120,7 @@ public class UriUtils {
 //                    .getContentResolver()
 //                    .query(getUriType(uriType),
 //                            null,
-//                            MediaStore.Downloads.RELATIVE_PATH + "=? AND" + MediaStore.Downloads.DISPLAY_NAME + "=?",
+//                            MediaStore.Downloads.RELATIVE_PATH + "=? AND " + MediaStore.Downloads.DISPLAY_NAME + "=?",
 //                            new String[]{contentValues.getAsString(MediaStore.Downloads.RELATIVE_PATH), contentValues.getAsString(MediaStore.Downloads.DISPLAY_NAME)},
 //                            null);
 //

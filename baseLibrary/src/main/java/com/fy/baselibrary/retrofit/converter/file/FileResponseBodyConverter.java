@@ -102,7 +102,7 @@ public class FileResponseBodyConverter implements Converter<ResponseBody, File> 
         Uri uri = null;
         if(!filePath.contains(AppUtils.getLocalPackageName())) { // 下载到 sd卡 Environment.DIRECTORY_DOWNLOADS 目录
             UriUtils.deleteFileUri("Downloads",
-                    MediaStore.Downloads.RELATIVE_PATH + "=? AND" + MediaStore.Downloads.DISPLAY_NAME + "=?",
+                    MediaStore.Downloads.RELATIVE_PATH + "=? AND " + MediaStore.Downloads.DISPLAY_NAME + " =?",
                     new String[]{Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath(), tempFile.getName()});
 
             ContentValues contentValues = new ContentValues();
