@@ -1,6 +1,5 @@
 package com.fy.baselibrary.utils.media;
 
-import android.annotation.Nullable;
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentUris;
