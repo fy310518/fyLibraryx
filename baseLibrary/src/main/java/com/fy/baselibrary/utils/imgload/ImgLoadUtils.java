@@ -1,7 +1,7 @@
 package com.fy.baselibrary.utils.imgload;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
@@ -38,27 +38,36 @@ public class ImgLoadUtils {
 
     /**
      * 预加载 （把指定URL地址的图片 的原始尺寸保存到缓存中）
-     * @param url
+     * @param model
      */
-    public static void preloadImg(Context context, String url) {
+    public static void preloadImg(Context context, Object model) {
         Glide.with(context)
-                .load(url)
+                .load(model)
                 .preload();
     }
 
     /**
      * 获取 glide 缓存在磁盘的图片文件
      * @param context
-     * @param url
+     * @param model
      */
-    public static File getImgCachePath(Context context, String url) throws ExecutionException, InterruptedException {
+    public static File getImgCachePath(Context context, Object model) throws ExecutionException, InterruptedException {
         FutureTarget<File> target = Glide.with(context)
                 .asFile()
-                .onlyRetrieveFromCache(true)
-                .load(url)
+//                .onlyRetrieveFromCache(true)
+                .load(model)
                 .submit();//必须要用在子线程当中
 
         return target.get();
+    }
+
+    public static Bitmap getImgCacheBitmap(Context context, Object model) throws ExecutionException, InterruptedException {
+        return Glide.with(context)
+                .asBitmap()
+//                .onlyRetrieveFromCache(true)
+                .load(model)
+                .submit() //必须要用在子线程当中
+                .get();
     }
 
 //    android:scaleType="centerCrop"
@@ -110,10 +119,10 @@ public class ImgLoadUtils {
     /**
      * 加载网络图片 带进度回调监听
      */
-    public static void loadImgProgress(@NonNull String url, @NonNull RequestOptions options,
+    public static void loadImgProgress(@NonNull Object url, @NonNull RequestOptions options,
                                        @NonNull ImageView imageView, ImgLoadCallBack<Drawable> callBack) {
 
-        FileDownInterceptor.addListener(url, new ProgressListener() {
+        FileDownInterceptor.addListener(url.toString(), new ProgressListener() {
             @Override
             public void onProgress(int progress) {
                 L.e("glide", progress + "%");
@@ -135,7 +144,7 @@ public class ImgLoadUtils {
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        FileDownInterceptor.removeListener(url);
+                        FileDownInterceptor.removeListener(url.toString());
                         if (null != callBack)
                             callBack.onLoadFailed(e, model, target, isFirstResource);
                         return false;
@@ -143,7 +152,7 @@ public class ImgLoadUtils {
 
                     @Override
                     public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        FileDownInterceptor.removeListener(url);
+                        FileDownInterceptor.removeListener(url.toString());
                         if (null != callBack)
                             callBack.onResourceReady(resource, model, target, dataSource, isFirstResource);
                         return false;
