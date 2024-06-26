@@ -220,7 +220,7 @@ public abstract class H5WebViewClient extends WebViewClient {
         WebResourceResponse webResourceResponse = null;
         File imgFile = null;
         try {
-            imgFile = ImgLoadUtils.getImgCachePath(view.getContext(), url);
+            imgFile = ImgLoadUtils.getImgCachePath(view.getContext(), url, null);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

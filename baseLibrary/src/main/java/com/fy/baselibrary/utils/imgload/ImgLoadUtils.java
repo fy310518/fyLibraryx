@@ -1,5 +1,6 @@
 package com.fy.baselibrary.utils.imgload;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -9,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
@@ -51,21 +53,32 @@ public class ImgLoadUtils {
      * @param context
      * @param model
      */
-    public static File getImgCachePath(Context context, Object model) throws ExecutionException, InterruptedException {
+    public static File getImgCachePath(Context context, Object model, RequestOptions options) throws ExecutionException, InterruptedException {
+        if(null == options){
+            options = new RequestOptions()
+//                    .onlyRetrieveFromCache(true) // 只从缓存中检索数据，而不去网络或其他地方获取新的数据
+            ;
+        }
+
         FutureTarget<File> target = Glide.with(context)
                 .asFile()
-//                .onlyRetrieveFromCache(true)
                 .load(model)
+                .apply(options)
                 .submit();//必须要用在子线程当中
 
         return target.get();
     }
 
-    public static Bitmap getImgCacheBitmap(Context context, Object model) throws ExecutionException, InterruptedException {
+    public static Bitmap getImgCacheBitmap(Context context, Object model, RequestOptions options) throws ExecutionException, InterruptedException {
+        if(null == options){
+            options = new RequestOptions()
+//                    .onlyRetrieveFromCache(true) // 只从缓存中检索数据，而不去网络或其他地方获取新的数据
+            ;
+        }
         return Glide.with(context)
                 .asBitmap()
-//                .onlyRetrieveFromCache(true)
                 .load(model)
+                .apply(options)
                 .submit() //必须要用在子线程当中
                 .get();
     }

@@ -41,7 +41,7 @@ public class CombineHelper {
         //循环 combineBitmapBuilder.urls 获取 bitmap 数组，调用 setBitmap(combineBitmapBuilder, bitmaps);
         for (int i = 0; i < combineBitmapBuilder.urls.size(); i++) {
             if (FileUtils.fileIsExist(combineBitmapBuilder.urls.get(i))) file = new File(combineBitmapBuilder.urls.get(i));
-            else file = ImgLoadUtils.getImgCachePath(context, combineBitmapBuilder.urls.get(i));
+            else file = ImgLoadUtils.getImgCachePath(context, combineBitmapBuilder.urls.get(i), null);
 
             fileInputStream = new FileInputStream(file);
             FileDescriptor fileDescriptor = fileInputStream.getFD();
