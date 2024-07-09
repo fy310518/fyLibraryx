@@ -125,6 +125,27 @@ public class ACache {
         }
     }
 
+    public void put2(String key, String value) {
+        File file = mCache.newFile(key);
+        BufferedWriter out = null;
+        try {
+            out = new BufferedWriter(new FileWriter(file, true));
+            out.write(value);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (out != null) {
+                try {
+                    out.flush();
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            mCache.put(file);
+        }
+    }
+
     /**
      * 保存 String数据 到 缓存中
      *
