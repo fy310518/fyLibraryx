@@ -312,13 +312,14 @@ public class AppUtils {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
 
-        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-            if (appProcess.processName.equals(context.getPackageName())) {
-//                BACKGROUND=400 EMPTY=500 FOREGROUND=100
-//                GONE=1000 PERCEPTIBLE=130 SERVICE=300 ISIBLE=200
+        if(null != appProcesses){
+            for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+                if (appProcess.processName.equals(context.getPackageName())) {
+    //                BACKGROUND=400 EMPTY=500 FOREGROUND=100
+    //                GONE=1000 PERCEPTIBLE=130 SERVICE=300 ISIBLE=200
 
-                return appProcess.pid;
-
+                    return appProcess.pid;
+                }
             }
         }
         return -1;
