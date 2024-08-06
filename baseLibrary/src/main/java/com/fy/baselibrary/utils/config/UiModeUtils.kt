@@ -25,7 +25,7 @@ class UiModeUtils {
          * @return 深色模式返回 true，否则返回false
          */
         fun isDarkThemeOn(): Boolean {
-            val uiModeManager = ConfigUtils.getAppCtx().getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+            val uiModeManager: UiModeManager? = ConfigUtils.getAppCtx().getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
             if (uiModeManager != null) {
                 val currentNightMode = uiModeManager.nightMode
                 return currentNightMode == UiModeManager.MODE_NIGHT_YES // 深色模式
