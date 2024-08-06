@@ -97,7 +97,14 @@ public class UriUtils {
 
             return insert;
         } else {
-            File file = FileUtils.folderIsExists(path);
+            String superFolder = "";
+            if (FileUtils.isSDCardEnable()) {
+                superFolder = FileUtils.getSDCardPath() + path;
+            } else {
+                superFolder = FileUtils.getFilesDir() + path;
+            }
+
+            File file = FileUtils.folderIsExists(superFolder);
 
             String fileName = contentValues.getAsString(MediaStore.Downloads.DISPLAY_NAME);
             if (!TextUtils.isEmpty(fileName)) {
