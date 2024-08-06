@@ -108,7 +108,7 @@ public class UriUtils {
 
             String fileName = contentValues.getAsString(MediaStore.Downloads.DISPLAY_NAME);
             if (!TextUtils.isEmpty(fileName)) {
-                file = FileUtils.fileIsExists(path + "/" + fileName);
+                file = FileUtils.fileIsExists(superFolder + "/" + fileName);
             }
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
