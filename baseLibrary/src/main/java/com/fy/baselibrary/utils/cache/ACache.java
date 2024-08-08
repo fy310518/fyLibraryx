@@ -21,6 +21,7 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
 import com.fy.baselibrary.utils.FileUtils;
+import com.fy.baselibrary.utils.notify.L;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -86,10 +87,10 @@ public class ACache {
 
     private ACache(File cacheDir, long max_size, int max_count) {
         if (!cacheDir.exists() && !cacheDir.mkdirs()) {
-            throw new RuntimeException("can't make dirs in "
-                    + cacheDir.getAbsolutePath());
+            L.e("can't make dirs in " + cacheDir.getAbsolutePath());
+        } else {
+            mCache = new ACacheManager(cacheDir, max_size, max_count);
         }
-        mCache = new ACacheManager(cacheDir, max_size, max_count);
     }
 
     // =======================================

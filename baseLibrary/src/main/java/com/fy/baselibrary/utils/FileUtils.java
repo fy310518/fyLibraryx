@@ -102,11 +102,16 @@ public class FileUtils {
      * @return "SDCard/Android/data/你的应用包名/cache/"
      */
     public static String getExternalCacheDir(){
-        File file = ConfigUtils.getAppCtx().getExternalCacheDir();
-        if (null == file){
-            return getCacheDir();
+        if (isSDCardEnable()){
+            File file = ConfigUtils.getAppCtx().getExternalCacheDir();
+
+            if (null == file){
+                return getCacheDir();
+            } else {
+                return file.getAbsolutePath() + File.separator;
+            }
         } else {
-            return file.getAbsolutePath() + File.separator;
+            return getCacheDir();
         }
     }
 
