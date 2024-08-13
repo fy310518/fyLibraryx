@@ -87,7 +87,10 @@ public class ACache {
 
     private ACache(File cacheDir, long max_size, int max_count) {
         if (!cacheDir.exists() && !cacheDir.mkdirs()) {
-            L.e("can't make dirs in " + cacheDir.getAbsolutePath());
+            File newCacheDir = new File(FileUtils.getCacheDir(), cacheDir.getName());
+            FileUtils.folderIsExists(newCacheDir.getPath());
+            
+            mCache = new ACacheManager(newCacheDir, max_size, max_count);
         } else {
             mCache = new ACacheManager(cacheDir, max_size, max_count);
         }
@@ -106,9 +109,10 @@ public class ACache {
      *            保存的String数据
      */
     public void put(String key, String value) {
-        File file = mCache.newFile(key);
+        File file = null;
         BufferedWriter out = null;
         try {
+            file = mCache.newFile(key);
             out = new BufferedWriter(new FileWriter(file), 1024);
             out.write(value);
         } catch (IOException e) {
@@ -122,14 +126,15 @@ public class ACache {
                     e.printStackTrace();
                 }
             }
-            mCache.put(file);
+            if(null != file) mCache.put(file);
         }
     }
 
     public void put2(String key, String value) {
-        File file = mCache.newFile(key);
+        File file = null;
         BufferedWriter out = null;
         try {
+            file = mCache.newFile(key);
             out = new BufferedWriter(new FileWriter(file, true));
             out.write(value);
         } catch (IOException e) {
@@ -143,7 +148,7 @@ public class ACache {
                     e.printStackTrace();
                 }
             }
-            mCache.put(file);
+            if(null != file) mCache.put(file);
         }
     }
 
