@@ -109,6 +109,8 @@ public class ACache {
      *            保存的String数据
      */
     public void put(String key, String value) {
+        if(null == mCache) return;
+
         File file = null;
         BufferedWriter out = null;
         try {
@@ -131,6 +133,8 @@ public class ACache {
     }
 
     public void put2(String key, String value) {
+        if(null == mCache) return;
+
         File file = null;
         BufferedWriter out = null;
         try {
@@ -358,6 +362,7 @@ public class ACache {
      * @param value  保存的数据
      */
     public void put(String key, byte[] value) {
+        if(null == mCache) return;
         File file = mCache.newFile(key);
         FileOutputStream out = null;
         try {
@@ -584,6 +589,7 @@ public class ACache {
      * @return value 缓存的文件
      */
     public File file(String key) {
+        if(null == mCache) return null;
         File f = mCache.newFile(key);
         if (f.exists())
             return f;
@@ -596,6 +602,7 @@ public class ACache {
      * @return 是否移除成功
      */
     public boolean remove(String key) {
+        if(null == mCache) return false;
         return mCache.remove(key);
     }
 
@@ -603,7 +610,9 @@ public class ACache {
      * 清除所有数据
      */
     public void clear() {
-        mCache.clear();
+        if(null != mCache){
+            mCache.clear();
+        }
     }
 
 }
