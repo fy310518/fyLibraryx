@@ -173,6 +173,8 @@ public class ACache {
      * @return String 数据
      */
     public String getAsString(String key) {
+        if(null == mCache) return "";
+
         File file = mCache.get(key);
         if (!file.exists())
             return null;
