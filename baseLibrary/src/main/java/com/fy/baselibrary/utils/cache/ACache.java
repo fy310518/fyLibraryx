@@ -59,7 +59,8 @@ public class ACache {
     }
 
     public static ACache get(String cacheName) {
-        File f = new File(FileUtils.getExternalCacheDir(), cacheName);
+//        File f = new File(FileUtils.getExternalCacheDir(), cacheName);
+        File f = new File(FileUtils.getCacheDir(), cacheName);
         return get(f, MAX_SIZE, MAX_COUNT);
     }
 
@@ -139,8 +140,15 @@ public class ACache {
         BufferedWriter out = null;
         try {
             file = mCache.newFile(key);
-            out = new BufferedWriter(new FileWriter(file, true));
+            // 打开一个写文件器，构造函数中的第二个参数true表示以追加形式写文件
+            FileWriter writer = new FileWriter(file, true);
+
+            out = new BufferedWriter(writer);
             out.write(value);
+            out.newLine();
+            out.close();
+
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
