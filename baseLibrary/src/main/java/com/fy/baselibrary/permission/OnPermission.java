@@ -12,9 +12,9 @@ public interface OnPermission {
      * 有权限被授予时回调（部分或全部授予）
      *
      * @param denyList    请求失败的权限组
-     * @param isAll       是否全部授予了
+     * @param isAllSuccess       是否全部授予了
      */
-    void hasPermission(List<String> denyList, boolean isAll);
+    void hasPermission(List<String> denyList, boolean isAllSuccess);
 
     /**
      * 权限被全部拒绝时回调

@@ -2,6 +2,8 @@ package com.fy.baselibrary.permission;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,6 +30,7 @@ import com.fy.baselibrary.base.fragment.BaseFragment;
 import com.fy.baselibrary.utils.AppUtils;
 import com.fy.baselibrary.utils.ResUtils;
 import com.fy.baselibrary.utils.drawable.ShapeBuilder;
+import com.fy.baselibrary.utils.notify.T;
 import com.fy.baselibrary.utils.os.OSUtils;
 
 import java.util.ArrayList;
@@ -402,4 +405,29 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
         assert manager != null;
         manager.beginTransaction().add(fragment, "PermissionFragment").commitAllowingStateLoss();
     }
+
+    /**
+     * 权限请求 调用入口
+     * @param object
+     * @param needPermission
+     * @param callListener
+     */
+    public static void runPermissionRequest(Object object, NeedPermission needPermission, OnPermission callListener) {
+        Context context = null;
+        if (object instanceof Activity) {
+            context = ((Activity) object);
+        } else if (object instanceof Fragment) {
+            context = ((Fragment) object).getActivity();
+        }
+        if (null == context) return;
+
+        //获取需要申请的权限，如果返回的权限列表为空 则 已经获取了对应的权限列表
+        List<String> requestPermission = PermissionUtils.getRequestPermissionList(context, needPermission.value());
+        if (requestPermission.size() == 0) {
+            callListener.hasPermission(new ArrayList<>(), true);
+        } else {
+            PermissionFragment.newInstant(object, needPermission, callListener);
+        }
+    }
+
 }

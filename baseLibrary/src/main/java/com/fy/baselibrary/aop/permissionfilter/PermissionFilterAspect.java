@@ -70,10 +70,6 @@ public class PermissionFilterAspect {
                             throwable.printStackTrace();
                         }
                     }
-
-                    if(null != needPermission.failListener){
-                        needPermission.failListener.noFail(isAll);
-                    }
                 }
 
                 @Override
@@ -85,10 +81,6 @@ public class PermissionFilterAspect {
                         } catch (Throwable throwable) {
                             throwable.printStackTrace();
                         }
-                    }
-
-                    if(null != needPermission.failListener){
-                        needPermission.failListener.noFail(false);
                     }
                 }
             });
