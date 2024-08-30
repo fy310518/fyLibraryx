@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.ArrayMap;
 import android.view.Gravity;
 import android.widget.ListView;
 
@@ -380,13 +381,13 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
      * @param object
      * @param needPermission
      */
-    public static void newInstant(Object object, NeedPermission needPermission, OnPermission callListener) {
+    public static void newInstant(Object object, PermissionBean needPermission, OnPermission callListener) {
         Bundle bundle = new Bundle();
-        bundle.putStringArray(KEY_PERMISSIONS_ARRAY, needPermission.value());
-        bundle.putInt(TipsDialogGravity, needPermission.gravity());
+        bundle.putStringArray(KEY_PERMISSIONS_ARRAY, needPermission.getValue());
+        bundle.putInt(TipsDialogGravity, needPermission.getGravity());
 
-        if (!TextUtils.isEmpty(needPermission.firstRefuseMsg())) bundle.putString(KEY_FIRST_MESSAGE, needPermission.firstRefuseMsg());
-        if (!TextUtils.isEmpty(needPermission.alwaysRefuseMsg())) bundle.putString(KEY_ALWAYS_MESSAGE, needPermission.alwaysRefuseMsg());
+        if (!TextUtils.isEmpty(needPermission.getFirstRefuseMsg())) bundle.putString(KEY_FIRST_MESSAGE, needPermission.getFirstRefuseMsg());
+        if (!TextUtils.isEmpty(needPermission.getAlwaysRefuseMsg())) bundle.putString(KEY_ALWAYS_MESSAGE, needPermission.getAlwaysRefuseMsg());
 
         PermissionFragment fragment = new PermissionFragment();
         fragment.call = callListener;
@@ -409,10 +410,10 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
     /**
      * 权限请求 调用入口
      * @param object
-     * @param needPermission
+     * @param needPermission  对标 needPermission 注解
      * @param callListener
      */
-    public static void runPermissionRequest(Object object, NeedPermission needPermission, OnPermission callListener) {
+    public static void runPermissionRequest(Object object, PermissionBean needPermission, OnPermission callListener) {
         Context context = null;
         if (object instanceof Activity) {
             context = ((Activity) object);
@@ -422,7 +423,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
         if (null == context) return;
 
         //获取需要申请的权限，如果返回的权限列表为空 则 已经获取了对应的权限列表
-        List<String> requestPermission = PermissionUtils.getRequestPermissionList(context, needPermission.value());
+        List<String> requestPermission = PermissionUtils.getRequestPermissionList(context, needPermission.getValue());
         if (requestPermission.size() == 0) {
             callListener.hasPermission(new ArrayList<>(), true);
         } else {

@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import com.fy.baselibrary.R;
 import com.fy.baselibrary.aop.annotation.NeedPermission;
 import com.fy.baselibrary.permission.OnPermission;
+import com.fy.baselibrary.permission.PermissionBean;
 import com.fy.baselibrary.permission.PermissionFragment;
 import com.fy.baselibrary.permission.PermissionUtils;
 import com.fy.baselibrary.utils.notify.T;
@@ -56,7 +57,14 @@ public class PermissionFilterAspect {
         if (requestPermission.size() == 0) {
             joinPoint.proceed();
         } else {
-            PermissionFragment.newInstant(object, needPermission, new OnPermission() {
+            PermissionBean permissionBean = new PermissionBean();
+            permissionBean.setGravity(needPermission.gravity());
+            permissionBean.setRun(needPermission.isRun());
+            permissionBean.setAlwaysRefuseMsg(needPermission.alwaysRefuseMsg());
+            permissionBean.setFirstRefuseMsg(needPermission.firstRefuseMsg());
+            permissionBean.setValue(needPermission.value());
+
+            PermissionFragment.newInstant(object, permissionBean, new OnPermission() {
                 @Override
                 public void hasPermission(List<String> denied, boolean isAll) {
 
