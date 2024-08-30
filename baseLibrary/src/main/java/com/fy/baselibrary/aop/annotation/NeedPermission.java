@@ -2,6 +2,8 @@ package com.fy.baselibrary.aop.annotation;
 
 import android.view.Gravity;
 
+import com.fy.baselibrary.aop.permissionfilter.NeedPermissionFailListener;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -42,5 +44,10 @@ public @interface NeedPermission {
      * 危险权限请求失败，显示弹窗位置
      */
     int gravity() default Gravity.BOTTOM;
+
+    /**
+     * 权限被拒绝 时候的 回调接口
+     */
+    NeedPermissionFailListener failListener = null;
 
 }

@@ -129,6 +129,15 @@ public class GsonUtils {
     }
 
     /**
+     * Json字符串转 对象 【list ， map 等均可】
+     */
+    public static<T> T jsonToObj(String jsonStr, Type typeOfT) {
+        Gson gson = new GsonBuilder().serializeNulls().disableHtmlEscaping().create();
+
+        return gson.fromJson(jsonStr, typeOfT);
+    }
+
+    /**
      * 将Json字符串转换成 List集合
      * @param jsonStr
      * @param <T>
