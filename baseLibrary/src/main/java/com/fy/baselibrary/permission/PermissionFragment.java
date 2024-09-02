@@ -216,6 +216,10 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                     requestSpecialPermission = true;
                     // 跳转到系统设置权限设置页面
                     showSpecialPermissionDialog(Permission.WRITE_SETTINGS);
+                } else if (requestPermission.contains(Permission.VPN_SERVICE) && !PermissionUtils.hasVPNPermission(getActivity())) {
+                    requestSpecialPermission = true;
+                    // 跳转到系统设置权限设置页面
+                    showSpecialPermissionDialog(Permission.VPN_SERVICE);
                 }
             }
 

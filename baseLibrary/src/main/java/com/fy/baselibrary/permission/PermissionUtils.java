@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.net.VpnService;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
@@ -215,6 +216,8 @@ public class PermissionUtils {
             return PermissionUtils.hasNotifyPermission(context);
         } else if (specialPermission.equals(Permission.WRITE_SETTINGS)) {
             return PermissionUtils.hasSettingPermission(context);
+        } else if (specialPermission.equals(Permission.VPN_SERVICE)) {
+            return PermissionUtils.hasVPNPermission(context);
         }
 
         return false;
@@ -249,6 +252,14 @@ public class PermissionUtils {
             return context.getPackageManager().canRequestPackageInstalls();
         }
         return true;
+    }
+
+    /**
+     * 是否有 vpn 权限
+     */
+    static boolean hasVPNPermission(Context context) {
+        Intent intent = VpnService.prepare(context);
+        return null == intent; // 有
     }
 
     /**
@@ -384,6 +395,8 @@ public class PermissionUtils {
                     return getNotifyPermissionIntent(context);
                 } else if (Permission.WRITE_SETTINGS.equals(permission)) {
                     return getSettingPermissionIntent(context);
+                }  else if (Permission.VPN_SERVICE.equals(permission)) {
+                    return getVpnPermissionIntent(context);
                 } else {
                     return jumpPermiSettting(context);
                 }
@@ -397,6 +410,15 @@ public class PermissionUtils {
         }
     }
 
+
+    /**
+     * 获取VPN权限 界面意图 【调用到这里，说明 App 没有获得 VPN 权限】
+     */
+    static Intent getVpnPermissionIntent(Context context) {
+        Intent intent = VpnService.prepare(context);
+
+        return intent;
+    }
 
 
     /**

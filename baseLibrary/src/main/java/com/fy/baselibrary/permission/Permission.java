@@ -38,6 +38,8 @@ public class Permission {
     public static final String SYSTEM_ALERT_WINDOW = "android.permission.SYSTEM_ALERT_WINDOW";
     /** 系统设置权限（特殊权限，需要 Android 6.0 及以上） */
     public static final String WRITE_SETTINGS = "android.permission.WRITE_SETTINGS";
+    /** vpn service 权限（特殊权限） */
+    public static final String VPN_SERVICE = "android.permission.BIND_VPN_SERVICE";
 
 
     /** 在后台获取位置（需要 Android 10.0 及以上） */
@@ -115,6 +117,7 @@ public class Permission {
         put(NOTIFICATION_SERVICE, new String[]{ResUtils.getStr(R.string.fyNotify), "显示和发送通知"});
         put(REQUEST_INSTALL_PACKAGES, new String[]{ResUtils.getStr(R.string.installApp), "调用系统安装器安装应用"});
         put(MANAGE_EXTERNAL_STORAGE, new String[]{ResUtils.getStr(R.string.fySdCard), "读写设备上的媒体及文件"});
+        put(VPN_SERVICE, new String[]{ResUtils.getStr(R.string.fyVPNConn), "VPN 服务"});
     }};
 
 }

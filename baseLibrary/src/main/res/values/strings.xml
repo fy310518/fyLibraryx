@@ -43,6 +43,7 @@
     <string name="fyNotify">通知</string>
     <string name="installApp">安装应用</string>
     <string name="fySdCard">外部存储</string>
+    <string name="fyVPNConn">VPN 连接</string>
 
 
     <string name="dataNull">没有数据</string>

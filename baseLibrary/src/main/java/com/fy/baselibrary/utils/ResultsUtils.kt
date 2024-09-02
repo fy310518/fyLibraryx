@@ -27,6 +27,11 @@ fun Fragment.registerActResult(callback: ActivityResultCallback<ActivityResult>)
         callback.onActivityResult(it)
     }
 
+fun Fragment.registerPermissionResult(callback: ActivityResultCallback<Map<String, @JvmSuppressWildcards Boolean>>) =
+    registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+        callback.onActivityResult(it)
+    }
+
 fun Intent.launch(launcher: ActivityResultLauncher<Intent>) {
     launcher.launch(this)
 }
