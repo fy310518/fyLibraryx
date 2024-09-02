@@ -324,6 +324,7 @@ public class PermissionUtils {
                 Permission.REQUEST_INSTALL_PACKAGES.equals(permission) ||
                 Permission.SYSTEM_ALERT_WINDOW.equals(permission) ||
                 Permission.NOTIFICATION_SERVICE.equals(permission) ||
+                Permission.VPN_SERVICE.equals(permission) ||
                 Permission.WRITE_SETTINGS.equals(permission);
     }
 
