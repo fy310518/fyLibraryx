@@ -91,6 +91,9 @@ public class PermissionUtils {
         // 检测系统权限
         if (Permission.WRITE_SETTINGS.equals(permission)) return hasSettingPermission(context);
 
+        // 检测VPN权限
+        if (Permission.VPN_SERVICE.equals(permission)) return hasVPNPermission(context);
+
         if (!OSUtils.isAndroid10()) {
             // 检测 10.0 的三个新权限，如果当前版本不符合最低要求，那么就用旧权限进行检测
             if (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission) ||
