@@ -68,6 +68,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
     private int gravity = Gravity.BOTTOM; // 权限请求失败，提示弹窗位置
 
     private boolean isToSettingPermission;
+    private boolean isFirstOpen = true;
 
     private OnPermission call;
 
@@ -103,6 +104,12 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
     @Override
     public void onResume() {
         super.onResume();
+
+        if(isFirstOpen) {
+            isFirstOpen = false;
+            return;
+        }
+
         //如果是从权限设置界面回来
 
         if (!TextUtils.isEmpty(mSpecialPermission) && !PermissionUtils.isAppSpecialPermission(getContext(), mSpecialPermission)){
