@@ -121,9 +121,9 @@ public class PermissionUtils {
      * 【其实是 判断申请的权限列表 是否被永久拒绝】
      */
     public static List<String> getShouldRationaleList(Activity activity, String... permissions) {
-        if (null == permissions) return null;
-
         List<String> strings = new ArrayList<>();
+        if (null == permissions) return strings;
+
         for (String permission : permissions) {
             if (isPermissionPermanentDenied(activity, permission)) {
                 strings.add(permission);

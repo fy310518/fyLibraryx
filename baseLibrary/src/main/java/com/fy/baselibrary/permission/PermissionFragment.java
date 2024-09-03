@@ -105,15 +105,15 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
         super.onResume();
         //如果是从权限设置界面回来
         if (isToSettingPermission) {
-
-            //特殊权限不为空
-            if (!TextUtils.isEmpty(mSpecialPermission) && !PermissionUtils.isAppSpecialPermission(getContext(), mSpecialPermission)){
-                mIsSpecialPermissionStatus = false;//特殊权限开启失败
-            }
-
             //重新检查权限
             isToSettingPermission = false;
             checkPermission(mPermissions);
+        }
+
+        //特殊权限不为空
+        if (!TextUtils.isEmpty(mSpecialPermission) && !PermissionUtils.isAppSpecialPermission(getContext(), mSpecialPermission)){
+            mIsSpecialPermissionStatus = false;//特殊权限开启失败
+            showSpecialPermissionDialog(mSpecialPermission);
         }
     }
 
@@ -133,7 +133,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                 permissionEnd(CALL_BACK_RESULT_CODE_SUCCESS, mIsSpecialPermissionStatus);
             } else { //失败
                 List<String> rationaleList = PermissionUtils.getShouldRationaleList(getActivity(), permissions);
-                if (null != rationaleList && rationaleList.size() > 0) {
+                if (rationaleList.size() > 0) {
                     if (rationaleList.size() < permissions.length){
                         showPermissionDialog(rationaleList, true, false);//部分永久拒绝
                     } else {
@@ -184,8 +184,8 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                     } else if (OSUtils.isAndroid10()) {
                         if (requestPermission.contains(Permission.MANAGE_EXTERNAL_STORAGE)){
                             requestSpecialPermission = true;
+                            mSpecialPermission = Permission.MANAGE_EXTERNAL_STORAGE;
                             // 存储权限设置界面
-                            showSpecialPermissionDialog(Permission.MANAGE_EXTERNAL_STORAGE);
                         } else {
                             requestPermission.remove(Permission.READ_MEDIA_AUDIO);
                             requestPermission.remove(Permission.READ_MEDIA_IMAGES);
@@ -202,29 +202,33 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
 
                 else if (requestPermission.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.hasInstallPermission(getActivity())) {
                     requestSpecialPermission = true;
+                    mSpecialPermission = Permission.REQUEST_INSTALL_PACKAGES;
                     // 跳转到安装权限设置界面
-                    showSpecialPermissionDialog(Permission.REQUEST_INSTALL_PACKAGES);
                 } else if (requestPermission.contains(Permission.SYSTEM_ALERT_WINDOW) && !PermissionUtils.hasWindowPermission(getActivity())) {
                     requestSpecialPermission = true;
+                    mSpecialPermission = Permission.SYSTEM_ALERT_WINDOW;
                     // 跳转到悬浮窗设置页面
-                    showSpecialPermissionDialog(Permission.SYSTEM_ALERT_WINDOW);
                 } else if (requestPermission.contains(Permission.NOTIFICATION_SERVICE) && !PermissionUtils.hasNotifyPermission(getActivity())) {
                     requestSpecialPermission = true;
+                    mSpecialPermission = Permission.NOTIFICATION_SERVICE;
                     // 跳转到通知栏权限设置页面
-                    showSpecialPermissionDialog(Permission.NOTIFICATION_SERVICE);
                 } else if (requestPermission.contains(Permission.WRITE_SETTINGS) && !PermissionUtils.hasSettingPermission(getActivity())) {
                     requestSpecialPermission = true;
+                    mSpecialPermission = Permission.WRITE_SETTINGS;
                     // 跳转到系统设置权限设置页面
-                    showSpecialPermissionDialog(Permission.WRITE_SETTINGS);
                 } else if (requestPermission.contains(Permission.VPN_SERVICE) && !PermissionUtils.hasVPNPermission(getActivity())) {
                     requestSpecialPermission = true;
-                    // 跳转到系统设置权限设置页面
-                    showSpecialPermissionDialog(Permission.VPN_SERVICE);
+                    mSpecialPermission = Permission.VPN_SERVICE;
+                    // vpn 权限
                 }
             }
 
             // 当前必须没有跳转到悬浮窗或者安装权限界面
-            if (!requestSpecialPermission) {
+            if(requestSpecialPermission){
+                List<String> rationaleList = new ArrayList<>();
+                rationaleList.add(mSpecialPermission);
+                PermissionUtils.startPermissionActivity(PermissionFragment.this, rationaleList);
+            } else {
                 if (requestPermission.size() > 0) {
                     requestPermissions(requestPermission.toArray(new String[0]), PERMISSION_REQUEST_CODE);
                 } else {
