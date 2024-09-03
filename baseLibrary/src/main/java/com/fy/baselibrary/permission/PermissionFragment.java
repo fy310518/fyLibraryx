@@ -104,16 +104,15 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
     public void onResume() {
         super.onResume();
         //如果是从权限设置界面回来
-        if (isToSettingPermission) {
-            //重新检查权限
+
+        if (!TextUtils.isEmpty(mSpecialPermission) && !PermissionUtils.isAppSpecialPermission(getContext(), mSpecialPermission)){
+            // 特殊权限不为空
+            mIsSpecialPermissionStatus = false; //特殊权限开启失败
+            showSpecialPermissionDialog(mSpecialPermission);
+        } else if (isToSettingPermission) {
+            // 重新检查权限
             isToSettingPermission = false;
             checkPermission(mPermissions);
-        }
-
-        //特殊权限不为空
-        if (!TextUtils.isEmpty(mSpecialPermission) && !PermissionUtils.isAppSpecialPermission(getContext(), mSpecialPermission)){
-            mIsSpecialPermissionStatus = false;//特殊权限开启失败
-            showSpecialPermissionDialog(mSpecialPermission);
         }
     }
 
