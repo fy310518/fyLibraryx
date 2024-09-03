@@ -18,6 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.fy.baselibrary.R;
 import com.fy.baselibrary.aop.annotation.NeedPermission;
@@ -68,9 +70,11 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
     private int gravity = Gravity.BOTTOM; // 权限请求失败，提示弹窗位置
 
     private boolean isToSettingPermission;
-    private boolean isFirstOpen = true;
 
     private OnPermission call;
+
+    private MutableLiveData<Boolean> isLoad = new MutableLiveData<>();
+    private boolean isRunComm = false;
 
     @Override
     public int setContentLayout() {
@@ -98,20 +102,18 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
             mAlwaysRefuseMessage = ResUtils.getReplaceStr(R.string.default_always_message, appName);
         }
 
-        checkPermission(mPermissions);
+        isLoad.observe(this, aBoolean -> {
+            if(aBoolean && !isRunComm) {
+                isRunComm = true;
+                checkPermission(mPermissions); // 只执行一次
+            }
+        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        if(isFirstOpen) {
-            isFirstOpen = false;
-            return;
-        }
-
         //如果是从权限设置界面回来
-
         if (!TextUtils.isEmpty(mSpecialPermission) && !PermissionUtils.isAppSpecialPermission(getContext(), mSpecialPermission)){
             // 特殊权限不为空
             mIsSpecialPermissionStatus = false; //特殊权限开启失败
@@ -121,6 +123,8 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
             isToSettingPermission = false;
             checkPermission(mPermissions);
         }
+
+        isLoad.setValue(true);
     }
 
     @Override
@@ -233,6 +237,9 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
             if(requestSpecialPermission){
                 List<String> rationaleList = new ArrayList<>();
                 rationaleList.add(mSpecialPermission);
+                isToSettingPermission = true;
+                removePermission(mSpecialPermission);
+
                 PermissionUtils.startPermissionActivity(PermissionFragment.this, rationaleList);
             } else {
                 if (requestPermission.size() > 0) {

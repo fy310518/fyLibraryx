@@ -468,10 +468,29 @@ public class JumpUtils {
      * @param url
      */
     public static void jump(Activity act, String url){
+        jumpWeb(act, url, null);
+    }
+
+    /**
+     * 跳转到浏览器 打开指定 URL链接
+     * @param act
+     * @param url
+     * @param componentName 【可以跳转到 指定的浏览器打开网页，前提是 已经安装了指定浏览器】
+     */
+    public static void jumpWeb(Activity act, String url, ComponentName componentName){
         Uri uri = Uri.parse(url);
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        if(null != componentName){
+            if(AppUtils.isPackageExist(act, componentName.getPackageName())){
+                intent.setComponent(componentName);
+            }
+        }
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        act.startActivity(intent);
+        try {
+            act.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
