@@ -134,6 +134,8 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
+        if(!mIsSpecialPermissionStatus) return; // 特殊权限开启失败 不执行 后面的逻辑
+
         if (requestCode == PERMISSION_REQUEST_CODE && grantResults.length > 0) {
             List<Integer> failurePermissionCount = new ArrayList<>();
             for (int i = 0; i < grantResults.length; i++) {
@@ -354,7 +356,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
 
         String[] info = Permission.specialPermission.get(specialPermission);
         if (null == info) {
-            mIsSpecialPermissionStatus = false;
+            mIsSpecialPermissionStatus = true;
             removePermission(specialPermission);
             checkPermission(mPermissions);
             return;
