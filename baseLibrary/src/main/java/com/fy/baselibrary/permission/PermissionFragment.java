@@ -289,10 +289,12 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
         }
 
         try {
-            FragmentTransaction transaction = manager.beginTransaction();
-            transaction.remove(this);
-            transaction.detach(this);
-            transaction.commit();
+            if(null != manager){
+                FragmentTransaction transaction = manager.beginTransaction();
+                transaction.remove(this);
+                transaction.detach(this);
+                transaction.commit();
+            }
         } catch (Exception e) {
             L.e(TAG, e.getMessage());
         }
