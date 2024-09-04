@@ -376,8 +376,10 @@ public class PermissionUtils {
             return jumpPermiSettting(context);
         }
 
-        if(deniedPermissions.contains(Manifest.permission.POST_NOTIFICATIONS)) { // 通知权限 进入通知设置页面
-            return notificationSetting(context);
+        if (OSUtils.isAndroid13()) {
+            if(deniedPermissions.contains(Manifest.permission.POST_NOTIFICATIONS)) { // 通知权限 进入通知设置页面
+                return notificationSetting(context);
+            }
         }
 
         // 如果失败的权限里面包含了特殊权限
