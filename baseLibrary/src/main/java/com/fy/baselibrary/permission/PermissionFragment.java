@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
@@ -33,6 +34,7 @@ import com.fy.baselibrary.base.fragment.BaseFragment;
 import com.fy.baselibrary.utils.AppUtils;
 import com.fy.baselibrary.utils.ResUtils;
 import com.fy.baselibrary.utils.drawable.ShapeBuilder;
+import com.fy.baselibrary.utils.notify.L;
 import com.fy.baselibrary.utils.notify.T;
 import com.fy.baselibrary.utils.os.OSUtils;
 
@@ -71,6 +73,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
 
     private boolean isToSettingPermission;
 
+    private FragmentManager manager;
     private OnPermission call;
 
     private MutableLiveData<Boolean> isLoad = new MutableLiveData<>();
@@ -124,7 +127,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
             checkPermission(mPermissions);
         }
 
-        isLoad.setValue(true);
+        if(!isRunComm) isLoad.setValue(true);
     }
 
     @Override
@@ -284,6 +287,15 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                 call.hasPermission(PermissionUtils.getRequestPermissionList(getContext(), mPermissions), isStatus);
             }
         }
+
+        try {
+            FragmentTransaction transaction = manager.beginTransaction();
+            transaction.remove(this);
+            transaction.detach(this);
+            transaction.commit();
+        } catch (Exception e) {
+            L.e(TAG, e.getMessage());
+        }
     }
 
 
@@ -425,6 +437,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
         }
 
         assert manager != null;
+        fragment.manager = manager;
         manager.beginTransaction().add(fragment, "PermissionFragment").commitAllowingStateLoss();
     }
 
