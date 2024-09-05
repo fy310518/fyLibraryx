@@ -380,7 +380,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
 //                        String content = ResUtils.getReplaceStr(R.string.default_special_permission_content, info[0], appName, info[0]);
                         holder.setText(R.id.txtSpecialPermission, info[0]);//特殊权限用途 说明
 
-                        holder.setText(R.id.tvpermissionConfirm, R.string.set);
+                        holder.setText(R.id.tvpermissionConfirm, R.string.deauthorization);
                         holder.setOnClickListener(R.id.tvpermissionConfirm, v -> {
                             List<String> rationaleList = new ArrayList<>();
                             rationaleList.add(specialPermission);
