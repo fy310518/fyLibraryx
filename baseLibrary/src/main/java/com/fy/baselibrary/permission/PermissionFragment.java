@@ -396,7 +396,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                             mIsSpecialPermissionStatus = false;
                             //请求的权限列表中有特殊权限，如果取消，移除这个特殊权限，继续请求 其它权限
                             removePermission(specialPermission);
-                            checkPermission(mPermissions);
+                            permissionEnd(CALL_BACK_RESULE_CODE_FAILURE, true);
                             dialog.dismiss(false);
                         });
                     }
