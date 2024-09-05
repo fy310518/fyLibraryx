@@ -280,12 +280,16 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
      */
     public void permissionEnd(int resultCode, boolean isStatus) {
         if (null != call){
-            if (resultCode == CALL_BACK_RESULT_CODE_SUCCESS && isStatus) {
+            int permission = isStatus ? R.string.permissionSuccess : R.string.permissionAllSuccess;
 
+            if (resultCode == CALL_BACK_RESULT_CODE_SUCCESS && isStatus) {
+                T.show(permission, -1);
                 call.hasPermission(Arrays.asList(mPermissions), isStatus);
             } else if (resultCode == CALL_BACK_RESULE_CODE_FAILURE && isStatus){
+                T.show(R.string.permissionFail, -1);
                 call.noPermission(Arrays.asList(mPermissions));
             } else {
+                T.show(permission, -1);
                 call.hasPermission(PermissionUtils.getRequestPermissionList(getContext(), mPermissions), isStatus);
             }
         }

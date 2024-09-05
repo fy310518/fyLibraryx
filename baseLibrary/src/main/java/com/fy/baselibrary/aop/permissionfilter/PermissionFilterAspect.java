@@ -82,7 +82,7 @@ public class PermissionFilterAspect {
 
                 @Override
                 public void noPermission(List<String> denied) {
-                    T.show(R.string.permissionFail, -1);
+//                    T.show(R.string.permissionFail, -1);
                     if (needPermission.isRun()) {
                         try {
                             joinPoint.proceed();

@@ -384,10 +384,6 @@ public class PermissionUtils {
 
         // 如果失败的权限里面包含了特殊权限
         if (PermissionUtils.containsSpecialPermission(deniedPermissions)) {
-            if (OSUtils.isAndroid13()) {
-                return jumpPermiSettting(context);
-            }
-
             // 如果当前只有一个权限被拒绝了
             if (deniedPermissions.size() == 1) {
                 String permission = deniedPermissions.get(0);
@@ -527,7 +523,7 @@ public class PermissionUtils {
      */
     public static Intent jumpPermiSettting(Context context) {
         Intent intent = null;
-        if (MARK.contains("HUAWEI")) {
+        if (MARK.contains("huawei")) {
             intent = huawei(context);
         } else if (MARK.contains("xiaomi")) {
             intent = xiaomi(context);
