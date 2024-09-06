@@ -33,14 +33,19 @@ public @interface NeedPermission {
     String alwaysRefuseMsg() default "";
 
     /**
-     * 存在被拒绝的权限时，是否继续执行
-     * @return 默认 false，不继续执行
-     */
-    boolean isRun() default false;
-
-    /**
      * 危险权限请求失败，显示弹窗位置
      */
     int gravity() default Gravity.BOTTOM;
 
+    /**
+     * 特殊权限被拒绝后，弹窗 是否显示 取消按钮
+     */
+    boolean isShowCancelBtn() default true;
+
+
+    /**
+     * 存在被拒绝的权限时，是否继续执行
+     * @return 默认 false，不继续执行
+     */
+    boolean isRun() default false;
 }

@@ -33,6 +33,11 @@ public class PermissionBean {
      */
     int gravity = Gravity.BOTTOM;
 
+    /**
+     * 特殊权限被拒绝后，弹窗 是否显示 取消按钮
+     */
+    boolean isShowCancelBtn = true;
+
 
     public String[] getValue() {
         return value;
@@ -72,5 +77,13 @@ public class PermissionBean {
 
     public void setGravity(int gravity) {
         this.gravity = gravity;
+    }
+
+    public boolean isShowCancelBtn() {
+        return isShowCancelBtn;
+    }
+
+    public void setShowCancelBtn(boolean showCancelBtn) {
+        isShowCancelBtn = showCancelBtn;
     }
 }

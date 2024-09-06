@@ -62,6 +62,7 @@ public class PermissionFilterAspect {
             permissionBean.setRun(needPermission.isRun());
             permissionBean.setAlwaysRefuseMsg(needPermission.alwaysRefuseMsg());
             permissionBean.setFirstRefuseMsg(needPermission.firstRefuseMsg());
+            permissionBean.setShowCancelBtn(needPermission.isShowCancelBtn());
             permissionBean.setValue(needPermission.value());
 
             PermissionFragment.newInstant(object, permissionBean, new OnPermission() {
