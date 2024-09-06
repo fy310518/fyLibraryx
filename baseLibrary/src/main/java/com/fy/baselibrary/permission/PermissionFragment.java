@@ -293,8 +293,10 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                 T.show(R.string.permissionFail, -1);
                 call.noPermission(Arrays.asList(mPermissions));
             } else {
-                T.show(permission, -1);
-                call.hasPermission(PermissionUtils.getRequestPermissionList(getContext(), mPermissions), isStatus);
+                List<String> list = PermissionUtils.getRequestPermissionList(getContext(), mPermissions);
+                int permissionTwo = list.isEmpty() ? R.string.permissionSuccess : R.string.permissionAllSuccess;
+                T.show(permissionTwo, -1);
+                call.hasPermission(list, list.isEmpty());
             }
         }
 
