@@ -45,6 +45,16 @@ public class PermissionUtils {
         List<String> requestPermissionCount = new ArrayList<>();
         for (String permission : permissions){
             if (!isPermissionGranted(context, permission)) {
+
+                if(permission.equals(Manifest.permission.POST_NOTIFICATIONS)) { // 通知权限
+                    if (OSUtils.isAndroid13()) {
+                        requestPermissionCount.add(permission);
+                    } else {
+                        requestPermissionCount.add(Manifest.permission.ACCESS_NOTIFICATION_POLICY);
+                    }
+                    break;
+                }
+
                 requestPermissionCount.add(permission);
             }
         }
