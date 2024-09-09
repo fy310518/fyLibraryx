@@ -72,7 +72,9 @@ public class PermissionUtils {
             if (OSUtils.isAndroid13()) {
                 return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
             } else {
-                return true;
+                // 检测通知栏权限
+//                if (Permission.NOTIFICATION_SERVICE.equals(permission)) return hasNotifyPermission(context);
+                return hasNotifyPermission(context);
             }
         }
 
@@ -84,9 +86,6 @@ public class PermissionUtils {
 
         // 检测悬浮窗权限
         if (Permission.SYSTEM_ALERT_WINDOW.equals(permission)) return hasWindowPermission(context);
-
-        // 检测通知栏权限
-        if (Permission.NOTIFICATION_SERVICE.equals(permission)) return hasNotifyPermission(context);
 
         // 检测系统权限
         if (Permission.WRITE_SETTINGS.equals(permission)) return hasSettingPermission(context);
