@@ -18,14 +18,22 @@ import com.bumptech.glide.request.FutureTarget;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.retrofit.RequestUtils;
 import com.fy.baselibrary.retrofit.interceptor.FileDownInterceptor;
+import com.fy.baselibrary.retrofit.observer.RequestBaseObserver;
+import com.fy.baselibrary.utils.FileUtils;
 import com.fy.baselibrary.utils.imgload.imgprogress.ImgLoadCallBack;
 import com.fy.baselibrary.utils.imgload.imgprogress.ProgressListener;
 import com.fy.baselibrary.utils.notify.L;
 
 import java.io.File;
 import java.util.concurrent.ExecutionException;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 /**
  * 图片加载工具类(目前使用 Glide)
@@ -114,6 +122,36 @@ public class ImgLoadUtils {
         Glide.with(imageView.getContext())
                 .load(model)
                 .apply(options)
+                .listener(new RequestListener<Drawable>(){
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        Observable.just("")
+                                .flatMap((Function<String, ObservableSource<String>>) s -> {
+                                    File file = ImgLoadUtils.getImgCachePath(ConfigUtils.getAppCtx(), model, new RequestOptions().onlyRetrieveFromCache(true));
+                                    if(null != file) {
+                                        L.e("-----file", file.getPath());
+                                        FileUtils.deleteFileSafely(file);
+                                    }
+
+                                    return Observable.just("");
+                                })
+                                .subscribe(new RequestBaseObserver<String>(){
+                                    @Override
+                                    protected void onSuccess(String t) {
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                    }
+                                });
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        return false;
+                    }
+                })
                 .into(imageView);
     }
 
@@ -126,6 +164,36 @@ public class ImgLoadUtils {
         Glide.with(imageView.getContext())
                 .load(model)
                 .apply(getDefaultOption(errorId))
+                .listener(new RequestListener<Drawable>(){
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        Observable.just("")
+                                .flatMap((Function<String, ObservableSource<String>>) s -> {
+                                    File file = ImgLoadUtils.getImgCachePath(ConfigUtils.getAppCtx(), model, new RequestOptions().onlyRetrieveFromCache(true));
+                                    if(null != file) {
+                                        L.e("-----file", file.getPath());
+                                        FileUtils.deleteFileSafely(file);
+                                    }
+
+                                    return Observable.just("");
+                                })
+                                .subscribe(new RequestBaseObserver<String>(){
+                                    @Override
+                                    protected void onSuccess(String t) {
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                    }
+                                });
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        return false;
+                    }
+                })
                 .into(imageView);
     }
 
