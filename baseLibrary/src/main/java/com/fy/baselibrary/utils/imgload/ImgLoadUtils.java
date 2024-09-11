@@ -34,6 +34,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * 图片加载工具类(目前使用 Glide)
@@ -135,6 +136,7 @@ public class ImgLoadUtils {
 
                                     return Observable.just("");
                                 })
+                                .subscribeOn(Schedulers.io())
                                 .subscribe(new RequestBaseObserver<String>(){
                                     @Override
                                     protected void onSuccess(String t) {
@@ -177,6 +179,7 @@ public class ImgLoadUtils {
 
                                     return Observable.just("");
                                 })
+                                .subscribeOn(Schedulers.io())
                                 .subscribe(new RequestBaseObserver<String>(){
                                     @Override
                                     protected void onSuccess(String t) {
