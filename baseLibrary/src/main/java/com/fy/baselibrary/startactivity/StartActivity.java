@@ -58,10 +58,11 @@ public abstract class StartActivity extends AppCompatActivity {
     /**
      * 退出应用
      */
-    private void exitApp() {
+    protected void exitApp() {
         L.e("ActivityCallbacks", "Application--Create() 退出-----");
-        finish();
-        System.exit(0);
+        finishAffinity();
+//        finish();
+//        System.exit(0);
     }
 
 }
