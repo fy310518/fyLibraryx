@@ -186,11 +186,13 @@ public class FragmentChangeManager {
      * @param fragment
      */
     public static void removeFragment(FragmentManager fragmentManager, Fragment fragment){
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        if(null != fragment){
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-        transaction.remove(fragment);
-        transaction.commit();
-        fragmentManager.executePendingTransactions();
+            transaction.remove(fragment);
+            transaction.commit();
+            fragmentManager.executePendingTransactions();
+        }
     }
 
     /**
