@@ -180,6 +180,32 @@ public class FragmentChangeManager {
 //        transaction.commit();
     }
 
+    /**
+     * 移除 fragment
+     * @param fragmentManager
+     * @param fragment
+     */
+    public static void removeFragment(FragmentManager fragmentManager, Fragment fragment){
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+        transaction.remove(fragment);
+        transaction.commit();
+        fragmentManager.executePendingTransactions();
+    }
+
+    /**
+     * 移除所有 fragment
+     * @param fragmentManager
+     */
+    public static void removeAllFragment(FragmentManager fragmentManager){
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+        for (Fragment fragment : fragmentManager.getFragments()) {
+            transaction.remove(fragment);
+        }
+        transaction.commit();
+        fragmentManager.executePendingTransactions();
+    }
 
     public FragmentChangeManager setAddToBackStack(boolean addToBackStack) {
         isAddToBackStack = addToBackStack;
