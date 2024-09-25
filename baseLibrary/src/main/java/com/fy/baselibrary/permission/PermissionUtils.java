@@ -52,7 +52,7 @@ public class PermissionUtils {
                     } else {
                         requestPermissionCount.add(Manifest.permission.ACCESS_NOTIFICATION_POLICY);
                     }
-                    break;
+//                    break;
                 }
 
                 requestPermissionCount.add(permission);

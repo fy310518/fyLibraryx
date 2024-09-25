@@ -31,6 +31,7 @@ import com.fy.baselibrary.base.dialog.CommonDialog;
 import com.fy.baselibrary.base.dialog.DialogConvertListener;
 import com.fy.baselibrary.base.dialog.NiceDialog;
 import com.fy.baselibrary.base.fragment.BaseFragment;
+import com.fy.baselibrary.base.fragment.FragmentChangeManager;
 import com.fy.baselibrary.utils.AppUtils;
 import com.fy.baselibrary.utils.ResUtils;
 import com.fy.baselibrary.utils.drawable.ShapeBuilder;
@@ -120,6 +121,13 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
     @Override
     public void onResume() {
         super.onResume();
+        Fragment niceDialog1 = getChildFragmentManager().findFragmentByTag("NiceDialogPermission1");
+        Fragment niceDialog2 = getChildFragmentManager().findFragmentByTag("NiceDialogPermission2");
+        if(null != niceDialog1 || null != niceDialog2){ // 避免重复
+            return;
+        }
+
+
         //如果是从权限设置界面回来
         if (!TextUtils.isEmpty(mSpecialPermission) && !PermissionUtils.isAppSpecialPermission(getContext(), mSpecialPermission)){
             // 特殊权限不为空
@@ -354,7 +362,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                 .setGravity(gravity)
                 .setAnim(android.R.style.Animation_Dialog)
                 .setKeyBack(true)
-                .show(getChildFragmentManager(), "PermissionFragment");
+                .show(getChildFragmentManager(), "NiceDialogPermission1");
     }
 
     /**
@@ -413,7 +421,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                 .setGravity(gravity)
                 .setAnim(android.R.style.Animation_Dialog)
                 .setKeyBack(true)
-                .show(getChildFragmentManager(), "PermissionFragment");
+                .show(getChildFragmentManager(), "NiceDialogPermission2");
     }
 
     //从全局 mPermissions 中移除 特殊权限
