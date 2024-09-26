@@ -55,7 +55,7 @@ fun Bundle.result(activity: Activity) {
  * Android14 注册广播报错解决
  * [RECEIVER_EXPORTED 表示可以接收应用外部广播，ContextRECEIVER_NOT_EXPORTED 应用内部广播]
  */
-fun Context.registerReceiver(receiver: BroadcastReceiver, filter: IntentFilter, flags: Int = Context.RECEIVER_EXPORTED){
+fun Context.receiverRegister(receiver: BroadcastReceiver, filter: IntentFilter, flags: Int = Context.RECEIVER_EXPORTED) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         registerReceiver(receiver, filter, flags)
     } else {
