@@ -17,10 +17,13 @@ import android.view.Window;
 import androidx.annotation.RequiresApi;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.fy.baselibrary.application.mvvm.BaseViewModel;
 import com.fy.baselibrary.application.mvvm.IBaseMVVM;
+import com.fy.baselibrary.base.fragment.FragmentChangeManager;
 import com.fy.baselibrary.utils.AnimUtils;
 import com.fy.baselibrary.utils.Constant;
 import com.fy.baselibrary.utils.ResUtils;
@@ -83,6 +86,11 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
 //            }
         }
 
+        if(null != savedInstanceState && activity instanceof FragmentActivity) {
+            FragmentActivity fragmentActivity = (FragmentActivity) activity;
+            Fragment cacheFragment = fragmentActivity.getSupportFragmentManager().findFragmentByTag("PermissionFragment");
+            FragmentChangeManager.removeFragment(fragmentActivity.getSupportFragmentManager(), cacheFragment);
+        }
 
 //        activity.getIntent().putExtra("ActivityBean", activityBean);
         //基础配置 执行完成，再执行 初始化 activity 操作
