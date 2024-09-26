@@ -179,7 +179,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                     }
 
                     if(!isRun) { // 必须授权的危险权限，弹窗 给与用户说明
-                        showPermissionDialog(rationaleList, true, false);
+                        showPermissionDialog(requestPermission, true, false);
                     } else {
                         closePermissionFragment();
                     }
