@@ -52,6 +52,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
     public final static String KEY_PERMISSIONS_ARRAY = "key_permission_array";
     public final static String TipsDialogGravity = "TipsDialogGravity";
     public final static String KEY_ShowCancelBtn = "isShowCancelBtn";
+    public final static String KEY_isRun = "isRun";
     public final static String KEY_FIRST_MESSAGE = "key_first_message";
     public final static String KEY_ALWAYS_MESSAGE = "key_always_message";
 
@@ -70,6 +71,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
     private String[] mPermissions;
     private int gravity = Gravity.BOTTOM; // 权限请求失败，提示弹窗位置
     private boolean isShowCancelBtn = true; //特殊权限被拒绝后弹窗 是否显示 取消按钮
+    private boolean isRun = false; //存在被拒绝的权限时，是否继续执行
 
 
     private boolean mIsSpecialPermissionStatus = true;//特殊权限是否请求成功
@@ -97,6 +99,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
             mPermissions = bundle.getStringArray(KEY_PERMISSIONS_ARRAY);
             gravity = bundle.getInt(TipsDialogGravity, Gravity.BOTTOM);
             isShowCancelBtn = bundle.getBoolean(KEY_ShowCancelBtn, false);
+            isRun = bundle.getBoolean(KEY_isRun, false);
 
             mFirstRefuseMessage = bundle.getString(KEY_FIRST_MESSAGE);
             mAlwaysRefuseMessage = bundle.getString(KEY_ALWAYS_MESSAGE);
@@ -171,8 +174,14 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                     for(String permiss : requestPermission){ // 特殊权限 给与用户说明
                         if(Permission.specialPermission.containsKey(permiss)){
                             showSpecialPermissionDialog(permiss);
-                            break;
+                            return;
                         }
+                    }
+
+                    if(isRun) { // 必须授权的危险权限，弹窗 给与用户说明
+                        showPermissionDialog(rationaleList, true, false);
+                    } else {
+                        closePermissionFragment();
                     }
                 }
             }
@@ -308,16 +317,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
             }
         }
 
-        try {
-            if(null != manager){
-                FragmentTransaction transaction = manager.beginTransaction();
-                transaction.remove(this);
-                transaction.detach(this);
-                transaction.commit();
-            }
-        } catch (Exception e) {
-            L.e(TAG, e.getMessage());
-        }
+        closePermissionFragment();
     }
 
 
@@ -433,6 +433,19 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
         mPermissions = tempStrArray;
     }
 
+    private void closePermissionFragment(){
+        try {
+            if(null != manager){
+                FragmentTransaction transaction = manager.beginTransaction();
+                transaction.remove(this);
+                transaction.detach(this);
+                transaction.commit();
+            }
+        } catch (Exception e) {
+            L.e(TAG, e.getMessage());
+        }
+    }
+
     /**
      * 准备请求权限
      * @param object
@@ -443,6 +456,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
         bundle.putStringArray(KEY_PERMISSIONS_ARRAY, needPermission.getValue());
         bundle.putInt(TipsDialogGravity, needPermission.getGravity());
         bundle.putBoolean(KEY_ShowCancelBtn, needPermission.isShowCancelBtn());
+        bundle.putBoolean(KEY_isRun, needPermission.isRun());
 
         if (!TextUtils.isEmpty(needPermission.getFirstRefuseMsg())) bundle.putString(KEY_FIRST_MESSAGE, needPermission.getFirstRefuseMsg());
         if (!TextUtils.isEmpty(needPermission.getAlwaysRefuseMsg())) bundle.putString(KEY_ALWAYS_MESSAGE, needPermission.getAlwaysRefuseMsg());
