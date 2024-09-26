@@ -269,6 +269,8 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                 PermissionUtils.startPermissionActivity(PermissionFragment.this, rationaleList);
             } else {
                 if (requestPermission.size() > 0) {
+                    mIsSpecialPermissionStatus = true;
+                    mSpecialPermission = "";
                     requestPermissions(requestPermission.toArray(new String[0]), PERMISSION_REQUEST_CODE);
                 } else {
                     permissionEnd(CALL_BACK_RESULT_CODE_SUCCESS, mIsSpecialPermissionStatus);
