@@ -83,6 +83,8 @@ public class ConfigUtils {
 
     public static String getTokenKey(){return ConfigUtils.getInstance().builder.token;}
 
+    public static List<Interceptor> getImgInterceptor(){return ConfigUtils.getInstance().builder.imgInterceptors;}
+
     public static List<Interceptor> getInterceptor(){return ConfigUtils.getInstance().builder.interceptors;}
 
     public static List<Interceptor> getNetInterceptor(){return ConfigUtils.getInstance().builder.netInterceptors;}
@@ -159,6 +161,8 @@ public class ConfigUtils {
         List<Interceptor> netInterceptors  = new ArrayList<>();
         /** 添加 自定义转换器； */
         List<Converter.Factory> converterFactories = new ArrayList<>();
+
+        List<Interceptor> imgInterceptors  = new ArrayList<>();
 
         /** 多状态布局 适配器 */
         OnStatusAdapter statusAdapter;
@@ -239,6 +243,11 @@ public class ConfigUtils {
 
         public ConfigBuilder addInterceptor(Interceptor interceptor) {
             interceptors.add(interceptor);
+            return this;
+        }
+
+        public ConfigBuilder addImgInterceptor(Interceptor interceptor) {
+            imgInterceptors.add(interceptor);
             return this;
         }
 

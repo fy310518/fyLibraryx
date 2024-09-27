@@ -21,6 +21,7 @@ import java.net.Proxy;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 
@@ -54,9 +55,9 @@ public class OkHttpLibraryGlideModule extends AppGlideModule {
 
     public static OkHttpClient getClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .connectTimeout(60 * 1000, TimeUnit.MILLISECONDS)
-                .readTimeout(60 * 1000, TimeUnit.MILLISECONDS)
-                .writeTimeout(60 * 1000, TimeUnit.MILLISECONDS)
+                .connectTimeout(120 * 1000, TimeUnit.MILLISECONDS)
+                .readTimeout(120 * 1000, TimeUnit.MILLISECONDS)
+                .writeTimeout(120 * 1000, TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(true)//错误重连
                 .addInterceptor(new RequestHeaderInterceptor())
                 .addInterceptor(new FileDownInterceptor())
@@ -68,6 +69,10 @@ public class OkHttpLibraryGlideModule extends AppGlideModule {
 
         if (ConfigUtils.isDEBUG()){//是否使用日志拦截器
             builder.addInterceptor(RequestModule.getResponseIntercept());
+        }
+
+        for(Interceptor interceptor : ConfigUtils.getImgInterceptor()){
+            builder.addInterceptor(interceptor);
         }
 
         //加载图片 信任所有证书

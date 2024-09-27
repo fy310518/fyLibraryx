@@ -80,7 +80,7 @@ public interface LoadService {
      * params.put("token", "123");
      */
     @UpLoadFileType
-    @Headers({"CONNECT_TIMEOUT:100", "READ_TIMEOUT:100", "WRITE_TIMEOUT:100"})
+    @Headers({"CONNECT_TIMEOUT:120000", "READ_TIMEOUT:120000", "WRITE_TIMEOUT:120000"})
     @POST()
     Observable<Object> uploadFile(@Url String apiUrl,
                                   @HeaderMap ArrayMap<String, Object> heads,
@@ -111,7 +111,7 @@ public interface LoadService {
     @DownLoadFileType
     @Streaming
     @GET
-    @Headers({"NoReplaceIp:---"})
+    @Headers({"NoReplaceIp:---", "CONNECT_TIMEOUT:120000", "READ_TIMEOUT:120000", "WRITE_TIMEOUT:120000"})
     Observable<File> download(@Header("IF-RANGE") String downParam, @Url String url);
 
     /**
