@@ -136,6 +136,19 @@ public class AppUtils {
         }
     }
 
+    /**
+     * 获取 指定应用ID 的 应用程序 安装时间
+     * @return firstInstallTime
+     */
+    public static long getInstallTime(Context context, String packageName) {
+        try {
+            PackageInfo info = context.getPackageManager().getPackageInfo(packageName, 0);
+            return info.firstInstallTime;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return 1;
+        }
+    }
 
     /**
      * 根据安装包路径获取 包名
