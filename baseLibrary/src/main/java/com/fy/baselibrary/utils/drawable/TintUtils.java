@@ -207,4 +207,30 @@ public class TintUtils {
                 break;
         }
     }
+
+    // @param position 5：没有icon；6：显示多个icon
+    public static void setTxtIconLocal(TextView tv, int position, Drawable... drawables){
+        if(position == 5){
+            tv.setCompoundDrawablesRelative(null, null, null, null);
+        } else if(position == 6 && null != drawables){
+            Drawable drawable1 = null;
+            Drawable drawable2 = null;
+            Drawable drawable3 = null;
+            Drawable drawable4 = null;
+            try {
+                drawable1 = drawables[0];
+                drawable2 = drawables[1];
+                drawable3 = drawables[2];
+                drawable4 = drawables[3];
+            } catch (Exception e) {
+            }
+
+            drawable1.setBounds(0, 0,
+                    drawable1.getMinimumWidth(), drawable1.getMinimumHeight());
+
+            tv.setCompoundDrawablesRelative(drawable1, drawable2, drawable3, drawable4);
+        }
+    }
+
+
 }

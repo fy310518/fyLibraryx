@@ -73,7 +73,7 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
                     && !key.equals("isFileKeyAES")
                     && !key.equals("filePathList")
                     && !key.equals("files")){
-                builder.addFormDataPart(key, (String) params.get(key));
+                builder.addFormDataPart(key, params.get(key) + "");
             }
         }
 
