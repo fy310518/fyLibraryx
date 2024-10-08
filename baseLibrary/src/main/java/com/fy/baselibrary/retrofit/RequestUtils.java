@@ -180,6 +180,10 @@ public final class RequestUtils {
      * @param reNameFile
      */
     public static Observable<Object> downLoadFile(@NonNull final String url, @NonNull String targetPath, @NonNull String reNameFile, boolean isReturnProcess){
+        if(!url.startsWith("http://") || !url.startsWith("https://")){
+            return Observable.just("");
+        }
+
         if(SpfAgent.init("").getInt(url + Constant.FileDownStatus) == 1) {
             return Observable.error(new ServerException("Downloading", -120));
         }
