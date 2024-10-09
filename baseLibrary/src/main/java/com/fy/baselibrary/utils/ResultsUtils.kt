@@ -1,5 +1,6 @@
 package com.fy.baselibrary.utils
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -56,6 +57,8 @@ fun Bundle.result(activity: Activity) {
  * [RECEIVER_EXPORTED 表示可以接收应用外部广播，ContextRECEIVER_NOT_EXPORTED 应用内部广播]
  */
 fun Context.receiverRegister(receiver: BroadcastReceiver, filter: IntentFilter, flags: Int = Context.RECEIVER_EXPORTED) {
+//    ContextCompat.registerReceiver(this, receiver, filter, flags)
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         registerReceiver(receiver, filter, flags)
     } else {

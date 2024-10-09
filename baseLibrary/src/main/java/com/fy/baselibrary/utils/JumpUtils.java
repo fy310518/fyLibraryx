@@ -285,11 +285,15 @@ public class JumpUtils {
      * @param act
      */
     public static void backDesktop(Activity act){
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        act.startActivity(intent);
+        try {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            act.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -335,7 +339,11 @@ public class JumpUtils {
             }
         }
 
-        act.startActivity(intent, options);
+        try {
+            act.startActivity(intent, options);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
