@@ -67,12 +67,12 @@ public class OkHttpLibraryGlideModule extends AppGlideModule {
                 .proxy(Proxy.NO_PROXY)
                 .protocols(Collections.singletonList(Protocol.HTTP_1_1));
 
-        if (ConfigUtils.isDEBUG()){//是否使用日志拦截器
-            builder.addInterceptor(RequestModule.getResponseIntercept());
-        }
-
         for(Interceptor interceptor : ConfigUtils.getImgInterceptor()){
             builder.addInterceptor(interceptor);
+        }
+
+        if (ConfigUtils.isDEBUG()){//是否使用日志拦截器
+            builder.addInterceptor(RequestModule.getResponseIntercept());
         }
 
         //加载图片 信任所有证书
