@@ -180,7 +180,7 @@ public final class RequestUtils {
      * @param reNameFile
      */
     public static Observable<Object> downLoadFile(@NonNull final String url, @NonNull String targetPath, @NonNull String reNameFile, boolean isReturnProcess){
-        if(!url.startsWith("http://") || !url.startsWith("https://")){
+        if(!url.startsWith("http://") && !url.startsWith("https://")){
             return Observable.just("");
         }
 
