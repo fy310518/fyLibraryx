@@ -135,9 +135,18 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                             requestPermission.remove(Permission.READ_MEDIA_VIDEO);
                             requestPermission.remove(Permission.READ_MEDIA_AUDIO);
 
-                            result.remove(Permission.READ_MEDIA_IMAGES);
-                            result.remove(Permission.READ_MEDIA_VIDEO);
-                            result.remove(Permission.READ_MEDIA_AUDIO);
+                            try {
+                                result.remove(Permission.READ_MEDIA_IMAGES);
+                            } catch (Exception e) {
+                            }
+                            try {
+                                result.remove(Permission.READ_MEDIA_VIDEO);
+                            } catch (Exception e) {
+                            }
+                            try {
+                                result.remove(Permission.READ_MEDIA_AUDIO);
+                            } catch (Exception e) {
+                            }
                         }
                     }
                 }
