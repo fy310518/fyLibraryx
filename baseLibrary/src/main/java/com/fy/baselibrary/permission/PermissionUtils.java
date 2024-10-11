@@ -138,6 +138,19 @@ public class PermissionUtils {
                 strings.add(permission);
             }
         }
+
+        if (OSUtils.isAndroid14()) {
+            if (strings.contains(Manifest.permission.READ_MEDIA_IMAGES) ||
+                    strings.contains(Manifest.permission.READ_MEDIA_VIDEO) ||
+                    strings.contains(Manifest.permission.READ_MEDIA_AUDIO)) {
+
+                strings.remove(Permission.READ_MEDIA_AUDIO);
+                strings.remove(Permission.READ_MEDIA_IMAGES);
+                strings.remove(Permission.READ_MEDIA_VIDEO);
+                strings.add(Permission.READ_USER_SELECTED);
+            }
+        }
+
         return strings;
     }
 
