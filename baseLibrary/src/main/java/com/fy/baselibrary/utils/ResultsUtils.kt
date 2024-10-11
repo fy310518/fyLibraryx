@@ -12,6 +12,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -33,13 +34,13 @@ fun Fragment.registerActResult(callback: ActivityResultCallback<ActivityResult>)
         callback.onActivityResult(it)
     }
 
-//fun Fragment.registerPermissionResult(callback: ActivityResultCallback<Map<String, @JvmSuppressWildcards Boolean>>) =
-//    registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { premissions->
-////        val granted = premissions.entries.all {
-////            it.value == true
-////        }
-//        callback.onActivityResult(premissions)
-//    }
+fun Fragment.registerPermissionResult(callback: ActivityResultCallback<Map<String, Boolean>>) =
+    registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { premissions->
+//        val granted = premissions.entries.all {
+//            it.value == true
+//        }
+        callback.onActivityResult(premissions)
+    }
 
 fun Intent.launch(launcher: ActivityResultLauncher<Intent>) {
     launcher.launch(this)

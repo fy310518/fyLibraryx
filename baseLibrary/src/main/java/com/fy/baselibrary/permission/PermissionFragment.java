@@ -1,9 +1,12 @@
 package com.fy.baselibrary.permission;
 
+import static com.fy.baselibrary.utils.ResultsUtilsKt.registerPermissionResult;
+
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +15,9 @@ import android.util.ArrayMap;
 import android.view.Gravity;
 import android.widget.ListView;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,6 +48,7 @@ import com.fy.baselibrary.utils.os.OSUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 动态权限管理 fragment
@@ -85,6 +92,9 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
     private MutableLiveData<Boolean> isLoad = new MutableLiveData<>();
     private boolean isRunComm = false;
 
+
+    private ActivityResultLauncher<String[]> launcher = null;
+
     @Override
     public int setContentLayout() {
         return -1;
@@ -119,6 +129,20 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                 checkPermission(mPermissions); // 只执行一次
             }
         });
+
+        launcher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), new ActivityResultCallback<Map<String, Boolean>>(){
+            @Override
+            public void onActivityResult(Map<String, Boolean> result) {
+                int failNum = 0;
+                for(String key : result.keySet()){
+                    if(Boolean.FALSE.equals(result.get(key))){
+                        failNum++;
+                    }
+                }
+
+                resultCallback(requestPermission.toArray(new String[0]), failNum);
+            }
+        });
     }
 
     @Override
@@ -150,8 +174,7 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if(!mIsSpecialPermissionStatus) return; // 特殊权限开启失败 不执行 后面的逻辑
-
-        if (requestCode == PERMISSION_REQUEST_CODE && grantResults.length > 0) {
+        if (requestCode == PERMISSION_REQUEST_CODE) {
             List<Integer> failurePermissionCount = new ArrayList<>();
             for (int i = 0; i < grantResults.length; i++) {
                 if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
@@ -159,7 +182,12 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                 }
             }
 
-            if (failurePermissionCount.size() == 0) {//权限请求失败数为0，则全部成功
+            resultCallback(permissions, failurePermissionCount.size());
+        }
+    }
+
+    private void resultCallback(@NonNull String[] permissions, int failNum){
+            if (failNum == 0) {//权限请求失败数为0，则全部成功
                 permissionEnd(CALL_BACK_RESULT_CODE_SUCCESS, mIsSpecialPermissionStatus);
             } else { //失败
                 List<String> rationaleList = PermissionUtils.getShouldRationaleList(getActivity(), permissions);
@@ -185,17 +213,18 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                     }
                 }
             }
-        }
     }
 
+    List<String> requestPermission = new ArrayList<>();
     /** 请求多个权限 */
     @TargetApi(Build.VERSION_CODES.M)
     public void checkPermission(String... permissions) {
         if (null != permissions) {
             if(ConfigUtils.isDEBUG()) PermissionUtils.checkPermissions(getActivity(), permissions);
 
+            requestPermission.clear();
             // 需要申请权限的权限列表
-            List<String> requestPermission = PermissionUtils.getRequestPermissionList(getContext(), permissions);
+            requestPermission.addAll(PermissionUtils.getRequestPermissionList(getContext(), permissions));
 
             // 是否需要申请特殊权限
             boolean requestSpecialPermission = false;
@@ -271,7 +300,8 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                 if (requestPermission.size() > 0) {
                     mIsSpecialPermissionStatus = true;
                     mSpecialPermission = "";
-                    requestPermissions(requestPermission.toArray(new String[0]), PERMISSION_REQUEST_CODE);
+//                    requestPermissions(requestPermission.toArray(new String[0]), PERMISSION_REQUEST_CODE);
+                    launcher.launch(requestPermission.toArray(new String[0]));
                 } else {
                     permissionEnd(CALL_BACK_RESULT_CODE_SUCCESS, mIsSpecialPermissionStatus);
                 }
