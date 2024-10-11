@@ -71,7 +71,9 @@ public class PermissionUtils {
         if(permission.equals(Manifest.permission.READ_MEDIA_IMAGES) ||
                 permission.equals(Manifest.permission.READ_MEDIA_VIDEO) ||
                 permission.equals(Manifest.permission.READ_MEDIA_AUDIO)){
-            if (OSUtils.isAndroid13()) {
+            if (OSUtils.isAndroid14()) {
+                return context.checkSelfPermission(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) == PackageManager.PERMISSION_GRANTED;
+            } else if (OSUtils.isAndroid13()) {
                 return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
             } else {
                 return context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
@@ -136,18 +138,6 @@ public class PermissionUtils {
         for (String permission : permissions) {
             if (isPermissionPermanentDenied(activity, permission)) {
                 strings.add(permission);
-            }
-        }
-
-        if (OSUtils.isAndroid14()) {
-            if (strings.contains(Manifest.permission.READ_MEDIA_IMAGES) ||
-                    strings.contains(Manifest.permission.READ_MEDIA_VIDEO) ||
-                    strings.contains(Manifest.permission.READ_MEDIA_AUDIO)) {
-
-                strings.remove(Permission.READ_MEDIA_AUDIO);
-                strings.remove(Permission.READ_MEDIA_IMAGES);
-                strings.remove(Permission.READ_MEDIA_VIDEO);
-                strings.add(Permission.READ_USER_SELECTED);
             }
         }
 
