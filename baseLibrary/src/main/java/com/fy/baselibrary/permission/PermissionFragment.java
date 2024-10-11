@@ -1,17 +1,13 @@
 package com.fy.baselibrary.permission;
 
-import static com.fy.baselibrary.utils.ResultsUtilsKt.registerPermissionResult;
-
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.ArrayMap;
 import android.view.Gravity;
 import android.widget.ListView;
 
@@ -26,10 +22,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
 import com.fy.baselibrary.R;
-import com.fy.baselibrary.aop.annotation.NeedPermission;
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.application.mvvm.BaseViewModel;
 import com.fy.baselibrary.base.ViewHolder;
@@ -37,10 +31,8 @@ import com.fy.baselibrary.base.dialog.CommonDialog;
 import com.fy.baselibrary.base.dialog.DialogConvertListener;
 import com.fy.baselibrary.base.dialog.NiceDialog;
 import com.fy.baselibrary.base.fragment.BaseFragment;
-import com.fy.baselibrary.base.fragment.FragmentChangeManager;
 import com.fy.baselibrary.utils.AppUtils;
 import com.fy.baselibrary.utils.ResUtils;
-import com.fy.baselibrary.utils.drawable.ShapeBuilder;
 import com.fy.baselibrary.utils.notify.L;
 import com.fy.baselibrary.utils.notify.T;
 import com.fy.baselibrary.utils.os.OSUtils;
@@ -133,6 +125,23 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
         launcher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), new ActivityResultCallback<Map<String, Boolean>>(){
             @Override
             public void onActivityResult(Map<String, Boolean> result) {
+                if (OSUtils.isAndroid14()) {
+                    if (requestPermission.contains(Manifest.permission.READ_MEDIA_IMAGES) ||
+                            requestPermission.contains(Manifest.permission.READ_MEDIA_VIDEO) ||
+                            requestPermission.contains(Manifest.permission.READ_MEDIA_AUDIO)) {
+
+                        if(PermissionUtils.isPermissionGranted(getContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)){
+                            requestPermission.remove(Permission.READ_MEDIA_IMAGES);
+                            requestPermission.remove(Permission.READ_MEDIA_VIDEO);
+                            requestPermission.remove(Permission.READ_MEDIA_AUDIO);
+
+                            result.remove(Permission.READ_MEDIA_IMAGES);
+                            result.remove(Permission.READ_MEDIA_VIDEO);
+                            result.remove(Permission.READ_MEDIA_AUDIO);
+                        }
+                    }
+                }
+
                 int failNum = 0;
                 for(String key : result.keySet()){
                     if(Boolean.FALSE.equals(result.get(key))){
