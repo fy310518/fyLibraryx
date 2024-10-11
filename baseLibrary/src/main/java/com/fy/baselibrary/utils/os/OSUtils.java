@@ -141,4 +141,11 @@ public class OSUtils {
     public static boolean isAndroid13() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
     }
+
+    /**
+     * 是否是 Android 14 及以上版本
+     */
+    public static boolean isAndroid14() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+    }
 }

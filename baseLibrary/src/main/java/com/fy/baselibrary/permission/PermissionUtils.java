@@ -68,11 +68,11 @@ public class PermissionUtils {
         // 如果是安卓 6.0 以下版本就默认授予
         if (!OSUtils.isAndroid6()) return true;
 
-        if(permission.equals(Manifest.permission.READ_MEDIA_IMAGES) || permission.equals(Manifest.permission.READ_MEDIA_VIDEO) || permission.equals(Manifest.permission.READ_MEDIA_AUDIO)){
+        if(permission.equals(Manifest.permission.READ_MEDIA_IMAGES) ||
+                permission.equals(Manifest.permission.READ_MEDIA_VIDEO) ||
+                permission.equals(Manifest.permission.READ_MEDIA_AUDIO)){
             if (OSUtils.isAndroid13()) {
                 return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
-            } else if (OSUtils.isAndroid11()) {
-                return context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
             } else {
                 return context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
             }

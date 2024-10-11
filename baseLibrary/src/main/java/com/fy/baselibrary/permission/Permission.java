@@ -23,6 +23,9 @@ public class Permission {
 //    危险权限：需要在代码中动态申请，以弹系统 Dialog 的形式进行请求
 //    特殊权限：需要在代码中动态申请，以跳系统 Activity 的形式进行请求
     /** 收集Android 各版本 特殊权限 */
+
+    /** android14 选择性照片和视频访问权限 */
+    public static final String READ_USER_SELECTED = "android.permission.READ_MEDIA_VISUAL_USER_SELECTED";
     /** 外部存储权限（特殊权限，需要 Android 13 及以上） */
     public static final String READ_MEDIA_AUDIO = "android.permission.READ_MEDIA_AUDIO";
     public static final String READ_MEDIA_IMAGES = "android.permission.READ_MEDIA_IMAGES";
