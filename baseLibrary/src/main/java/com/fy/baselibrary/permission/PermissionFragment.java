@@ -215,7 +215,9 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                 String[] array = storagePermission.toArray(new String[storagePermission.size()]);
 
                 if(!PermissionUtils.hasStoragePermission(getActivity(), array) && storagePermission.size() > 0){ // 是否需要申请 存储权限
-                    if (OSUtils.isAndroid10()) {
+                    if (OSUtils.isAndroid13()) {
+
+                    } else if (OSUtils.isAndroid10()) {
                         if (requestPermission.contains(Permission.MANAGE_EXTERNAL_STORAGE)){
                             requestSpecialPermission = true;
                             mSpecialPermission = Permission.MANAGE_EXTERNAL_STORAGE;
