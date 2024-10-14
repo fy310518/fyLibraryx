@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.ArrayMap;
 import android.view.Gravity;
 import android.widget.ListView;
 
@@ -125,6 +126,9 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
         launcher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), new ActivityResultCallback<Map<String, Boolean>>(){
             @Override
             public void onActivityResult(Map<String, Boolean> result) {
+                ArrayMap<String, Boolean> tempMap = new ArrayMap<>();
+                tempMap.putAll(result);
+
                 if (OSUtils.isAndroid14()) {
                     if (requestPermission.contains(Manifest.permission.READ_MEDIA_IMAGES) ||
                             requestPermission.contains(Manifest.permission.READ_MEDIA_VIDEO) ||
@@ -136,15 +140,15 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                             requestPermission.remove(Permission.READ_MEDIA_AUDIO);
 
                             try {
-                                result.remove(Permission.READ_MEDIA_IMAGES);
+                                tempMap.remove(Permission.READ_MEDIA_IMAGES);
                             } catch (Exception e) {
                             }
                             try {
-                                result.remove(Permission.READ_MEDIA_VIDEO);
+                                tempMap.remove(Permission.READ_MEDIA_VIDEO);
                             } catch (Exception e) {
                             }
                             try {
-                                result.remove(Permission.READ_MEDIA_AUDIO);
+                                tempMap.remove(Permission.READ_MEDIA_AUDIO);
                             } catch (Exception e) {
                             }
                         }
@@ -152,8 +156,8 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
                 }
 
                 int failNum = 0;
-                for(String key : result.keySet()){
-                    if(Boolean.FALSE.equals(result.get(key))){
+                for(String key : tempMap.keySet()){
+                    if(Boolean.FALSE.equals(tempMap.get(key))){
                         failNum++;
                     }
                 }
