@@ -14,6 +14,7 @@ import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.retrofit.RequestModule;
 import com.fy.baselibrary.retrofit.interceptor.FileDownInterceptor;
 import com.fy.baselibrary.retrofit.interceptor.RequestHeaderInterceptor;
+import com.fy.baselibrary.retrofit.interceptor.RetryInterceptor;
 import com.fy.baselibrary.utils.security.SSLUtil;
 
 import java.io.InputStream;
@@ -59,7 +60,7 @@ public class OkHttpLibraryGlideModule extends AppGlideModule {
                 .readTimeout(60 * 1000, TimeUnit.MILLISECONDS)
                 .writeTimeout(60 * 1000, TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(true)//错误重连
-                .addInterceptor(new RequestHeaderInterceptor())
+                .addInterceptor(new RetryInterceptor())
                 .addInterceptor(new FileDownInterceptor())
                 .hostnameVerifier((hostname, session) -> {
                     return true;//强行返回true 即验证成功
