@@ -2,6 +2,7 @@ package com.fy.baselibrary.utils.config
 
 import android.app.Activity
 import android.graphics.Color
+import android.widget.EditText
 import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.WindowCompat
@@ -17,7 +18,23 @@ class StatusBarUtils {
     companion object{
 
         /**
-         * 显示状态栏
+         * 控制键盘 显示/隐藏
+         * @param isVisible 是否显示
+         */
+        fun setKeyBoardVisible(activity: Activity, editText: EditText, isVisible: Boolean){
+            val window = activity.window
+
+            WindowCompat.getInsetsController(window, editText).let { controller ->
+                if(isVisible){
+                    controller.show(WindowInsetsCompat.Type.ime())
+                } else {
+                    controller.hide(WindowInsetsCompat.Type.ime())
+                }
+            }
+        }
+
+        /**
+         * 控制状态栏、导航栏 显示/隐藏
          * @param isVisible 是否显示
          */
         fun setStatusBarVisible(activity: Activity, isVisible: Boolean) {
@@ -26,8 +43,10 @@ class StatusBarUtils {
             WindowInsetsControllerCompat(window, window.decorView).let { controller ->
                 if (isVisible) {
                     controller.show(WindowInsetsCompat.Type.statusBars())
+                    controller.show(WindowInsetsCompat.Type.navigationBars())
                 } else {
                     controller.hide(WindowInsetsCompat.Type.statusBars())
+                    controller.hide(WindowInsetsCompat.Type.navigationBars())
                 }
                 controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
