@@ -5,6 +5,7 @@ import android.util.ArrayMap;
 
 import com.fy.baselibrary.retrofit.load.LoadOnSubscribe;
 import com.fy.baselibrary.retrofit.load.up.FileProgressRequestBody;
+import com.fy.baselibrary.utils.security.EncodeUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,7 +97,7 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
                 builder.addFormDataPart(isFileKeyAES ? fileKey + (i + 1) : fileKey, file.getName(), requestBody);
             } else {
                 String name = fileKey.equals("fileName") ? fileKey + 1 : fileKey;
-                builder.addFormDataPart(name, file.getName(), requestBody);
+                builder.addFormDataPart(name, EncodeUtils.urlEncode(file.getName()), requestBody);
             }
         }
 

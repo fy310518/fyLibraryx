@@ -39,8 +39,10 @@ public final class EncodeUtils {
         try {
             return URLEncoder.encode(input, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new AssertionError(e);
+//            throw new AssertionError(e);
         }
+
+        return "";
     }
 
     /**
