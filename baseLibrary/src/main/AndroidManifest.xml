@@ -22,11 +22,11 @@
     <!-- 往SDCard写入数据权限 -->
 <!--    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />-->
 <!--    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />-->
-<!--    &lt;!&ndash; android R 所有文件访问权限 &ndash;&gt;-->
-<!--    &lt;!&ndash;    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />&ndash;&gt;-->
-<!--    &lt;!&ndash;  android13 图片访问权限  &ndash;&gt;-->
+    <!-- android R 所有文件访问权限 -->
+<!--    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />-->
+    <!--  android13 图片访问权限  -->
 <!--    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"  />-->
-<!--    &lt;!&ndash;  android14 选择性照片和视频访问权限  &ndash;&gt;-->
+    <!--  android14 选择性照片和视频访问权限  -->
 <!--    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />-->
 
 </manifest>
