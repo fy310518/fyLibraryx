@@ -3,8 +3,7 @@ package com.fy.baselibrary.retrofit.converter.file;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 
-import com.fy.baselibrary.retrofit.load.LoadOnSubscribe;
-import com.fy.baselibrary.retrofit.load.up.FileProgressRequestBody;
+import com.fy.baselibrary.retrofit.load.up.ProgressRequestBody;
 import com.fy.baselibrary.utils.security.EncodeUtils;
 
 import java.io.File;
@@ -13,6 +12,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+import kotlinx.coroutines.channels.Channel;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -24,22 +24,18 @@ import retrofit2.Converter;
  */
 public class FileRequestBodyConverter implements Converter<ArrayMap<String, Object>, RequestBody> {
 
-    //进度发射器
-    LoadOnSubscribe loadOnSubscribe;
-
     public FileRequestBodyConverter() {
     }
 
-//          此方法参数 对应 应用层 执行上传文件前的 请求参数配置 请严格 一一对应
+//        此方法参数 对应 应用层 执行上传文件前的 请求参数配置 请严格 一一对应
 //        ArrayMap<String, Object> params = new ArrayMap<>();
 //        params.put("uploadFile", "fileName");
 //        params.put("isFileKeyAES", true);//是否使用 fileKey1，fileKey2
 //        params.put("filePathList", files);
-//        params.put("LoadOnSubscribe", new LoadOnSubscribe());
+//        params.put("ProgressChannel", new LoadOnSubscribe());
     @Override
     public RequestBody convert(ArrayMap<String, Object> params) throws IOException {
 
-        loadOnSubscribe = (LoadOnSubscribe) params.get("LoadOnSubscribe");
         String fileKey = (String) params.get("uploadFile");
 
         if (TextUtils.isEmpty(fileKey)) fileKey = "file";
@@ -69,7 +65,7 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
         //解析 文本参数 装载到 MultipartBody 中
         for (String key : params.keySet()) {
             if (!TextUtils.isEmpty(key)
-                    && !key.equals("LoadOnSubscribe")
+                    && !key.equals("ProgressChannel")
                     && !key.equals("uploadFile")
                     && !key.equals("isFileKeyAES")
                     && !key.equals("filePathList")
@@ -77,6 +73,9 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
                 builder.addFormDataPart(key, params.get(key) + "");
             }
         }
+
+        //进度发射器
+        Channel<Float> channel = (Channel<Float>) params.get("ProgressChannel");
 
         long sumLeng = 0L;
         File file;
@@ -92,7 +91,7 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
             if(TextUtils.isEmpty(contentType)){
                 contentType = "multipart/form-data";
             }
-            FileProgressRequestBody requestBody = new FileProgressRequestBody(file, contentType, loadOnSubscribe);
+            ProgressRequestBody requestBody = new ProgressRequestBody(file, contentType, channel);
             if (files.size() > 1) {
                 builder.addFormDataPart(isFileKeyAES ? fileKey + (i + 1) : fileKey, file.getName(), requestBody);
             } else {
@@ -100,8 +99,6 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
                 builder.addFormDataPart(name, EncodeUtils.urlEncode(file.getName()), requestBody);
             }
         }
-
-        loadOnSubscribe.setmSumLength(sumLeng);
 
         return builder.build();
     }
@@ -113,40 +110,6 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
      * @param files File列表或者 File 路径列表
      * @param <T>   泛型
      * @return MultipartBody.Part列表（retrofit 多文件文件上传）
-     */
-    public static <T> List<MultipartBody.Part> filesToMultipartBodyPart(List<T> files, LoadOnSubscribe loadOnSubscribe) {
-        List<MultipartBody.Part> parts = new ArrayList<>();
-
-        long sumLeng = 0L;
-        File file;
-        for (T t : files) {//访问手机端的文件资源，保证手机端sdcdrd中必须有这个文件
-
-            if (t instanceof File) file = (File) t;
-            else if (t instanceof String)
-                file = new File((String) t);//访问手机端的文件资源，保证手机端sdcdrd中必须有这个文件
-            else break;
-            sumLeng += file.length();
-
-            String path = file.getPath();
-            String fileStr = path.substring(path.lastIndexOf(".") + 1);
-
-            FileProgressRequestBody requestBody = new FileProgressRequestBody(file, "image/" + fileStr, loadOnSubscribe);
-//            RequestBody requestBody = RequestBody.create(MediaType.parse("image/" + fileStr), file);
-            MultipartBody.Part part = MultipartBody.Part.createFormData("files", file.getName(), requestBody);
-            parts.add(part);
-        }
-
-        loadOnSubscribe.setmSumLength(sumLeng);
-
-        return parts;
-    }
-
-
-    /**
-     * 将文件集合 转换为 MultipartBody.Part 集合
-     * @param files
-     * @param <T>
-     * @return
      */
     public static <T> List<MultipartBody.Part> filesToMultipartBodyPart(List<T> files) {
         List<MultipartBody.Part> parts = new ArrayList<>();

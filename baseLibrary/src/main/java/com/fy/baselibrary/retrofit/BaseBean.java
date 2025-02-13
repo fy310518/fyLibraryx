@@ -16,23 +16,23 @@ public interface BaseBean<T> {
      * 获取请求返回状态码
      * @return 状态码
      */
-    public int getCode();
+    int getResultCode();
 
     /**
      * 获取请求返回信息
      * @return 消息
      */
-    public String getMsg();
+    String getResultMsg();
 
     /**
      * 获取请求返回对象
      * @return 泛型
      */
-    public T getData();
+    T getResultData();
 
     /**
      * 判断请求是否成功
      * @return true/false
      */
-    public boolean isSuccess();
+    boolean isSuccess();
 }

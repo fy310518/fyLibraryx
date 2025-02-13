@@ -8,25 +8,8 @@ import android.webkit.WebView;
 
 import androidx.fragment.app.Fragment;
 
-import com.fy.baselibrary.retrofit.RequestUtils;
-import com.fy.baselibrary.retrofit.RxHelper;
-import com.fy.baselibrary.retrofit.load.LoadOnSubscribe;
-import com.fy.baselibrary.retrofit.load.LoadService;
 import com.fy.baselibrary.retrofit.observer.IProgressDialog;
-import com.fy.baselibrary.retrofit.observer.RequestBaseObserver;
-import com.fy.baselibrary.utils.FileUtils;
 import com.fy.baselibrary.utils.GsonUtils;
-import com.fy.baselibrary.utils.security.EncodeUtils;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * DESCRIPTION：h5 android 交互
@@ -154,16 +137,16 @@ public class BaseAndroidJSInterface {
 
         switch (method.toUpperCase()) {
             case "GET":
-                httpGet(headers, params, hostAddress + request.getUrl(), request.getJsMethod());
+//                httpGet(headers, params, hostAddress + request.getUrl(), request.getJsMethod());
                 break;
             case "POST":
-                httpPost(headers, params, hostAddress + request.getUrl(), request.getJsMethod());
+//                httpPost(headers, params, hostAddress + request.getUrl(), request.getJsMethod());
                 break;
             case "POSTJSON":
-                httpPostJson(headers, params, hostAddress + request.getUrl(), request.getJsMethod());
+//                httpPostJson(headers, params, hostAddress + request.getUrl(), request.getJsMethod());
                 break;
             case "UPLOAD":
-                httpUpload(headers, params, hostAddress + request.getUrl(), request.getJsMethod(), request.getBase64());
+//                httpUpload(headers, params, hostAddress + request.getUrl(), request.getJsMethod(), request.getBase64());
                 break;
         }
 
@@ -171,88 +154,6 @@ public class BaseAndroidJSInterface {
     }
 
 
-    private void httpGet(ArrayMap<String, Object> headers, ArrayMap<String, Object> params, final String url, final String jsMethod) {
-        RequestUtils.create(LoadService.class)
-                .jsInAndroidGetRequest(url, headers, params)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .compose(RxHelper.bindToLifecycle(null == context ? fragment.getActivity() : context))
-                .subscribe(getCallObserver(url, jsMethod));
-    }
-
-    private void httpPost(ArrayMap<String, Object> headers, ArrayMap<String, Object> params, final String url, final String jsMethod) {
-        RequestUtils.create(LoadService.class)
-                .jsInAndroidPostForm(url, headers, params)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .compose(RxHelper.bindToLifecycle(null == context ? fragment.getActivity() : context))
-                .subscribe(getCallObserver(url, jsMethod));
-    }
-
-    private void httpPostJson(ArrayMap<String, Object> headers, ArrayMap<String, Object> params, final String url, final String jsMethod) {
-        RequestUtils.create(LoadService.class)
-                .jsInAndroidPostJson(url, headers, params)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .compose(RxHelper.bindToLifecycle(null == context ? fragment.getActivity() : context))
-                .subscribe(getCallObserver(url, jsMethod));
-    }
-
-    private void httpUpload(ArrayMap<String, Object> headers,
-                            ArrayMap<String, Object> params,
-                            final String url,
-                            final String jsMethod,
-                            ArrayList<String> base64) {
-
-        Observable.just(base64)
-                .subscribeOn(Schedulers.io())
-                .map(new Function<ArrayList<String>, List<String>>() {
-                    @Override
-                    public List<String> apply(ArrayList<String> base64List) throws Exception {
-                        List<String> filePath = new ArrayList<>();
-
-                        for (String item : base64List) {
-                            File newFile = FileUtils.createFile("/DCIM/camera/", "IMG_", ".png", 0);
-                            EncodeUtils.decoderBase64File(item, newFile.getPath());
-
-                            filePath.add(newFile.getPath());
-                        }
-                        return filePath;
-                    }
-                })
-                .flatMap(new Function<List<String>, ObservableSource<?>>() {
-                    @Override
-                    public ObservableSource<?> apply(List<String> filePathList) throws Exception {
-                        params.put("uploadFile", "fileName");
-                        params.put("filePathList", filePathList);
-                        params.put("LoadOnSubscribe", new LoadOnSubscribe());
-
-                        return RequestUtils.create(LoadService.class)
-                                .uploadFile(url, headers, params)
-                                .compose(RxHelper.bindToLifecycle(null == context ? fragment.getActivity() : context))
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread());
-                    }
-                })
-                .subscribe(getCallObserver(url, jsMethod));
-    }
-
-    //定义网络请求 观察者，统一处理返回数据
-    private RequestBaseObserver<Object> getCallObserver(final String url, final String jsMethod) {
-        return new RequestBaseObserver<Object>(progressDialog) {
-            @Override
-            protected void onSuccess(Object data) {
-                String json = GsonUtils.toJson(data);
-                //Android 调用 h5 方法
-//                view.loadUrl("javascript:" + jsMethod + "(\'" + json + "\')");
-                view.evaluateJavascript(jsMethod + "(\'" + json + "\')", null);//4.4以上，效率更高，可以接收 js方法的返回值
-
-                if (listener != null) {
-                    listener.beforH5(url, json, false);
-                }
-            }
-        };
-    }
 
     private OnOwnOptListener listener;
 

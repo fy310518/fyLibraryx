@@ -110,10 +110,10 @@ public class ResUtils {
      * 获取清单文件 指定 key的 meta-data 的值；（meta-data是一个键值对）
      *
      * @param metaKey       meta-data 的 key
-     * @param metaValueType 返回值类型
+     * @param defaultValue 返回值类型
      * @return
      */
-    public static Object getMetaData(Context context, String metaKey, Object metaValueType) {
+    public static Object getMetaData(Context context, String metaKey, Object defaultValue) {
         Object value = null;
 
         try {
@@ -121,14 +121,14 @@ public class ResUtils {
                     .getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
 
             Bundle bundle = ai.metaData;
-            if (metaValueType instanceof Integer) {
-                value = bundle.getInt(metaKey);
-            } else if (metaValueType instanceof Float) {
-                value = bundle.getFloat(metaKey);
-            } else if (metaValueType instanceof Boolean) {
-                value = bundle.getBoolean(metaKey);
-            } else if (metaValueType instanceof String) {
-                value = bundle.getString(metaKey);
+            if (defaultValue instanceof Integer) {
+                value = bundle.getInt(metaKey, (Integer) defaultValue);
+            } else if (defaultValue instanceof Float) {
+                value = bundle.getFloat(metaKey, (Float) defaultValue);
+            } else if (defaultValue instanceof Boolean) {
+                value = bundle.getBoolean(metaKey, (Boolean) defaultValue);
+            } else if (defaultValue instanceof String) {
+                value = bundle.getString(metaKey, (String) defaultValue);
             }
 
         } catch (Exception e) {

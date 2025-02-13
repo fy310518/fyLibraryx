@@ -6,10 +6,7 @@ import com.fy.baselibrary.retrofit.interceptor.FileDownInterceptor;
 import com.fy.baselibrary.retrofit.interceptor.RequestHeaderInterceptor;
 import com.fy.baselibrary.retrofit.interceptor.cache.CacheNetworkInterceptor;
 import com.fy.baselibrary.retrofit.interceptor.cache.IsUseCacheInterceptor;
-import com.fy.baselibrary.retrofit.interceptor.cookie.AddCookiesInterceptor;
-import com.fy.baselibrary.retrofit.interceptor.cookie.CacheCookiesInterceptor;
 import com.fy.baselibrary.retrofit.load.TimeoutInterceptor;
-import com.fy.baselibrary.utils.Constant;
 import com.fy.baselibrary.utils.FileUtils;
 import com.fy.baselibrary.utils.notify.L;
 import com.fy.baselibrary.utils.security.SSLUtil;
@@ -30,7 +27,6 @@ import okhttp3.Protocol;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -46,7 +42,6 @@ public final class RequestModule {
         Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
                 .addConverterFactory(FileConverterFactory.create())
                 .addConverterFactory(getGsonConvertFactory())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .baseUrl(ConfigUtils.getBaseUrl())
                 .client(okBuilder.build());
 
@@ -115,8 +110,9 @@ public final class RequestModule {
             Object[] sslData = SSLUtil.getSSLSocketFactory(cerFileNames.toArray(new String[]{}));
             if (null != sslData) builder.sslSocketFactory((SSLSocketFactory)sslData[0], (X509TrustManager)sslData[1]);
         } else {
-            builder.sslSocketFactory(SSLUtil.createSSLSocketFactory());
-            builder.hostnameVerifier(SSLUtil.DO_NOT_VERIFY);
+//            builder.sslSocketFactory(SSLUtil.createSSLSocketFactory());
+//            builder.hostnameVerifier(SSLUtil.DO_NOT_VERIFY);
+            builder.sslSocketFactory(SSLUtil.getSSLSocketFactory(), new SSLUtil.TrustAllManager());
         }
 
         return builder;

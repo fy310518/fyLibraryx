@@ -141,25 +141,7 @@ public class SSLUtil {
     }
 
 
-    /**
-     * 信任所有的证书
-     * TODO 最好加上证书认证，主流App都有自己的证书
-     */
-    @SuppressLint("TrulyRandom")
-    public static SSLSocketFactory createSSLSocketFactory() {
-        SSLSocketFactory sSLSocketFactory = null;
-        try {
-            SSLContext sc = SSLContext.getInstance("TLS");
-            sc.init(null, new TrustManager[]{new TrustAllManager()},
-                    new SecureRandom());
-            sSLSocketFactory = sc.getSocketFactory();
-        } catch (Exception e) {
-        }
-
-        return sSLSocketFactory;
-    }
-
-    private static class TrustAllManager implements X509TrustManager {
+    public static class TrustAllManager implements X509TrustManager {
         public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
             Log.d("checkClientTrusted", "authType:" + authType);
         }
@@ -185,5 +167,40 @@ public class SSLUtil {
             return true;
         }
     };
+
+
+
+    //获取这个SSLSocketFactory
+    public static SSLSocketFactory getSSLSocketFactory() {
+        try {
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, getTrustManager(), new SecureRandom());
+            return sslContext.getSocketFactory();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    //获取TrustManager
+    private static TrustManager[] getTrustManager() {
+        //就是把下面这个X509TrustManager更换一下
+        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+            @Override
+            public void checkClientTrusted(X509Certificate[] chain, String authType) {
+            }
+
+            @Override
+            public void checkServerTrusted(X509Certificate[] chain, String authType) {
+            }
+
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[]{};
+            }
+        }};
+        return trustAllCerts;
+    }
+
+
 
 }

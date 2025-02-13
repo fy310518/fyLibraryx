@@ -15,7 +15,7 @@ import org.aspectj.lang.annotation.Pointcut;
 @Aspect
 public class StatusBarAspect {
 
-    @Pointcut("execution(@com.fy.baselibrary.aop.annotation.StatusBar * *(..))" + " && @annotation(param)")
+    @Pointcut("execution(@com.fy.com.fy.baselibrary.aop.annotation.StatusBar * *(..))" + " && @annotation(param)")
     public void statusBar(StatusBar param) {}
 
     @Before("statusBar(param)")

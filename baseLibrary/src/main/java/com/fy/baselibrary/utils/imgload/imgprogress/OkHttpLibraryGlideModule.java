@@ -76,8 +76,9 @@ public class OkHttpLibraryGlideModule extends AppGlideModule {
         }
 
         //加载图片 信任所有证书
-        builder.sslSocketFactory(SSLUtil.createSSLSocketFactory());
-        builder.hostnameVerifier(SSLUtil.DO_NOT_VERIFY);
+//        builder.sslSocketFactory(SSLUtil.createSSLSocketFactory());
+//        builder.hostnameVerifier(SSLUtil.DO_NOT_VERIFY);
+        builder.sslSocketFactory(SSLUtil.getSSLSocketFactory(), new SSLUtil.TrustAllManager());
 
         return builder.build();
     }

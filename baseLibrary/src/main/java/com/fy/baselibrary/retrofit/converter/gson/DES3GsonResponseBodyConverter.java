@@ -1,5 +1,7 @@
 package com.fy.baselibrary.retrofit.converter.gson;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import com.fy.baselibrary.utils.notify.L;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
@@ -16,7 +18,6 @@ import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 
-import static okhttp3.internal.Util.UTF_8;
 
 /*
 * 对联网返回数据的解密后统一处理。

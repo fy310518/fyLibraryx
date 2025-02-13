@@ -29,7 +29,6 @@ import com.fy.baselibrary.utils.Constant;
 import com.fy.baselibrary.utils.ResUtils;
 import com.fy.baselibrary.utils.notify.L;
 
-import io.reactivex.subjects.BehaviorSubject;
 
 /**
  * activity 生命周期回调 (api 14+)
@@ -40,7 +39,6 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
     public static final String TAG = "lifeCycle --> ";
     public static int actNum;
 
-    private static ArrayMap<String, BehaviorSubject<String>> behaviorSubjectMap = new ArrayMap<>();
     private ArrayMap<String, BaseOrientoinListener> orientationListenerMap = new ArrayMap<>();
 
     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -55,7 +53,6 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
 //        }
 
         ResUtils.setFontDefault(activity);
-        behaviorSubjectMap.put(activity.getClass().getSimpleName() + "-" + activity.getTaskId(), BehaviorSubject.create());
 //        BaseActivityBean activityBean = new BaseActivityBean();
 
         ViewDataBinding vdb = null;
@@ -134,12 +131,6 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
             orientationListener.disable();
             orientationListenerMap.remove(activity.getClass().getSimpleName() + "-" + activity.getTaskId());
         }
-
-        BehaviorSubject<String> subject = behaviorSubjectMap.get(activity.getClass().getSimpleName() + "-" + activity.getTaskId());
-        if (null != subject) {
-            subject.onNext(Constant.DESTROY);
-            behaviorSubjectMap.remove(activity.getClass().getSimpleName() + "-" + activity.getTaskId());
-        }
     }
 
 
@@ -185,7 +176,7 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
 
         if (BaseActivityLifecycleCallbacks.actNum == 1 &&
                 info.numRunning == 1 &&
-                !info.topActivity.getClassName().equals("com.fy.baselibrary.startactivity.StartActivity")) {
+                !info.topActivity.getClassName().equals("com.fy.com.fy.baselibrary.startactivity.StartActivity")) {
             //被杀死重启
             isrun = true;
             L.e(TAG, activity.getClass().getName() + "关闭此界面");
@@ -194,19 +185,6 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
         }
 
         return isrun;
-    }
-
-
-
-    public static BehaviorSubject<String> getCurrentSubject(Context context) {
-        if (context instanceof Activity) {
-            Activity activity = (Activity) context;
-            BehaviorSubject<String> subject = behaviorSubjectMap.get(activity.getClass().getSimpleName() + "-" + activity.getTaskId());
-
-            return subject;
-        }
-
-        return null;
     }
 
 }

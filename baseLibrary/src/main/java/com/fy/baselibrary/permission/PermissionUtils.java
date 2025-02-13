@@ -14,10 +14,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
 
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
-import com.fy.baselibrary.BuildConfig;
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.retrofit.ServerException;
 import com.fy.baselibrary.utils.os.OSUtils;

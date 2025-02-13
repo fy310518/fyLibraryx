@@ -3,14 +3,12 @@ package com.fy.baselibrary.retrofit.interceptor.cookie;
 import android.annotation.SuppressLint;
 
 import com.fy.baselibrary.application.ioc.ConfigUtils;
-import com.fy.baselibrary.utils.Constant;
-import com.fy.baselibrary.utils.notify.L;
 import com.fy.baselibrary.utils.cache.SpfAgent;
+import com.fy.baselibrary.utils.notify.L;
 
 import java.io.IOException;
 import java.util.List;
 
-import io.reactivex.Observable;
 import okhttp3.Interceptor;
 import okhttp3.Response;
 
@@ -34,9 +32,15 @@ public class CacheCookiesInterceptor implements Interceptor {
 
             Object[] strArray = response.headers(set_cookie).toArray();
 
-            Observable.fromArray(strArray)
-                    .map(s -> s.toString().split(";")[0])
-                    .subscribe(s -> cookieBuffer.append(s).append(";"));
+            for (Object str : strArray) {
+                String data = str.toString().split(";")[0];
+
+                cookieBuffer.append(data).append(";");
+            }
+
+//            Observable.fromArray(strArray)
+//                    .map(s -> s.toString().split(";")[0])
+//                    .subscribe(s -> cookieBuffer.append(s).append(";"));
 
             SpfAgent.init("")
                     .saveString("cookie", cookieBuffer.toString())

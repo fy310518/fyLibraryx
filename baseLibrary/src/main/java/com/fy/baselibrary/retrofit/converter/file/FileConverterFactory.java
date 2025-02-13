@@ -48,11 +48,11 @@ public class FileConverterFactory extends Converter.Factory {
 
     @Override
     public Converter<ResponseBody, File> responseBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
-        for (Annotation annotation : annotations) {
-            if (annotation instanceof DownLoadFileType) {
-                return new FileResponseBodyConverter();
-            }
-        }
+//        for (Annotation annotation : annotations) {
+//            if (annotation instanceof DownLoadFileType) {
+//                return new FileResponseBodyConverter();
+//            }
+//        }
         return null;
     }
 }

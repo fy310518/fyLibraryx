@@ -3,20 +3,17 @@ package com.fy.baselibrary.retrofit.converter.file;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 
-import com.fy.baselibrary.retrofit.load.LoadOnSubscribe;
-import com.fy.baselibrary.retrofit.load.up.FileProgressRequestBody;
+import com.fy.baselibrary.retrofit.load.up.ProgressRequestBody;
 import com.fy.baselibrary.utils.security.EncodeUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.MediaType;
+import kotlinx.coroutines.channels.Channel;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import retrofit2.Converter;
 
 /**
  * 文件上传 转换器
@@ -25,14 +22,12 @@ import retrofit2.Converter;
 public class FileRequestBodyConverter2 extends FileRequestBodyConverter {
 
     //进度发射器
-    LoadOnSubscribe loadOnSubscribe;
 
     public FileRequestBodyConverter2() {
     }
 
     @Override
     public RequestBody convert(ArrayMap<String, Object> params) throws IOException {
-        loadOnSubscribe = (LoadOnSubscribe) params.get("LoadOnSubscribe");
         String fileKey = (String) params.get("uploadFile");
 
         if (TextUtils.isEmpty(fileKey)) fileKey = "file";
@@ -57,10 +52,13 @@ public class FileRequestBodyConverter2 extends FileRequestBodyConverter {
         boolean isFileKeyAES = (boolean) params.get("isFileKeyAES");
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
 
+        //进度发射器
+        Channel<Float> channel = (Channel<Float>) params.get("ProgressChannel");
+
         //解析 文本参数 装载到 MultipartBody 中
         for (String key : params.keySet()) {
             if (!TextUtils.isEmpty(key)
-                    && !key.equals("LoadOnSubscribe")
+                    && !key.equals("ProgressChannel")
                     && !key.equals("uploadFile")
                     && !key.equals("isFileKeyAES")
                     && !key.equals("filePathList")
@@ -82,7 +80,7 @@ public class FileRequestBodyConverter2 extends FileRequestBodyConverter {
                 contentType = "multipart/form-data";
             }
 
-            FileProgressRequestBody requestBody = new FileProgressRequestBody(file, contentType, loadOnSubscribe);
+            ProgressRequestBody requestBody = new ProgressRequestBody(file, contentType, channel);
             if (files.size() > 1){
                 builder.addFormDataPart(isFileKeyAES ? fileKey + (i + 1) : fileKey, file.getName(), requestBody);
             } else {

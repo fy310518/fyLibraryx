@@ -9,18 +9,13 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
+
 import androidx.annotation.RequiresApi;
 
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 
 /**
  * 低功耗蓝牙工具类
@@ -104,15 +99,15 @@ public class BleUtils {
         //先关闭手机蓝牙
         turnOffBluetooth();
 
-        //延迟1S 打开手机蓝牙
-        Observable.timer(1, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Long>() {
-                    @Override
-                    public void accept(@NonNull Long aLong) throws Exception {
-                        turnOnBluetooth();
-                    }
-                });
+//        //延迟1S 打开手机蓝牙
+//        Observable.timer(1, TimeUnit.SECONDS)
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Consumer<Long>() {
+//                    @Override
+//                    public void accept(@NonNull Long aLong) throws Exception {
+//                        turnOnBluetooth();
+//                    }
+//                });
     }
 
     /**

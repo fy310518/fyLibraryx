@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 @Aspect
 public class OnClikFilterAspect {
 
-    @Pointcut("execution(@com.fy.baselibrary.aop.annotation.ClickFilter * *(..))")
+    @Pointcut("execution(@com.fy.com.fy.baselibrary.aop.annotation.ClickFilter * *(..))")
     public void clickFilter() {}
 
     @Around("clickFilter()")

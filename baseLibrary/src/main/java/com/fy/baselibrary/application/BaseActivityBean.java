@@ -4,8 +4,6 @@ import com.fy.baselibrary.statuslayout.StatusLayoutManager;
 
 import java.io.Serializable;
 
-import io.reactivex.subjects.BehaviorSubject;
-
 /**
  * 使用 ActivityLifecycleCallbacks 实现给所有 Activity 执行 ButterKnife.bind
  * Created by fangs on 2017/5/18.
