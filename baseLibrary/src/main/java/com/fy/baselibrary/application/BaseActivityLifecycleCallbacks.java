@@ -176,7 +176,7 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
 
         if (BaseActivityLifecycleCallbacks.actNum == 1 &&
                 info.numRunning == 1 &&
-                !info.topActivity.getClassName().equals("com.fy.com.fy.baselibrary.startactivity.StartActivity")) {
+                !info.topActivity.getClassName().equals("com.fy.baselibrary.startactivity.StartActivity")) {
             //被杀死重启
             isrun = true;
             L.e(TAG, activity.getClass().getName() + "关闭此界面");

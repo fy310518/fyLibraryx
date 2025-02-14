@@ -4,6 +4,7 @@ import android.util.ArrayMap
 import com.fy.baselibrary.retrofit.load.down.DownLoadFileType
 import com.fy.baselibrary.retrofit.load.up.UpLoadFileType
 import com.fy.baselibrary.retrofit.test.BeanModule
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.FieldMap
@@ -11,7 +12,9 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.QueryMap
 import retrofit2.http.Streaming
 import retrofit2.http.Url
@@ -59,23 +62,23 @@ interface ApiService {
     suspend fun uploadFile(@Url apiUrl: String,
                            @Body params: ArrayMap<String, Any>): Any
 
-//    /**
-//     * 多图片上传 方式二（@Multipart：方法注解；@Part：参数注解；参数类型；MultipartBody.Part）
-//     * @param apiUrl
-//     * @param txtParams  文本参数，可多个 （转换方式：MultipartBody.Part.createFormData("key", "参数");）
-//     * @param files  文件
-//     * @return
-//     */
+    /**
+     * 多图片上传 方式二（@Multipart：方法注解；@Part：参数注解；参数类型；MultipartBody.Part）
+     * @param apiUrl
+     * @param txtParams  文本参数，可多个 （转换方式：MultipartBody.Part.createFormData("key", "参数");）
+     * @param files  文件
+     * @return
+     */
 //    @Multipart
 //    @Headers(value = ["CONNECT_TIMEOUT:60000", "READ_TIMEOUT:60000", "WRITE_TIMEOUT:60000"])
 //    @POST
 //    suspend fun uploadFile(@Url apiUrl: String,
-//                             @Part txtParams: ArrayList<MultipartBody.Part>,
-//                             @Part files : MultipartBody.Part): Any
-//    @Multipart
-//    @Headers(value = ["CONNECT_TIMEOUT:60000", "READ_TIMEOUT:60000", "WRITE_TIMEOUT:60000"])
-//    @POST
-//    suspend fun uploadFile(@Url apiUrl: String,
-//                             @Part txtParams: ArrayList<MultipartBody.Part>?,
-//                             @Part files : ArrayList<MultipartBody.Part>): Any
+//                           @Part txtParams: ArrayList<MultipartBody.Part>,
+//                           @Part files : MultipartBody.Part): Any
+    @Multipart
+    @Headers(value = ["CONNECT_TIMEOUT:60000", "READ_TIMEOUT:60000", "WRITE_TIMEOUT:60000"])
+    @POST
+    suspend fun uploadFile(@Url apiUrl: String,
+                             @Part txtParams: ArrayList<MultipartBody.Part>?,
+                             @Part files : ArrayList<MultipartBody.Part>): Any
 }

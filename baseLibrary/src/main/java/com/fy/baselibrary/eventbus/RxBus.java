@@ -1,4 +1,4 @@
-//package com.fy.com.fy.baselibrary.eventbus;
+//package com.fy.baselibrary.eventbus;
 //
 //import android.util.ArrayMap;
 //

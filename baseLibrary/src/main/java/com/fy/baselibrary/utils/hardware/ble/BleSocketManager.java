@@ -1,4 +1,4 @@
-//package com.fy.com.fy.baselibrary.utils.hardware.ble;
+//package com.fy.baselibrary.utils.hardware.ble;
 //
 //import android.annotation.SuppressLint;
 //import android.bluetooth.BluetoothAdapter;
@@ -9,9 +9,9 @@
 //
 //import androidx.annotation.NonNull;
 //
-//import com.fy.com.fy.baselibrary.retrofit.ServerException;
-//import com.fy.com.fy.baselibrary.retrofit.observer.RequestBaseObserver;
-//import com.fy.com.fy.baselibrary.utils.TransfmtUtils;
+//import com.fy.baselibrary.retrofit.ServerException;
+//import com.fy.baselibrary.retrofit.observer.RequestBaseObserver;
+//import com.fy.baselibrary.utils.TransfmtUtils;
 //
 //import java.io.IOException;
 //import java.io.InputStream;

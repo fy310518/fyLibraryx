@@ -11,6 +11,7 @@ import com.fy.baselibrary.retrofit.RequestUtils
 import com.fy.baselibrary.retrofit.ServerException
 import com.fy.baselibrary.retrofit.load.ApiService
 import com.fy.baselibrary.retrofit.observer.IProgressDialog
+import com.fy.baselibrary.retrofit.observer.TransmissionState
 import com.fy.baselibrary.utils.AppUtils
 import com.fy.baselibrary.utils.Constant
 import com.fy.baselibrary.utils.FileUtils
@@ -18,7 +19,6 @@ import com.fy.baselibrary.utils.GsonUtils
 import com.fy.baselibrary.utils.cache.SpfAgent
 import com.fy.baselibrary.utils.media.UriUtils
 import com.fy.baselibrary.utils.notify.L
-import com.google.gson.annotations.Until
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
@@ -36,6 +36,8 @@ import java.io.OutputStream
 import java.io.RandomAccessFile
 
 class HttpUtils {
+
+    val CALL_BACK_LENGTH: Long = (1024 * 1024).toLong()
 
     companion object {
         val instance by lazy { HttpUtils() }
@@ -129,9 +131,9 @@ class HttpUtils {
 //            }
     }
 
-    fun <R> uploadFile(apiUrl: String, progressDialog: IProgressDialog?, files: ArrayList<R>,
+    fun <R> uploadFile(apiUrl: String, files: ArrayList<R>, progressDialog: IProgressDialog?,
                    params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-                       progressCallback: ((proress: Float)-> Until)?): Flow<Any> {
+                       progressCallback: ((Float) -> Unit)? = null): Flow<Any> {
 
         val channel = Channel<Float>()
         GlobalScope.launch {
@@ -154,6 +156,11 @@ class HttpUtils {
             RequestUtils.create(ApiService::class.java)
                 .uploadFile(apiUrl, params)
 
+            for(proress in channel){
+                L.e("request", "进度--> ${proress} ${Thread.currentThread().name}")
+                emit(proress)
+            }
+
             emit("data")
         }
             .flowOn(Dispatchers.IO)
@@ -173,7 +180,15 @@ class HttpUtils {
     }
 
 
-     fun downLoadFile(downUrl: String, targetPath: String, reNameFile: String, progressDialog: IProgressDialog?, isReturnProcess: Boolean = false): Flow<Any> {
+    /**
+     * 下载文件
+     */
+     fun downLoadFile(downUrl: String,
+                      targetPath: String,
+                      reNameFile: String,
+                      progressDialog: IProgressDialog?,
+                      isReturnProcess: Boolean = false): Flow<TransmissionState> {
+
          return flow {
              var filePath: String = targetPath
              filePath = if (!TextUtils.isEmpty(filePath)) {
@@ -201,9 +216,13 @@ class HttpUtils {
              val responseBody = RequestUtils.create(ApiService::class.java)
                  .download(downParam, downUrl)
 
-             val file = saveFile(responseBody, downUrl, filePath)
+             val file = saveFile(responseBody, downUrl, filePath){
+                 if (isReturnProcess) {
+                     emit(TransmissionState.InProgress(it))
+                 }
+             }
 
-             emit(file)
+             emit(TransmissionState.Success(file))
          }.flowOn(Dispatchers.IO)
              .onStart {
                  L.e("request", "请求开始--> ${Thread.currentThread().name}")
@@ -225,7 +244,7 @@ class HttpUtils {
      * @param filePath     文件保存路径
      * @return
      */
-    fun saveFile(responseBody: ResponseBody, url: String, filePath: String): File {
+    private inline fun saveFile(responseBody: ResponseBody, url: String, filePath: String, progressListener: (Float) -> Unit): File {
         var tempFile = FileUtils.getTempFile(url, filePath)
 
         val reName_MAP = ArrayMap<String, String>()
@@ -250,7 +269,7 @@ class HttpUtils {
         }
 
 
-        var file: File = writeFileToDisk(responseBody, url, tempFile.absolutePath, uri)
+        var file: File = writeFileToDisk(responseBody, url, tempFile.absolutePath, uri, progressListener)
         try {
             val FileDownStatus = SpfAgent.init("").getInt(url + Constant.FileDownStatus)
 
@@ -316,11 +335,10 @@ class HttpUtils {
      * @return
      * @throws IOException
      */
-    fun writeFileToDisk(responseBody: ResponseBody, url: String, filePath: String?, uri: Uri?): File {
-        val totalByte = responseBody.contentLength()
-        L.e("fy_file_FileDownInterceptor", "文件下载 写数据" + "---" + Thread.currentThread().name)
-
+    private inline fun writeFileToDisk(responseBody: ResponseBody, url: String, filePath: String?, uri: Uri?, progressListener: (Float) -> Unit): File {
         val file = File(filePath)
+        val totalByte = responseBody.contentLength()
+        val fileTotalByte = file.length() + totalByte
 
         SpfAgent.init("").saveInt(url + Constant.FileDownStatus, 1).commit(false) //正在下载
         val buffer = ByteArray(1024 * 4)
@@ -342,6 +360,8 @@ class HttpUtils {
             }
 
             var downloadByte: Long = 0
+            var lastTotal = 0L
+
             while (true) {
                 val len = `is`.read(buffer)
                 if (len == -1) { //下载完成
@@ -360,11 +380,12 @@ class HttpUtils {
                 }
 
                 downloadByte += len.toLong()
+                lastTotal += len.toLong()
 
-//                if (null != loadOnSubscribe && downloadByte >= CALL_BACK_LENGTH) {//避免每写4096字节，就回调一次，那未免太奢侈了，所以设定一个常量每1mb回调一次
-//                    loadOnSubscribe.onRead(downloadByte);
-//                    downloadByte = 0;
-//                }
+                if (lastTotal >= CALL_BACK_LENGTH || downloadByte >= fileTotalByte) { //避免每写4096字节，就回调一次，那未免太奢侈了，所以设定一个常量每1mb回调一次
+                    progressListener((downloadByte * 100 / fileTotalByte).toFloat())
+                    lastTotal = 0
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()

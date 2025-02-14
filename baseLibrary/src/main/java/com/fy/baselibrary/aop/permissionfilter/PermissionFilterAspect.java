@@ -30,7 +30,7 @@ public class PermissionFilterAspect {
 
 //    @Pointcut 注解代表切入点，具体就是指哪些方法需要被执行"AOP"
 //    execution()里指定了 NeedPermission 注解的路径，即加入 NeedPermission 注解的方法就是需要处理的切面
-    @Pointcut("execution(@com.fy.com.fy.baselibrary.aop.annotation.NeedPermission * *(..))" + " && @annotation(needPermission)")
+    @Pointcut("execution(@com.fy.baselibrary.aop.annotation.NeedPermission * *(..))" + " && @annotation(needPermission)")
     public void PermissionFilter(NeedPermission needPermission) {
     }
 
