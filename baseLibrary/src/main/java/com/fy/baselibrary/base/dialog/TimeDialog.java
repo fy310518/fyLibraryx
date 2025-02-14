@@ -68,7 +68,9 @@ public abstract class TimeDialog extends CommonDialog {
     protected abstract void customerView(ViewHolder holder);
 
     @Override
-    public void convertView(ViewHolder holder, CommonDialog dialog) {
+    public void convertView(CommonDialog dialog) {
+        ViewHolder holder = ViewHolder.createViewHolder(getContext(), mRootView);
+
         initWheelView(holder);
         if (null == wvYear || null == wvMonth || null == wvDay || null == wvHour || null == wvMin || null == wvSecond) {
             throw new UnsupportedOperationException("Six wheel views cannot be null");

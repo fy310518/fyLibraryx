@@ -13,13 +13,18 @@ import android.view.WindowManager;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.fy.baselibrary.R;
+import com.fy.baselibrary.application.mvvm.BaseViewModel;
+import com.fy.baselibrary.application.mvvm.IBaseMVVM;
 import com.fy.baselibrary.base.PopupDismissListner;
 import com.fy.baselibrary.base.ViewHolder;
+import com.fy.baselibrary.utils.AnimUtils;
 import com.fy.baselibrary.utils.DensityUtils;
 import com.fy.baselibrary.utils.ScreenUtils;
 import com.fy.baselibrary.utils.notify.L;
@@ -31,7 +36,7 @@ import java.lang.reflect.Field;
  * 应用 所有dialog 的父类
  * Created by fangs on 2017/3/13.
  */
-public abstract class CommonDialog extends DialogFragment {
+public abstract class CommonDialog<VM extends BaseViewModel, VDB extends ViewDataBinding> extends DialogFragment {
     /**
      * 统一 弹窗宽度占屏幕百分比
      */
@@ -47,6 +52,8 @@ public abstract class CommonDialog extends DialogFragment {
     private static final String ANIM = "anim_style";
     private static final String LAYOUT = "layout_id";
 
+    protected VDB vdb;
+    protected VM vm;
     protected View mRootView;
 
     protected PopupDismissListner dialogList;
@@ -77,7 +84,7 @@ public abstract class CommonDialog extends DialogFragment {
     protected abstract int initLayoutId();
 
     /** 渲染数据到View中 */
-    public abstract void convertView(ViewHolder holder, CommonDialog dialog);
+    public abstract void convertView(CommonDialog dialog);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,9 +111,13 @@ public abstract class CommonDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (null == mRootView) {
-            mRootView = inflater.inflate(layoutId, container, false);
+            vdb = DataBindingUtil.inflate(LayoutInflater.from(getContext()), layoutId, container, false);
+            vdb.setLifecycleOwner(getActivity());
+            mRootView = vdb.getRoot();
 
-            convertView(ViewHolder.createViewHolder(getContext(), mRootView), this);
+            vm = AnimUtils.createViewModel(this);
+
+            convertView(this);
         } else {
             ViewGroup parent = (ViewGroup) mRootView.getParent();
             if (null != parent) {

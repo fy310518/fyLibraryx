@@ -2,14 +2,15 @@ package com.fy.baselibrary.base.dialog;
 
 import android.os.Bundle;
 import androidx.annotation.LayoutRes;
+import androidx.databinding.ViewDataBinding;
 
+import com.fy.baselibrary.application.mvvm.BaseViewModel;
 import com.fy.baselibrary.base.ViewHolder;
 
 /**
  * 完善 没有扩展需求情况下 使用父类创建dialog 不够优雅的问题
- * Created by fangs on 2018/3/21.
  */
-public class NiceDialog extends CommonDialog {
+public class NiceDialog<VM extends BaseViewModel, VDB extends ViewDataBinding> extends CommonDialog<VM, VDB> {
     private static final String LISTENER = "ViewConvertListener";
     private static final String DestroyLISTENER = "ViewDestroyListener";
 
@@ -32,9 +33,9 @@ public class NiceDialog extends CommonDialog {
     }
 
     @Override
-    public void convertView(ViewHolder holder, CommonDialog dialog) {
+    public void convertView(CommonDialog dialog) {
         if (null != dialogConvertListener) {
-            dialogConvertListener.convertView(holder, dialog);
+            dialogConvertListener.convertView(ViewHolder.createViewHolder(getContext(), mRootView), dialog);
         }
     }
 

@@ -21,7 +21,6 @@ android {
 	dataBinding {
         enabled = true
     }
-	
     buildTypes {
         release {
             minifyEnabled false
@@ -104,5 +103,5 @@ dependencies {
     }
 
     //aop
-    implementation 'org.aspectj:aspectjrt:1.9.5'
+//    implementation 'org.aspectj:aspectjrt:1.9.5'
 }
