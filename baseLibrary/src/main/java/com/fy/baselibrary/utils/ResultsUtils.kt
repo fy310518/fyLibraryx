@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
@@ -16,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.fy.baselibrary.aop.clickfilter.ClickUtils
 
 /**
  * description Results api 简单 封装，减少模板代码
@@ -66,3 +68,17 @@ fun Context.receiverRegister(receiver: BroadcastReceiver, filter: IntentFilter, 
         registerReceiver(receiver, filter)
     }
 }
+
+
+/***
+ * 点击事件的View扩展 防止重复点击”
+ * @param block: (T) -> Unit 函数
+ * @return Unit
+ */
+fun <T : View> T.click(intervalMillis: Long = 900L, block: (T) -> Unit) = setOnClickListener { view ->
+    if(ClickUtils.isFastClick(view, intervalMillis)){
+        block(view as T)
+    }
+}
+
+
